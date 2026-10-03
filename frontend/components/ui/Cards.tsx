@@ -35,21 +35,34 @@ function CardActionLink({ action, primary = false }: { action: CardAction; prima
 export type ReadinessCardProps = CardClassName & {
   action: CardAction;
   completed: number;
+  description?: string;
   label?: string;
+  primaryAction?: boolean;
+  progressSummary?: string;
   total: number;
 };
 
-export function ReadinessCard({ action, className, completed, label = "Preparedness level", total }: ReadinessCardProps) {
+export function ReadinessCard({
+  action,
+  className,
+  completed,
+  description,
+  label = "Preparedness level",
+  primaryAction = false,
+  progressSummary,
+  total,
+}: ReadinessCardProps) {
   const percentage = total > 0 ? Math.round((Math.min(Math.max(completed, 0), total) / total) * 100) : 0;
 
   return (
     <article className={cardClassName("card card--readiness", className)}>
       <h3 className="card__title">{label}</h3>
+      {description && <p className="card__description">{description}</p>}
       <div className="card__readiness-content">
         <CircularProgress label={label} max={total} value={completed} valueLabel={`${completed}/${total}`} variant="success" />
-        <p className="card__readiness-percent">{percentage}%</p>
+        <p className="card__readiness-percent">{progressSummary ?? `${percentage}%`}</p>
       </div>
-      <CardActionLink action={action} />
+      <CardActionLink action={action} primary={primaryAction} />
     </article>
   );
 }
@@ -64,13 +77,24 @@ export type FamilyMembersCardProps = CardClassName & {
   addMemberAction: CardAction;
   manageAction: CardAction;
   members: FamilyMember[];
+  membersLabel?: string;
+  summary?: string;
+  title?: string;
 };
 
-export function FamilyMembersCard({ addMemberAction, className, manageAction, members }: FamilyMembersCardProps) {
+export function FamilyMembersCard({
+  addMemberAction,
+  className,
+  manageAction,
+  members,
+  membersLabel,
+  summary,
+  title = "Family members",
+}: FamilyMembersCardProps) {
   return (
     <article className={cardClassName("card card--family-members", className)}>
-      <h3 className="card__title">Family members</h3>
-      <ul className="card__avatar-list" aria-label={`${members.length} family members`}>
+      <h3 className="card__title">{title}</h3>
+      <ul className="card__avatar-list" aria-label={membersLabel ?? `${members.length} family members`}>
         {members.map((member, index) => (
           <li key={member.id}>
             <span className={`card__avatar${index === 0 ? " card__avatar--accent" : ""}`} title={member.name}>{member.initials}</span>
@@ -83,7 +107,7 @@ export function FamilyMembersCard({ addMemberAction, className, manageAction, me
           </a>
         </li>
       </ul>
-      <p className="card__summary">{members.length} active {members.length === 1 ? "member" : "members"}</p>
+      <p className="card__summary">{summary ?? `${members.length} active ${members.length === 1 ? "member" : "members"}`}</p>
       <CardActionLink action={manageAction} />
     </article>
   );

@@ -27,7 +27,7 @@ consumed by components. Semantic tokens are the stable public contract.
 
 ```text
 Primitive palette → semantic role → component property
-red-500          → action-primary → Button background
+red-700          → action-primary → Button background
 neutral-950      → content-primary → Body text
 ```
 
@@ -60,7 +60,7 @@ unchanged: `light`, `dark`, `grayscale`, `hc-black-white`, and
 | `neutral-200` | `#E5E7EB` | Subtle light surface |
 | `neutral-100` | `#F3F4F6` | Light canvas |
 | `neutral-0` | `#FFFFFF` | Raised light surface and inverse ink |
-| `red-500` | `#FF0033` | Plan: 0 brand/action base |
+| `red-500` | `#FF0033` | Plan: 0 brand accent and asset base |
 
 ### Accessibility-derived primitives
 
@@ -68,6 +68,8 @@ unchanged: `light`, `dark`, `grayscale`, `hc-black-white`, and
 | --- | --- | --- |
 | `neutral-550` | `#626974` | Accessible muted text on the light canvas |
 | `red-600` | `#D4002A` | Accessible red text, link, and light-theme danger foreground |
+| `red-700` | `#B00020` | Accessible primary-action fill with white content |
+| `red-800` | `#8E001C` | Pressed primary-action fill with white content |
 | `red-400` | `#FF4D6D` | Accessible accent/link foreground on dark surfaces |
 | `green-700` | `#087A3A` | Light-theme success foreground |
 | `amber-800` | `#8A3D00` | Light-theme warning foreground |
@@ -79,8 +81,8 @@ unchanged: `light`, `dark`, `grayscale`, `hc-black-white`, and
 
 `neutral-500` is 4.39:1 on `neutral-100`, so it must not be used as normal
 text on the light canvas. `red-500` is 3.60:1 on `neutral-100` and 3.96:1
-against white, so it must not be used as normal red text on light surfaces or
-with white normal-size text.
+against white, so it is a brand accent rather than an action fill or normal
+text color.
 
 ## Semantic color roles
 
@@ -100,10 +102,10 @@ with white normal-size text.
 | `--content-disabled` | `#6B7280` | Unavailable controls only |
 | `--border-strong` | `#6B7280` | Inputs, controls, selected boundaries |
 | `--border-subtle` | `#E5E7EB` | Decorative separators only |
-| `--action-primary` | `#FF0033` | Primary action fill with `#0A0A0A` foreground |
-| `--action-primary-hover` | `#FF4D6D` | Hovered primary action with `#0A0A0A` foreground |
-| `--action-primary-pressed` | `#D4002A` | Pressed primary action with `#FFFFFF` foreground |
-| `--action-selected` | `#D4002A` | Persistent selected state with `#FFFFFF` foreground |
+| `--action-primary` | `#B00020` | Primary action fill with `#FFFFFF` foreground |
+| `--action-primary-hover` | `#D4002A` | Hovered primary action with `#FFFFFF` foreground |
+| `--action-primary-pressed` | `#8E001C` | Pressed primary action with `#FFFFFF` foreground |
+| `--action-selected` | `#B00020` | Persistent selected state with `#FFFFFF` foreground |
 | `--action-danger` | `#D4002A` | Destructive action boundary and pressed fill with `#FFFFFF` foreground |
 | `--action-danger-hover` | `#FFE6EB` | Hovered destructive action with `#D4002A` foreground |
 | `--focus-ring` | `#0A0A0A` | 3px visible focus outline |
@@ -124,16 +126,17 @@ with white normal-size text.
 | `--content-disabled` | `#9CA3AF` | Unavailable controls only |
 | `--border-strong` | `#9CA3AF` | Inputs, controls, selected boundaries |
 | `--border-subtle` | `#3A3A3A` | Decorative separators only |
-| `--action-primary` | `#FF0033` | Primary action fill with `#0A0A0A` foreground |
-| `--action-primary-hover` | `#FF4D6D` | Hovered primary action with `#0A0A0A` foreground |
-| `--action-primary-pressed` | `#FF8099` | Pressed primary action with `#0A0A0A` foreground |
-| `--action-selected` | `#FF8099` | Persistent selected state with `#0A0A0A` foreground |
+| `--action-primary` | `#B00020` | Primary action fill with `#FFFFFF` foreground |
+| `--action-primary-hover` | `#D4002A` | Hovered primary action with `#FFFFFF` foreground |
+| `--action-primary-pressed` | `#8E001C` | Pressed primary action with `#FFFFFF` foreground |
+| `--action-selected` | `#B00020` | Persistent selected state with `#FFFFFF` foreground |
 | `--action-danger` | `#FF8AA0` | Destructive action boundary and pressed fill with `#0A0A0A` foreground |
 | `--action-danger-hover` | `#460014` | Hovered destructive action with `#FF8AA0` foreground |
 | `--focus-ring` | `#FFFFFF` | 3px visible focus outline |
 
-An action's foreground must change with its state where specified above. Do not
-reuse white text with `--action-primary` in the light theme.
+An action's foreground must change with its state where specified above. All
+red primary actions use white content; `red-500` is never a primary-action
+fill.
 
 ### Feedback roles
 
@@ -190,8 +193,9 @@ foreground/background roles. They do not introduce category colors. In
 | `#1F1F1F` on `#F3F4F6` | 14.98:1 | Secondary light text |
 | `#626974` on `#F3F4F6` | 5.03:1 | Muted light text |
 | `#D4002A` on `#FFFFFF` | 5.48:1 | Light links and danger text |
-| `#0A0A0A` on `#FF0033` | 5.00:1 | Default primary action label |
-| `#FFFFFF` on `#D4002A` | 5.48:1 | Pressed light primary action label |
+| `#FFFFFF` on `#B00020` | 7.33:1 | Default primary action label |
+| `#FFFFFF` on `#D4002A` | 5.48:1 | Hovered primary action label |
+| `#FFFFFF` on `#8E001C` | 9.14:1 | Pressed primary action label |
 | `#FFFFFF` on `#141414` | 18.42:1 | Primary dark text |
 | `#FF4D6D` on `#0A0A0A` | 6.16:1 | Dark links and accent text |
 

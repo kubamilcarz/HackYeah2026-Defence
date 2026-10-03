@@ -7,6 +7,24 @@ type DeepStrings<T> = { [K in keyof T]: T[K] extends string ? string : DeepStrin
 const en = {
   common: { backToSettings: "Back to Settings", comingSoon: "Coming soon" },
   navigation: { brandLabel: "PLAN:0 home", primary: "Primary navigation", home: "Home", map: "Map", family: "Family", plan: "Plan", supplies: "Supplies", alerts: "Alerts", settings: "Settings" },
+  home: {
+    title: "Prepare together, act with clarity",
+    intro: "Build the information your household may need before a crisis makes it harder to think clearly.",
+    emergency: { title: "In an emergency", description: "Follow local authority instructions and contact emergency services when needed. PLAN:0 does not replace official guidance.", action: "Open important numbers" },
+    setup: {
+      heading: "Build your household plan",
+      description: "Start with the details that make it easier to contact one another and decide what to do next.",
+      readiness: { label: "Plan setup", description: "Start with the people and places your household depends on.", progressSummary: "4 essentials to add", action: "Build your plan" },
+      family: { title: "People to contact", membersLabel: "Saved people", summary: "No people or emergency contacts saved", addAction: "Add a family member", manageAction: "Manage people" },
+      essentials: { title: "Essential information", meetingPlace: "Meeting place", contactPlan: "Contact plan", healthInformation: "Health information", notSet: "Not set", action: "Add essential info" },
+    },
+    quickAccess: {
+      heading: "When you need something fast",
+      description: "Use official and current sources for urgent decisions.",
+      numbers: { title: "Important numbers", description: "Call services or open official resources" },
+      map: { title: "Map nearby places", description: "Find saved and essential locations" },
+    },
+  },
   languageSettings: { backLabel: "Back to Settings", heading: "Language", legend: "Choose your language" },
   placeholders: {
     home: { title: "Home", description: "Your household readiness overview will appear here." },
@@ -45,6 +63,24 @@ export type Messages = DeepStrings<typeof en>;
 const pl: Messages = {
   common: { backToSettings: "Wróć do ustawień", comingSoon: "Wkrótce" },
   navigation: { brandLabel: "Start PLAN:0", primary: "Główna nawigacja", home: "Start", map: "Mapa", family: "Rodzina", plan: "Plan", supplies: "Zapasy", alerts: "Alerty", settings: "Ustawienia" },
+  home: {
+    title: "Przygotuj się razem, działaj spokojnie",
+    intro: "Zbierz informacje, których Twoje gospodarstwo może potrzebować, zanim kryzys utrudni spokojne działanie.",
+    emergency: { title: "W sytuacji zagrożenia", description: "Stosuj się do instrukcji lokalnych władz i w razie potrzeby skontaktuj się ze służbami ratunkowymi. PLAN:0 nie zastępuje oficjalnych komunikatów.", action: "Otwórz ważne numery" },
+    setup: {
+      heading: "Zbuduj plan gospodarstwa",
+      description: "Zacznij od informacji, które ułatwią kontakt z bliskimi i podjęcie kolejnych kroków.",
+      readiness: { label: "Konfiguracja planu", description: "Zacznij od osób i miejsc, na których polega Twoje gospodarstwo.", progressSummary: "4 ważne elementy do dodania", action: "Zbuduj plan" },
+      family: { title: "Osoby do kontaktu", membersLabel: "Zapisane osoby", summary: "Nie zapisano jeszcze osób ani kontaktów alarmowych", addAction: "Dodaj członka rodziny", manageAction: "Zarządzaj osobami" },
+      essentials: { title: "Niezbędne informacje", meetingPlace: "Miejsce spotkania", contactPlan: "Plan kontaktu", healthInformation: "Informacje medyczne", notSet: "Nie ustawiono", action: "Dodaj ważne informacje" },
+    },
+    quickAccess: {
+      heading: "Gdy potrzebujesz czegoś szybko",
+      description: "W pilnych decyzjach korzystaj z oficjalnych i aktualnych źródeł.",
+      numbers: { title: "Ważne numery", description: "Zadzwoń do służb lub otwórz oficjalne źródła" },
+      map: { title: "Mapa pobliskich miejsc", description: "Znajdź zapisane i ważne lokalizacje" },
+    },
+  },
   languageSettings: { backLabel: "Wróć do ustawień", heading: "Język", legend: "Wybierz język" },
   placeholders: {
     home: { title: "Start", description: "W tym miejscu pojawi się przegląd gotowości Twojego gospodarstwa domowego." },

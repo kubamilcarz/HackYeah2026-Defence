@@ -39,7 +39,7 @@ documents for every entry below. The live visual reference is `/design-system`.
 
 | Component | Source | Use |
 | --- | --- | --- |
-| `ReadinessCard` | `ui/Cards.tsx` | Household preparedness progress and a next action. |
+| `ReadinessCard` | `ui/Cards.tsx` | Household preparedness progress and a next action; supports optional next-step context and a primary action treatment. |
 | `FamilyMembersCard`, `FamilyProfileCard` | `ui/Cards.tsx` | Household members and their key profile information. |
 | `ShelterCard` | `ui/Cards.tsx` | Nearby shelter or critical location summary; do not imply availability without sourced current data. |
 | `HouseholdResourcesCard` | `ui/Cards.tsx` | Household resources and related management action. |

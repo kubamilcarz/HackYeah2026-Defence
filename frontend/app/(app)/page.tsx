@@ -1,7 +1,5 @@
-import { PlaceholderScreen } from "@/components/app/PlaceholderScreen";
+import { HomeScreen } from "@/components/app/HomeScreen";
 
 export default function HomePage() {
-  return (
-    <PlaceholderScreen page="home" />
-  );
+  return <HomeScreen />;
 }
