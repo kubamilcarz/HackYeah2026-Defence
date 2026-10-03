@@ -32,7 +32,7 @@ const sections = [
   ["02 / Typography", "Readable by default", "type"],
   ["03 / Actions & inputs", "Components", "components"],
   ["04 / Status", "Feedback", "feedback"],
-  ["05 / Navigation", "Tab bars", "navigation"],
+  ["05 / Navigation", "Navigation", "navigation"],
   ["06 / Iconography", "Emergency reference", "icons"],
   ["07 / Brand", "Logo assets", "brand"],
 ] as const;
@@ -385,7 +385,7 @@ export default function DesignSystemPage() {
               <div className="mt-8 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-raised)] p-5 sm:p-6">
                 <div className="max-w-2xl">
                   <p className="type-caption text-[var(--content-muted)]">
-                    Use the fixed bottom bar below 1024px and the sticky sidebar on desktop. Pass the current destination as <code>activeItem</code>; a destination omitted from the mobile set has no selected mobile tab.
+                    Use the page bar for a title and contextual actions: it centers the title on mobile and aligns it to the content on web. Use the fixed bottom bar below 1024px and the sticky sidebar on desktop for primary destinations; pass the current destination as <code>activeItem</code>.
                   </p>
                 </div>
                 <NavigationShowcase />

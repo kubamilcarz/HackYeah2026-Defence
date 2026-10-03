@@ -503,6 +503,40 @@ a[href] {
   cursor: not-allowed;
 }
 
+.page-navigation-bar {
+  align-items: center;
+  background: var(--surface-raised);
+  border-bottom: 1px solid var(--border-strong);
+  box-sizing: border-box;
+  color: var(--content-primary);
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: var(--space-12) minmax(0, 1fr) var(--space-12);
+  min-height: var(--space-16);
+  padding: var(--space-2) var(--space-4);
+}
+
+.page-navigation-bar__slot {
+  align-items: center;
+  display: flex;
+  min-width: 0;
+}
+
+.page-navigation-bar__slot--trailing { justify-content: flex-end; }
+
+.page-navigation-bar__button { flex: 0 0 auto; }
+
+.page-navigation-bar__title {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-h3);
+  margin: 0;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .app-navigation {
   color: var(--content-primary);
 }
@@ -648,8 +682,47 @@ a.app-navigation__link {
 }
 
 @media (min-width: 64rem) {
+  .page-navigation-bar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    padding-inline: var(--space-6);
+  }
+
+  .page-navigation-bar__title { text-align: left; }
+
   .app-navigation--responsive .app-navigation__mobile { display: none; }
   .app-navigation--responsive .app-navigation__desktop { display: block; }
+}
+
+.page-navigation-bar--preview-mobile {
+  grid-template-columns: var(--space-12) minmax(0, 1fr) var(--space-12);
+  padding-inline: var(--space-4);
+}
+
+.page-navigation-bar--preview-mobile .page-navigation-bar__title { text-align: center; }
+
+.page-navigation-bar--preview-desktop {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding-inline: var(--space-6);
+}
+
+.page-navigation-bar--preview-desktop .page-navigation-bar__title { text-align: left; }
+
+.page-navigation-showcase__preview {
+  background: var(--surface-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-2);
+  overflow: hidden;
+}
+
+.page-navigation-showcase__preview .navigation-showcase__heading {
+  margin: var(--space-4) var(--space-4) var(--space-4);
+}
+
+.page-navigation-showcase__status {
+  color: var(--content-muted);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  margin: var(--space-3) var(--space-4);
 }
 
 :root[data-theme="dark"] .app-navigation__brand-logo--color,

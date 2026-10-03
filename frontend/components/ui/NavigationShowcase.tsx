@@ -4,6 +4,7 @@ import { useState, type MouseEvent } from "react";
 import {
   Bell,
   ClipboardText,
+  DotsThree,
   Gear,
   House,
   MapTrifold,
@@ -11,6 +12,7 @@ import {
   UsersThree,
 } from "@phosphor-icons/react";
 import { AppNavigation, type NavigationItem } from "@/components/ui/AppNavigation";
+import { PageNavigationBar } from "@/components/ui/PageNavigationBar";
 
 const desktopItems: NavigationItem[] = [
   { id: "home", label: "Home", href: "#home", icon: House },
@@ -58,9 +60,35 @@ function NavigationPreview({ mode, title }: PreviewProps) {
   );
 }
 
+function PageNavigationPreview({ mode, title }: PreviewProps) {
+  const [lastAction, setLastAction] = useState("Ready");
+
+  return (
+    <section className="page-navigation-showcase__preview">
+      <div className="navigation-showcase__heading">
+        <h3 className="type-h3">{title}</h3>
+        <code>{mode === "mobile" ? "&lt; 1024px" : "≥ 1024px"}</code>
+      </div>
+      <PageNavigationBar
+        action={{
+          icon: DotsThree,
+          label: "More options",
+          onClick: () => setLastAction("More options selected"),
+        }}
+        className={`page-navigation-bar--preview-${mode}`}
+        onBack={() => setLastAction("Back selected")}
+        title="Emergency contacts"
+      />
+      <p aria-live="polite" className="page-navigation-showcase__status">{lastAction}</p>
+    </section>
+  );
+}
+
 export function NavigationShowcase() {
   return (
     <div className="navigation-showcase">
+      <PageNavigationPreview mode="mobile" title="Mobile page bar" />
+      <PageNavigationPreview mode="desktop" title="Web page bar" />
       <NavigationPreview mode="mobile" title="Mobile bottom bar" />
       <NavigationPreview mode="desktop" title="Desktop sidebar" />
     </div>
