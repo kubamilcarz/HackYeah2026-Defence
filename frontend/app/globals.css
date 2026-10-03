@@ -1237,6 +1237,55 @@ a.app-navigation__link--active {
 
 .settings-page__link:active { background: var(--surface-subtle); }
 
+.settings-page__storage-card {
+  align-items: stretch;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+
+@media (min-width: 40rem) {
+  .settings-page__storage-card {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.settings-page__storage-content {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.settings-page__storage-icon {
+  color: var(--content-secondary);
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.settings-page__storage-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-page__clear-button {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+@media (min-width: 40rem) {
+  .settings-page__clear-button {
+    width: auto;
+  }
+}
+
+
 .settings-page__footer {
   border-top: 1px solid var(--border-subtle);
   color: var(--content-muted);

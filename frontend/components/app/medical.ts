@@ -1,3 +1,13 @@
+import {
+  putInStore,
+  putManyInStore,
+  deleteFromStore,
+  subscribeToDatabase,
+  DB_STORES,
+  type DbMedicalProfile,
+  type DbMedicalNote,
+} from "@/lib/db";
+
 export type MedicalNote = {
   id: string;
   memberId: string;
@@ -7,6 +17,7 @@ export type MedicalNote = {
   createdAt: string;
   updatedAt: string;
 };
+
 
 export type MedicalProfile = {
   id: string;
@@ -102,10 +113,12 @@ export function subscribeToMedicalProfiles(onStoreChange: () => void): () => voi
 
   window.addEventListener("storage", handleUpdate);
   window.addEventListener(PROFILES_CHANGE_EVENT, handleUpdate);
+  const unsubscribeDb = subscribeToDatabase(handleUpdate);
 
   return () => {
     window.removeEventListener("storage", handleUpdate);
     window.removeEventListener(PROFILES_CHANGE_EVENT, handleUpdate);
+    unsubscribeDb();
   };
 }
 
@@ -126,6 +139,7 @@ export function saveMedicalProfile(updated: MedicalProfile): void {
   } catch {
     // Graceful fallback
   }
+  putManyInStore(DB_STORES.MEDICAL_PROFILES, next as DbMedicalProfile[]).catch(() => {});
   window.dispatchEvent(new Event(PROFILES_CHANGE_EVENT));
 }
 
@@ -170,10 +184,12 @@ export function subscribeToMedicalNotes(onStoreChange: () => void): () => void {
 
   window.addEventListener("storage", handleUpdate);
   window.addEventListener(NOTES_CHANGE_EVENT, handleUpdate);
+  const unsubscribeDb = subscribeToDatabase(handleUpdate);
 
   return () => {
     window.removeEventListener("storage", handleUpdate);
     window.removeEventListener(NOTES_CHANGE_EVENT, handleUpdate);
+    unsubscribeDb();
   };
 }
 
@@ -204,6 +220,7 @@ export function saveMedicalNote(noteInput: Omit<MedicalNote, "id" | "createdAt" 
   } catch {
     // Graceful fallback
   }
+  putManyInStore(DB_STORES.MEDICAL_NOTES, next as DbMedicalNote[]).catch(() => {});
   window.dispatchEvent(new Event(NOTES_CHANGE_EVENT));
 }
 
@@ -216,6 +233,7 @@ export function deleteMedicalNote(noteId: string): void {
   } catch {
     // Graceful fallback
   }
+  deleteFromStore(DB_STORES.MEDICAL_NOTES, noteId).catch(() => {});
   window.dispatchEvent(new Event(NOTES_CHANGE_EVENT));
 }
 

@@ -1,22 +1,28 @@
 "use client";
+import { useState } from "react";
 import {
   Bell,
   BookOpenText,
   CaretRight,
+  Database,
   Gear,
   Globe,
   Info,
   Phone,
   ShieldWarning,
+  Trash,
   User,
 } from "@phosphor-icons/react/ssr";
 import type { Icon } from "@phosphor-icons/react/lib";
 import Image from "next/image";
 import Link from "next/link";
 import { AccessibilityIcon } from "@/components/accessibility/AccessibilityIcon";
+import { Button } from "@/components/ui/Button";
+import { Dialog } from "@/components/ui/Dialog";
 import { EmergencyModeCard } from "@/components/ui/EmergencyModeCard";
 import { PageNavigationBar } from "@/components/ui/PageNavigationBar";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
+import { clearAllOfflineData } from "@/lib/db";
 
 type SettingsLink = {
   href: string;
@@ -27,6 +33,10 @@ type SettingsLink = {
 export default function SettingsPage() {
   const { messages } = useLocalization();
   const copy = messages.settings;
+  const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+  const [clearedNotice, setClearedNotice] = useState(false);
+
   const accountSection = {
     id: "account-and-app",
     items: [
@@ -47,6 +57,20 @@ export default function SettingsPage() {
     ],
     title: copy.resources,
   };
+
+  async function handleConfirmClear() {
+    setIsClearing(true);
+    try {
+      await clearAllOfflineData();
+      setIsClearDialogOpen(false);
+      setClearedNotice(true);
+      setTimeout(() => setClearedNotice(false), 4000);
+    } catch (error) {
+      console.error("Failed to clear offline storage:", error);
+    } finally {
+      setIsClearing(false);
+    }
+  }
 
   return (
     <main className="settings-page">
@@ -99,6 +123,7 @@ export default function SettingsPage() {
               ))}
             </ul>
           </section>
+
           <section aria-labelledby="accessibility-heading" className="settings-page__section">
             <h2 className="type-h2 settings-page__section-heading" id="accessibility-heading">{copy.accessibility}</h2>
             <ul className="settings-page__list">
@@ -113,7 +138,60 @@ export default function SettingsPage() {
               </li>
             </ul>
           </section>
+
+          <section aria-labelledby="storage-heading" className="settings-page__section">
+            <h2 className="type-h2 settings-page__section-heading" id="storage-heading">{copy.dataAndStorage}</h2>
+            <div className="settings-page__storage-card">
+              <div className="settings-page__storage-content">
+                <Database aria-hidden="true" className="settings-page__storage-icon" size={28} />
+                <div className="settings-page__storage-info">
+                  <p className="type-body font-semibold">{copy.storageDescription}</p>
+                  {clearedNotice && (
+                    <p aria-live="polite" className="type-caption text-[var(--action-primary)] font-medium mt-1">
+                      {copy.clearSuccess}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <Button
+                aria-label={copy.clearStorageAria}
+                className="settings-page__clear-button"
+                leadingIcon={Trash}
+                onClick={() => setIsClearDialogOpen(true)}
+                variant="destructive"
+              >
+                {copy.clearStorage}
+              </Button>
+            </div>
+          </section>
         </nav>
+
+        <Dialog
+          closeLabel={copy.clearDialogCancel}
+          description={copy.clearDialogDescription}
+          onOpenChange={setIsClearDialogOpen}
+          open={isClearDialogOpen}
+          title={copy.clearDialogTitle}
+        >
+          <div className="dialog__actions">
+            <Button
+              disabled={isClearing}
+              onClick={() => setIsClearDialogOpen(false)}
+              variant="secondary"
+            >
+              {copy.clearDialogCancel}
+            </Button>
+            <Button
+              disabled={isClearing}
+              leadingIcon={Trash}
+              onClick={handleConfirmClear}
+              variant="destructive"
+            >
+              {copy.clearDialogConfirm}
+            </Button>
+          </div>
+        </Dialog>
+
         <footer className="settings-page__footer">
           <p className="type-caption">© 2026 Na Wszelki</p>
         </footer>
@@ -121,3 +199,4 @@ export default function SettingsPage() {
     </main>
   );
 }
+

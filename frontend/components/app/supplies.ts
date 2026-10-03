@@ -127,6 +127,13 @@ export function supplyIssues(item: SupplyItem, now = startOfToday()): InventoryI
   return issues;
 }
 
+import {
+  putManyInStore,
+  subscribeToDatabase,
+  DB_STORES,
+  type DbSupplyItem,
+} from "@/lib/db";
+
 export function isSupplyReady(item: SupplyItem, now?: Date) {
   return supplyIssues(item, now).length === 0;
 }
@@ -138,6 +145,8 @@ export const localSuppliesRepository: SuppliesRepository = {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (!stored) {
         clientSnapshot = { items: starterItems() };
+        // Asynchronously backfill into IndexedDB
+        putManyInStore(DB_STORES.SUPPLIES, clientSnapshot.items as DbSupplyItem[]).catch(() => {});
         return clientSnapshot;
       }
       const parsed: unknown = JSON.parse(stored);
@@ -159,6 +168,8 @@ export const localSuppliesRepository: SuppliesRepository = {
     } catch {
       clientSnapshot = { items, issue: "storage-unavailable" };
     }
+    // Also persist in IndexedDB
+    putManyInStore(DB_STORES.SUPPLIES, items as DbSupplyItem[]).catch(() => {});
     window.dispatchEvent(new Event(CHANGE_EVENT));
     return clientSnapshot.issue === "storage-unavailable" ? "storage-unavailable" : "saved";
   },
@@ -171,9 +182,11 @@ export function subscribeToSupplies(onStoreChange: () => void) {
   };
   window.addEventListener("storage", synchronize);
   window.addEventListener(CHANGE_EVENT, onStoreChange);
+  const unsubscribeDb = subscribeToDatabase(synchronize);
   return () => {
     window.removeEventListener("storage", synchronize);
     window.removeEventListener(CHANGE_EVENT, onStoreChange);
+    unsubscribeDb();
   };
 }
 
@@ -184,3 +197,4 @@ export function getSuppliesSnapshot() {
 export function getSuppliesServerSnapshot() {
   return null;
 }
+
