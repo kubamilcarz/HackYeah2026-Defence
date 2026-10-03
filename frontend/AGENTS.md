@@ -7,3 +7,18 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# PLAN:0 frontend
+
+This directory is the responsive PLAN:0 PWA. For user-interface, shared
+component, design-token, or accessibility work, use `$plan0-ui-a11y`.
+
+- Consult `docs/design-system/components.md` before adding a shared primitive;
+  compose from the catalog when it fits.
+- Preserve the semantic-token and accessibility-preference contracts in
+  `docs/design-system/`. Do not add raw color values or component-local theme
+  overrides.
+- Keep UI usable by keyboard, at supported text scales and zoom, with reduced
+  motion and forced colors. Prefer native HTML before ARIA.
+- Run `npm run lint` for code changes. Also run `npm run verify:colors` when
+  changing semantic color tokens or their mappings.
