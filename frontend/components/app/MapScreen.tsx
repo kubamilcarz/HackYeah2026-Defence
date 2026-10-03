@@ -1,6 +1,7 @@
 "use client";
 
-import { Crosshair } from "@phosphor-icons/react";
+import { ArrowRight, Compass, Crosshair, MapPin } from "@phosphor-icons/react";
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { Map, type MapPosition } from "@/components/ui/Map";
 import { IconButton } from "@/components/ui/Button";
@@ -8,7 +9,7 @@ import { SearchField } from "@/components/ui/FormControls";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 
 type SheetSize = "compact" | "browse" | "expanded";
-type MapFilter = "all" | "shelters" | "hospitals" | "pharmacies" | "meeting-places";
+type MapFilter = "plan" | "all" | "shelters" | "hospitals" | "pharmacies" | "meeting-places";
 
 const SHEET_SIZES: SheetSize[] = ["compact", "browse", "expanded"];
 const DEFAULT_CENTER: MapPosition = { lat: 50.0674, lng: 19.9915 };
@@ -18,11 +19,12 @@ export function MapScreen() {
   const copy = messages.map;
   const sheetLabels: Record<SheetSize, string> = copy.sizes;
   const mapFilters: { id: MapFilter; label: string }[] = [
-    { id: "all", label: copy.all }, { id: "shelters", label: copy.shelters }, { id: "hospitals", label: copy.hospitals }, { id: "pharmacies", label: copy.pharmacies }, { id: "meeting-places", label: copy.meetingPlaces },
+    { id: "plan", label: copy.yourPlan }, { id: "all", label: copy.all }, { id: "shelters", label: copy.shelters }, { id: "hospitals", label: copy.hospitals }, { id: "pharmacies", label: copy.pharmacies }, { id: "meeting-places", label: copy.meetingPlaces },
   ];
   const [center, setCenter] = useState(DEFAULT_CENTER);
   const [locationStatus, setLocationStatus] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState<MapFilter>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState<MapFilter>("plan");
   const [sheetSize, setSheetSize] = useState<SheetSize>("browse");
   const dragStartY = useRef<number | undefined>(undefined);
 
@@ -108,24 +110,58 @@ export function MapScreen() {
 
         <div className="map-sheet__context">
           <SearchField
-            hideLabel
             clearLabel={copy.clearSearch}
+            hideLabel
             label={copy.search}
+            onChange={(event) => setSearchQuery(event.target.value)}
             placeholder={copy.search}
+            value={searchQuery}
           />
-          <div aria-label={copy.filterLocations} className="map-sheet__filters" role="group">
-            {mapFilters.map((filter) => (
-              <button
-                aria-pressed={selectedFilter === filter.id}
-                className="map-sheet__filter"
-                key={filter.id}
-                onClick={() => setSelectedFilter(filter.id)}
-                type="button"
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
+
+          {sheetSize !== "compact" && (
+            <>
+              <section aria-labelledby="plan-places-heading" className="map-sheet__section">
+                <div className="map-sheet__section-heading">
+                  <h2 className="type-h3" id="plan-places-heading">{copy.planPlaces}</h2>
+                  <Link className="map-sheet__text-link" href="/plan">{copy.managePlan}</Link>
+                </div>
+                <div className="map-sheet__setup-card">
+                  <span aria-hidden="true" className="map-sheet__setup-icon"><MapPin size={24} weight="bold" /></span>
+                  <div>
+                    <h3 className="type-h3">{copy.primaryMeetingPlace}</h3>
+                    <p className="type-caption">{copy.meetingPlaceDescription}</p>
+                  </div>
+                  <Link aria-label={copy.addMeetingPlace} className="map-sheet__setup-action" href="/plan">
+                    <span>{copy.add}</span><ArrowRight aria-hidden="true" size={20} weight="bold" />
+                  </Link>
+                </div>
+              </section>
+
+              <section aria-labelledby="nearby-places-heading" className="map-sheet__section">
+                <div className="map-sheet__section-heading">
+                  <h2 className="type-h3" id="nearby-places-heading">{copy.nearbyPlaces}</h2>
+                  <span className="type-caption">{copy.mapArea}</span>
+                </div>
+                <div aria-label={copy.filterLocations} className="map-sheet__filters" role="group">
+                  {mapFilters.map((filter) => (
+                    <button
+                      aria-pressed={selectedFilter === filter.id}
+                      className="map-sheet__filter"
+                      key={filter.id}
+                      onClick={() => setSelectedFilter(filter.id)}
+                      type="button"
+                    >
+                      {filter.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="map-sheet__nearby-empty">
+                  <Compass aria-hidden="true" size={24} weight="bold" />
+                  <p className="type-caption">{copy.nearbyUnavailable}</p>
+                </div>
+              </section>
+            </>
+          )}
         </div>
       </section>
     </main>
