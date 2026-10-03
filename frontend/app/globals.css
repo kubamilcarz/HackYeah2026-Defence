@@ -61,6 +61,7 @@
   --feedback-info-foreground: #0057b8;
   --feedback-info-background: #e8f1ff;
   --focus-ring: #0a0a0a;
+  --overlay-backdrop: rgb(10 10 10 / 52%);
   --link-decoration: underline;
   --brand-image-filter: none;
   --brand-yellow-filter: brightness(0) saturate(100%) invert(93%) sepia(97%) saturate(1700%) hue-rotate(2deg) brightness(110%) contrast(105%);
@@ -110,6 +111,7 @@
   --feedback-info-foreground: #9dcaff;
   --feedback-info-background: #00274e;
   --focus-ring: #ffffff;
+  --overlay-backdrop: rgb(0 0 0 / 64%);
   --brand-image-filter: invert(1);
   --button-image-filter: none;
 }
@@ -150,6 +152,7 @@
   --feedback-info-foreground: #ffffff;
   --feedback-info-background: #000000;
   --focus-ring: #ffffff;
+  --overlay-backdrop: rgb(0 0 0 / 72%);
   --brand-image-filter: invert(1);
   --button-image-filter: none;
 }
@@ -190,6 +193,7 @@
   --feedback-info-foreground: #ffff00;
   --feedback-info-background: #000000;
   --focus-ring: #ffff00;
+  --overlay-backdrop: rgb(0 0 0 / 72%);
   --brand-image-filter: invert(93%) sepia(97%) saturate(1700%) hue-rotate(2deg) brightness(110%) contrast(105%);
   --button-image-filter: none;
 }
@@ -230,6 +234,7 @@
   --feedback-info-foreground: #111111;
   --feedback-info-background: #dedede;
   --focus-ring: #111111;
+  --overlay-backdrop: rgb(17 17 17 / 52%);
   --link-decoration: underline;
   --brand-image-filter: grayscale(1);
   --button-image-filter: invert(1) grayscale(1);
@@ -308,6 +313,7 @@
     --feedback-info-foreground: #9dcaff;
     --feedback-info-background: #00274e;
     --focus-ring: #ffffff;
+    --overlay-backdrop: rgb(0 0 0 / 64%);
     --brand-image-filter: invert(1);
     --button-image-filter: none;
   }
@@ -643,6 +649,10 @@ a[href] {
   line-height: var(--line-height-h3);
 }
 
+.feedback--toast {
+  width: min(100%, 24rem);
+}
+
 .feedback__description {
   color: var(--content-secondary);
   font-size: var(--font-size-caption);
@@ -686,6 +696,112 @@ a[href] {
 @media (hover: hover) {
   .feedback__dismiss:hover {
     background: color-mix(in srgb, currentColor 12%, transparent);
+  }
+}
+
+.toast-viewport {
+  bottom: var(--space-6);
+  display: grid;
+  gap: var(--space-3);
+  pointer-events: none;
+  position: fixed;
+  right: var(--space-6);
+  width: min(calc(100vw - var(--space-8)), 24rem);
+  z-index: 40;
+}
+
+.toast-viewport > * {
+  pointer-events: auto;
+}
+
+.dialog {
+  background: transparent;
+  border: 0;
+  box-sizing: border-box;
+  inset: 0;
+  margin: auto;
+  max-height: 100dvh;
+  max-width: 100%;
+  overflow: auto;
+  padding: var(--space-4);
+  position: fixed;
+}
+
+.dialog::backdrop {
+  background: var(--overlay-backdrop);
+}
+
+.dialog__surface {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--space-3);
+  color: var(--content-primary);
+  margin: auto;
+  max-width: 32rem;
+  min-width: min(100%, 18rem);
+  padding: var(--space-6);
+}
+
+.dialog__header {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--space-4);
+  justify-content: space-between;
+}
+
+.dialog__title,
+.dialog__description {
+  margin: 0;
+}
+
+.dialog__title {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-h2);
+}
+
+.dialog__description {
+  color: var(--content-secondary);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  margin-top: var(--space-2);
+}
+
+.dialog__close {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--space-2);
+  color: var(--content-primary);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  min-height: var(--space-10);
+  min-width: var(--space-10);
+  padding: var(--space-2);
+}
+
+.dialog__body {
+  margin-top: var(--space-6);
+}
+
+.dialog__actions {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+@media (min-width: 32rem) {
+  .dialog__actions {
+    flex-direction: row;
+  }
+}
+
+@media (hover: hover) {
+  .dialog__close:hover {
+    background: var(--action-secondary-hover);
   }
 }
 

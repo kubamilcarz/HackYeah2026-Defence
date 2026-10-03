@@ -17,6 +17,7 @@ import {
 import type { Icon } from "@phosphor-icons/react/lib";
 import { Button, IconButton } from "@/components/ui/Button";
 import { Alert, Banner } from "@/components/ui/Alert";
+import { FeedbackShowcase } from "@/components/ui/FeedbackShowcase";
 import { Badge, Tag } from "@/components/ui/Tag";
 
 export const metadata: Metadata = {
@@ -373,6 +374,7 @@ export default function DesignSystemPage() {
                     />
                   </div>
                 </section>
+                <FeedbackShowcase />
               </div>
             )}
             {id === "icons" && (
