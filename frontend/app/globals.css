@@ -16,6 +16,16 @@
   --line-height-body: 1.5rem;
   --font-size-caption: 0.875rem;
   --line-height-caption: 1.25rem;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
   --surface-canvas: #f3f4f6;
   --surface-raised: #ffffff;
   --surface-subtle: #e5e7eb;
@@ -374,14 +384,14 @@ a[href] {
   font-weight: var(--font-weight-semibold);
   justify-content: center;
   line-height: 1.25rem;
-  min-height: 3rem;
+  min-height: var(--space-12);
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 
 .button {
   border-radius: 9999px;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
 }
 
 .button__icon {
@@ -390,8 +400,8 @@ a[href] {
 
 .icon-button {
   border-radius: 9999px;
-  min-width: 3rem;
-  padding: 0.75rem;
+  min-width: var(--space-12);
+  padding: var(--space-3);
 }
 
 .button--primary,

@@ -37,6 +37,19 @@ const typeStyles = [
   ["Caption", "Supporting text", "Regular", "14 / 20", "type-caption"],
 ] as const;
 
+const spacingTokens = [
+  ["1", "4px", "--space-1"],
+  ["2", "8px", "--space-2"],
+  ["3", "12px", "--space-3"],
+  ["4", "16px", "--space-4"],
+  ["5", "20px", "--space-5"],
+  ["6", "24px", "--space-6"],
+  ["8", "32px", "--space-8"],
+  ["10", "40px", "--space-10"],
+  ["12", "48px", "--space-12"],
+  ["16", "64px", "--space-16"],
+] as const;
+
 const colorGroups = [
   {
     name: "Surfaces",
@@ -135,7 +148,7 @@ export default function DesignSystemPage() {
             {id === "foundations" && (
               <div className="mt-8 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-raised)] p-5 sm:p-6">
                 <p className="type-caption mb-6 max-w-2xl text-[var(--content-muted)]">
-                  Use semantic tokens in components, never raw color values. This reference responds to the active appearance setting.
+                  Use semantic color and spacing tokens in components, never raw values. Color responds to the active appearance setting; spacing remains consistent across appearances.
                 </p>
                 <div className="grid gap-6 md:grid-cols-2">
                   {colorGroups.map(({ name, tokens }) => (
@@ -159,6 +172,29 @@ export default function DesignSystemPage() {
                     </section>
                   ))}
                 </div>
+                <section className="mt-8" aria-labelledby="spacing-heading">
+                  <div className="mb-3">
+                    <h3 className="type-h3" id="spacing-heading">Spacing</h3>
+                    <p className="type-caption mt-1 text-[var(--content-muted)]">A 4px base scale for layout, component padding, and gaps. Use the next suitable token instead of one-off values.</p>
+                  </div>
+                  <div className="overflow-hidden rounded-lg border border-[var(--border-subtle)]">
+                    <div className="grid grid-cols-[4rem_minmax(0,1fr)_4rem] gap-3 border-b border-[var(--border-subtle)] px-4 py-3 font-mono text-xs font-semibold uppercase tracking-[0.16em] text-[var(--content-muted)] sm:grid-cols-[5rem_minmax(0,1fr)_5rem]">
+                      <span>Token</span>
+                      <span>Reference</span>
+                      <span>Value</span>
+                    </div>
+                    {spacingTokens.map(([scale, value, token]) => (
+                      <div className="grid grid-cols-[4rem_minmax(0,1fr)_4rem] items-center gap-3 border-b border-[var(--border-subtle)] px-4 py-3 last:border-b-0 sm:grid-cols-[5rem_minmax(0,1fr)_5rem]" key={token}>
+                        <code className="font-mono text-xs text-[var(--content-muted)]">{scale}</code>
+                        <div className="flex h-4 items-center">
+                          <span aria-hidden="true" className="block h-4 rounded-sm bg-[var(--action-primary)]" style={{ width: `var(${token})` }} />
+                          <code className="ml-3 font-mono text-xs text-[var(--content-muted)]">{token}</code>
+                        </div>
+                        <span className="type-caption text-[var(--content-muted)]">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
               </div>
             )}
             {id === "type" && (
