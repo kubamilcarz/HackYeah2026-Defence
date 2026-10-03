@@ -17,6 +17,7 @@ import {
 import type { Icon } from "@phosphor-icons/react/lib";
 import { Button, IconButton } from "@/components/ui/Button";
 import { Alert, Banner } from "@/components/ui/Alert";
+import { ControlsShowcase } from "@/components/ui/ControlsShowcase";
 import { FeedbackShowcase } from "@/components/ui/FeedbackShowcase";
 import { Badge, Tag } from "@/components/ui/Tag";
 
@@ -326,6 +327,7 @@ export default function DesignSystemPage() {
                       </div>
                     </div>
                   </section>
+                  <ControlsShowcase />
                 </div>
               </div>
             )}
