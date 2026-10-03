@@ -176,3 +176,8 @@ _cors_origins = os.environ.get(
 )
 CORS_ALLOWED_ORIGINS = [origin.strip() for origin in _cors_origins.split(",") if origin.strip()]
 CORS_ALLOW_CREDENTIALS = True
+
+
+# OpenAI Settings
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
