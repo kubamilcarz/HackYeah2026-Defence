@@ -20,6 +20,7 @@ import { Alert, Banner } from "@/components/ui/Alert";
 import { ControlsShowcase } from "@/components/ui/ControlsShowcase";
 import { FeedbackShowcase } from "@/components/ui/FeedbackShowcase";
 import { NavigationShowcase } from "@/components/ui/NavigationShowcase";
+import { CircularProgress, LinearProgress } from "@/components/ui/Progress";
 import { Badge, Tag } from "@/components/ui/Tag";
 
 export const metadata: Metadata = {
@@ -376,6 +377,21 @@ export default function DesignSystemPage() {
                       title="Your plan is ready"
                       variant="success"
                     />
+                  </div>
+                </section>
+                <section className="mt-10" aria-labelledby="progress-indicators-heading">
+                  <div className="mb-4 max-w-2xl">
+                    <h3 className="type-h3" id="progress-indicators-heading">Progress indicators</h3>
+                    <p className="type-caption mt-1 text-[var(--content-muted)]">Use determinate progress when the current value and total are known. Pair every state with a label and value; use circular progress for compact summaries and linear progress when horizontal space is available.</p>
+                  </div>
+                  <div className="grid gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+                    <div className="flex items-center justify-center rounded-lg border border-[var(--border-subtle)] p-6">
+                      <CircularProgress label="Preparedness progress" max={8} value={5} valueLabel="5/8" variant="success" />
+                    </div>
+                    <div className="grid gap-4 rounded-lg border border-[var(--border-subtle)] p-5">
+                      <LinearProgress label="Water reserve" max={24} value={18} valueLabel="18 / 24 L" variant="success" />
+                      <LinearProgress label="Food reserve" max={14} value={6} valueLabel="6 / 14 days" variant="warning" />
+                    </div>
                   </div>
                 </section>
                 <FeedbackShowcase />

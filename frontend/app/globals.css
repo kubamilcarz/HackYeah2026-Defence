@@ -1187,6 +1187,96 @@ a.app-navigation__link {
   top: var(--space-3);
 }
 
+.progress {
+  --progress-foreground: var(--content-primary);
+  color: var(--content-primary);
+}
+
+.progress--success { --progress-foreground: var(--feedback-success-foreground); }
+.progress--warning { --progress-foreground: var(--feedback-warning-foreground); }
+.progress--danger { --progress-foreground: var(--feedback-danger-foreground); }
+.progress--info { --progress-foreground: var(--feedback-info-foreground); }
+
+.progress__meta {
+  align-items: baseline;
+  display: flex;
+  gap: var(--space-4);
+  justify-content: space-between;
+}
+
+.progress__label,
+.progress__value {
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+}
+
+.progress__label { font-weight: var(--font-weight-semibold); }
+
+.progress__value {
+  color: var(--progress-foreground);
+  font-weight: var(--font-weight-bold);
+  text-align: end;
+}
+
+.progress__track {
+  background: var(--surface-subtle);
+  border-radius: 999px;
+  height: var(--space-3);
+  margin-top: var(--space-3);
+  overflow: hidden;
+}
+
+.progress__fill {
+  background: var(--progress-foreground);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+}
+
+.progress--circular {
+  align-items: center;
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.progress__circle {
+  height: 8rem;
+  position: relative;
+  width: 8rem;
+}
+
+.progress__svg {
+  display: block;
+  height: 100%;
+  transform: rotate(-90deg);
+  width: 100%;
+}
+
+.progress__circle-track,
+.progress__circle-fill {
+  fill: none;
+  stroke-width: 12;
+}
+
+.progress__circle-track { stroke: var(--surface-subtle); }
+
+.progress__circle-fill {
+  stroke: var(--progress-foreground);
+  stroke-linecap: butt;
+}
+
+.progress__circle-value {
+  align-items: center;
+  display: flex;
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-bold);
+  inset: 0;
+  justify-content: center;
+  line-height: var(--line-height-h2);
+  position: absolute;
+}
+
 @media (hover: hover) {
   .feedback__dismiss:hover {
     background: color-mix(in srgb, currentColor 12%, transparent);
