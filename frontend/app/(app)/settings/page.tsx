@@ -79,7 +79,7 @@ export default function SettingsPage() {
                 <Link className="settings-page__link" href="/settings/accessibility">
                   <span className="settings-page__link-label">
                     <AccessibilityIcon className="settings-page__accessibility-icon" />
-                    <span>Accessibility settings</span>
+                    <span>Accessibility</span>
                   </span>
                   <CaretRight aria-hidden="true" size={20} weight="bold" />
                 </Link>
