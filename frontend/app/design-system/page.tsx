@@ -19,6 +19,7 @@ import { Button, IconButton } from "@/components/ui/Button";
 import { Alert, Banner } from "@/components/ui/Alert";
 import { ControlsShowcase } from "@/components/ui/ControlsShowcase";
 import { FeedbackShowcase } from "@/components/ui/FeedbackShowcase";
+import { NavigationShowcase } from "@/components/ui/NavigationShowcase";
 import { Badge, Tag } from "@/components/ui/Tag";
 
 export const metadata: Metadata = {
@@ -31,8 +32,9 @@ const sections = [
   ["02 / Typography", "Readable by default", "type"],
   ["03 / Actions & inputs", "Components", "components"],
   ["04 / Status", "Feedback", "feedback"],
-  ["05 / Iconography", "Emergency reference", "icons"],
-  ["06 / Brand", "Logo assets", "brand"],
+  ["05 / Navigation", "Tab bars", "navigation"],
+  ["06 / Iconography", "Emergency reference", "icons"],
+  ["07 / Brand", "Logo assets", "brand"],
 ] as const;
 
 const appearanceVariants = [
@@ -377,6 +379,16 @@ export default function DesignSystemPage() {
                   </div>
                 </section>
                 <FeedbackShowcase />
+              </div>
+            )}
+            {id === "navigation" && (
+              <div className="mt-8 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-raised)] p-5 sm:p-6">
+                <div className="max-w-2xl">
+                  <p className="type-caption text-[var(--content-muted)]">
+                    Use the fixed bottom bar below 1024px and the sticky sidebar on desktop. Pass the current destination as <code>activeItem</code>; a destination omitted from the mobile set has no selected mobile tab.
+                  </p>
+                </div>
+                <NavigationShowcase />
               </div>
             )}
             {id === "icons" && (

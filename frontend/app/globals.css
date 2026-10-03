@@ -503,6 +503,181 @@ a[href] {
   cursor: not-allowed;
 }
 
+.app-navigation {
+  color: var(--content-primary);
+}
+
+.app-navigation__mobile {
+  background: var(--surface-raised);
+  border-top: 1px solid var(--border-strong);
+  bottom: 0;
+  left: 0;
+  padding: var(--space-2) var(--space-2) max(var(--space-2), env(safe-area-inset-bottom));
+  position: fixed;
+  right: 0;
+  z-index: 20;
+}
+
+.app-navigation__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.app-navigation__list--mobile {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: repeat(var(--navigation-item-count, 5), minmax(0, 1fr));
+}
+
+a.app-navigation__link {
+  align-items: center;
+  border-radius: var(--space-2);
+  color: var(--content-primary);
+  display: flex;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-3);
+  min-height: var(--space-12);
+  text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.app-navigation__link--mobile {
+  flex-direction: column;
+  gap: var(--space-1);
+  justify-content: center;
+  min-width: 0;
+  padding: var(--space-1);
+  text-align: center;
+}
+
+.app-navigation__link--mobile span {
+  line-height: var(--line-height-caption);
+  overflow-wrap: anywhere;
+}
+
+.app-navigation__icon { flex: 0 0 auto; }
+
+.app-navigation__link--active {
+  background: var(--action-primary);
+  color: var(--action-primary-content);
+}
+
+.app-navigation__desktop {
+  background: var(--surface-raised);
+  border-right: 1px solid var(--border-strong);
+  box-sizing: border-box;
+  min-height: 100dvh;
+  padding: var(--space-6);
+  position: sticky;
+  top: 0;
+  width: 16rem;
+}
+
+.app-navigation__brand {
+  display: inline-flex;
+  height: 5rem;
+  margin-bottom: var(--space-10);
+  width: 5rem;
+}
+
+.app-navigation__brand-logo {
+  height: 100%;
+  width: 100%;
+}
+
+.app-navigation__brand-logo--contrast { display: none; }
+
+.app-navigation__list--desktop { display: grid; gap: var(--space-2); }
+
+.app-navigation__link--desktop { padding: var(--space-3); }
+
+@media (hover: hover) {
+  .app-navigation__link:not(.app-navigation__link--active):hover {
+    background: var(--action-secondary-hover);
+  }
+}
+
+.app-navigation__link:not(.app-navigation__link--active):active {
+  background: var(--surface-subtle);
+}
+
+.app-navigation--responsive .app-navigation__desktop { display: none; }
+
+.app-navigation--mobile .app-navigation__mobile {
+  border: 1px solid var(--border-strong);
+  padding-bottom: var(--space-2);
+  position: static;
+}
+
+.app-navigation--desktop .app-navigation__desktop { position: static; }
+
+.navigation-showcase {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.navigation-showcase__preview {
+  background: var(--surface-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-2);
+  overflow: hidden;
+  padding: var(--space-4);
+}
+
+.navigation-showcase__heading {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.navigation-showcase__heading code {
+  color: var(--content-muted);
+  font-family: var(--font-family-mono);
+  font-size: 0.75rem;
+}
+
+.navigation-showcase__preview--mobile { align-self: end; }
+
+@media (min-width: 48rem) {
+  .navigation-showcase { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+
+@media (min-width: 64rem) {
+  .app-navigation--responsive .app-navigation__mobile { display: none; }
+  .app-navigation--responsive .app-navigation__desktop { display: block; }
+}
+
+:root[data-theme="dark"] .app-navigation__brand-logo--color,
+:root[data-theme="hc-black-white"] .app-navigation__brand-logo--color,
+:root[data-theme="hc-black-yellow"] .app-navigation__brand-logo--color {
+  display: none;
+}
+
+:root[data-theme="dark"] .app-navigation__brand-logo--contrast,
+:root[data-theme="hc-black-white"] .app-navigation__brand-logo--contrast,
+:root[data-theme="hc-black-yellow"] .app-navigation__brand-logo--contrast {
+  display: block;
+}
+
+:root[data-theme="hc-black-yellow"] .app-navigation__brand-logo--contrast {
+  filter: var(--brand-yellow-filter);
+}
+
+:root[data-theme="grayscale"] .app-navigation__brand-logo--color {
+  filter: grayscale(1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .app-navigation__brand-logo--color { display: none; }
+  :root:not([data-theme]) .app-navigation__brand-logo--contrast { display: block; }
+}
+
+
 .field {
   color: var(--content-primary);
   display: grid;
