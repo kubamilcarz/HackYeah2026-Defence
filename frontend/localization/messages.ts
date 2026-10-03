@@ -89,7 +89,7 @@ const pl: Messages = {
       map: { title: "Mapa pobliskich miejsc", description: "Znajdź zapisane i ważne lokalizacje" },
     },
   },
-  installReminder: { title: "Dodaj PLAN:0 do ekranu początkowego", description: "Miej plan swojego gospodarstwa zawsze pod ręką — dodaj PLAN:0 jako aplikację.", action: "Zobacz instrukcję", dismiss: "Ukryj przypomnienie o ekranie początkowym" },
+  installReminder: { title: "Dodaj PLAN:0 do ekranu początkowego", description: "Miej plan swojego gospodarstwa zawsze pod ręką - dodaj PLAN:0 jako aplikację.", action: "Zobacz instrukcję", dismiss: "Ukryj przypomnienie o ekranie początkowym" },
   installGuide: {
     title: "Dodaj PLAN:0 do ekranu początkowego",
     description: "Dodaj PLAN:0 do ekranu początkowego, aby otwierać plan gospodarstwa tak jak aplikację.",

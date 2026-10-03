@@ -665,6 +665,13 @@ a.app-navigation__link--active {
   min-height: 100dvh;
 }
 
+.app-shell__install-reminder {
+  border-inline: 0;
+  border-radius: 0;
+}
+
+.app-shell__body { min-width: 0; }
+
 .app-shell__content {
   box-sizing: border-box;
   min-width: 0;
@@ -705,7 +712,11 @@ a.app-navigation__link--active {
   padding-top: var(--space-4);
 }
 
-.home-screen { box-sizing: border-box; min-height: 100dvh; padding: var(--space-8) var(--space-4); }
+.home-screen {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  padding: var(--space-8) var(--space-4);
+}
 
 .home-screen__content { display: grid; gap: var(--space-10); margin-inline: auto; max-width: 72rem; }
 .home-screen__header { display: grid; gap: var(--space-3); max-width: 42rem; }
@@ -1232,7 +1243,7 @@ a.app-navigation__link--active {
   .app-navigation--responsive .app-navigation__mobile { display: none; }
   .app-navigation--responsive .app-navigation__desktop { display: block; }
 
-  .app-shell { display: flex; }
+  .app-shell__body { display: flex; min-height: 100dvh; }
 
   .app-shell__content {
     flex: 1 1 auto;

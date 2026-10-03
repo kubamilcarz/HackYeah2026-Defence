@@ -49,7 +49,7 @@ export function InstallReminder() {
     <Alert
       actionHref="/settings/guides"
       actionLabel={copy.action}
-      className="home-screen__install-reminder"
+      className="app-shell__install-reminder"
       description={copy.description}
       dismissLabel={copy.dismiss}
       dismissible
