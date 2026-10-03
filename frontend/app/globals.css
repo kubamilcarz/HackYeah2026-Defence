@@ -36,6 +36,12 @@
   --action-primary-pressed: #d4002a;
   --action-primary-pressed-content: #ffffff;
   --action-secondary-hover: #e5e7eb;
+  --action-danger: #d4002a;
+  --action-danger-content: #ffffff;
+  --action-danger-hover: #ffe6eb;
+  --action-danger-hover-content: #d4002a;
+  --action-danger-pressed: #d4002a;
+  --action-danger-pressed-content: #ffffff;
   --feedback-success-foreground: #087a3a;
   --feedback-success-background: #e6f7ec;
   --feedback-warning-foreground: #8a3d00;
@@ -78,6 +84,12 @@
   --action-primary-pressed: #ff8099;
   --action-primary-pressed-content: #0a0a0a;
   --action-secondary-hover: #1f1f1f;
+  --action-danger: #ff8aa0;
+  --action-danger-content: #0a0a0a;
+  --action-danger-hover: #460014;
+  --action-danger-hover-content: #ff8aa0;
+  --action-danger-pressed: #ff8aa0;
+  --action-danger-pressed-content: #0a0a0a;
   --feedback-success-foreground: #70e69a;
   --feedback-success-background: #123a22;
   --feedback-warning-foreground: #ffc36a;
@@ -112,6 +124,12 @@
   --action-primary-pressed: #ffffff;
   --action-primary-pressed-content: #000000;
   --action-secondary-hover: #242424;
+  --action-danger: #ffffff;
+  --action-danger-content: #000000;
+  --action-danger-hover: #242424;
+  --action-danger-hover-content: #ffffff;
+  --action-danger-pressed: #ffffff;
+  --action-danger-pressed-content: #000000;
   --feedback-success-foreground: #ffffff;
   --feedback-success-background: #000000;
   --feedback-warning-foreground: #ffffff;
@@ -146,6 +164,12 @@
   --action-primary-pressed: #ffff00;
   --action-primary-pressed-content: #000000;
   --action-secondary-hover: #313100;
+  --action-danger: #ffff00;
+  --action-danger-content: #000000;
+  --action-danger-hover: #313100;
+  --action-danger-hover-content: #ffff00;
+  --action-danger-pressed: #ffff00;
+  --action-danger-pressed-content: #000000;
   --feedback-success-foreground: #ffff00;
   --feedback-success-background: #000000;
   --feedback-warning-foreground: #ffff00;
@@ -180,6 +204,12 @@
   --action-primary-pressed: #111111;
   --action-primary-pressed-content: #ffffff;
   --action-secondary-hover: #dedede;
+  --action-danger: #111111;
+  --action-danger-content: #ffffff;
+  --action-danger-hover: #dedede;
+  --action-danger-hover-content: #111111;
+  --action-danger-pressed: #111111;
+  --action-danger-pressed-content: #ffffff;
   --feedback-success-foreground: #111111;
   --feedback-success-background: #dedede;
   --feedback-warning-foreground: #111111;
@@ -252,6 +282,12 @@
     --action-primary-pressed: #ff8099;
     --action-primary-pressed-content: #0a0a0a;
     --action-secondary-hover: #1f1f1f;
+    --action-danger: #ff8aa0;
+    --action-danger-content: #0a0a0a;
+    --action-danger-hover: #460014;
+    --action-danger-hover-content: #ff8aa0;
+    --action-danger-pressed: #ff8aa0;
+    --action-danger-pressed-content: #0a0a0a;
     --feedback-success-foreground: #70e69a;
     --feedback-success-background: #123a22;
     --feedback-warning-foreground: #ffc36a;
@@ -325,6 +361,136 @@ a[href] {
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
+}
+
+.button,
+.icon-button {
+  align-items: center;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  justify-content: center;
+  line-height: 1.25rem;
+  min-height: 3rem;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.button {
+  border-radius: 9999px;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+}
+
+.button__icon {
+  flex: 0 0 auto;
+}
+
+.icon-button {
+  border-radius: 9999px;
+  min-width: 3rem;
+  padding: 0.75rem;
+}
+
+.button--primary,
+.icon-button--primary {
+  background: var(--action-primary);
+  color: var(--action-primary-content);
+}
+
+.button--secondary,
+.icon-button--secondary {
+  background: transparent;
+  border-color: var(--border-strong);
+  color: var(--content-primary);
+}
+
+.button--tertiary,
+.icon-button--tertiary {
+  background: transparent;
+  color: var(--content-primary);
+}
+
+.button--destructive,
+.icon-button--destructive {
+  background: transparent;
+  border-color: var(--action-danger);
+  color: var(--action-danger);
+}
+
+@media (hover: hover) {
+  .button--primary:not(:disabled):hover,
+  .icon-button--primary:not(:disabled):hover {
+    background: var(--action-primary-hover);
+    color: var(--action-primary-hover-content);
+  }
+
+  .button--secondary:not(:disabled):hover,
+  .icon-button--secondary:not(:disabled):hover,
+  .button--tertiary:not(:disabled):hover,
+  .icon-button--tertiary:not(:disabled):hover {
+    background: var(--action-secondary-hover);
+  }
+
+  .button--destructive:not(:disabled):hover,
+  .icon-button--destructive:not(:disabled):hover {
+    background: var(--action-danger-hover);
+    color: var(--action-danger-hover-content);
+  }
+}
+
+.button--primary:not(:disabled):active,
+.icon-button--primary:not(:disabled):active {
+  background: var(--action-primary-pressed);
+  color: var(--action-primary-pressed-content);
+}
+
+.button--secondary:not(:disabled):active,
+.icon-button--secondary:not(:disabled):active,
+.button--tertiary:not(:disabled):active,
+.icon-button--tertiary:not(:disabled):active {
+  background: var(--surface-subtle);
+}
+
+.button--destructive:not(:disabled):active,
+.icon-button--destructive:not(:disabled):active {
+  background: var(--action-danger-pressed);
+  color: var(--action-danger-pressed-content);
+}
+
+.button--preview-focus,
+.icon-button--preview-focus {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.button--preview-hover.button--primary,
+.icon-button--preview-hover.icon-button--primary {
+  background: var(--action-primary-hover);
+  color: var(--action-primary-hover-content);
+}
+
+.button--preview-pressed.button--primary,
+.icon-button--preview-pressed.icon-button--primary {
+  background: var(--action-primary-pressed);
+  color: var(--action-primary-pressed-content);
+}
+
+.button:disabled,
+.icon-button:disabled {
+  background: var(--surface-disabled);
+  border-color: var(--border-subtle);
+  color: var(--content-disabled);
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .icon-button {
+    transition: none;
+  }
 }
 
 .sr-only {

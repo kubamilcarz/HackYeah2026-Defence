@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {
   Ambulance,
+  ArrowRight,
   FireExtinguisher,
   FirstAidKit,
   Lifebuoy,
@@ -9,9 +10,11 @@ import {
   Radio,
   ShieldWarning,
   Siren,
+  Trash,
   Warning,
 } from "@phosphor-icons/react/ssr";
 import type { Icon } from "@phosphor-icons/react/lib";
+import { Button, IconButton } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
   title: "Design system | 72H",
@@ -60,6 +63,8 @@ const colorGroups = [
       ["Primary", "--action-primary"],
       ["Primary hover", "--action-primary-hover"],
       ["Primary pressed", "--action-primary-pressed"],
+      ["Destructive", "--action-danger"],
+      ["Destructive hover", "--action-danger-hover"],
       ["Focus ring", "--focus-ring"],
     ],
   },
@@ -85,6 +90,20 @@ const emergencyIcons: { name: string; use: string; Icon: Icon }[] = [
   { name: "MapPin", use: "Incident location or meeting point", Icon: MapPin },
   { name: "Radio", use: "Emergency communications", Icon: Radio },
   { name: "Lifebuoy", use: "Rescue or support", Icon: Lifebuoy },
+];
+
+const buttonExamples: { label: string; variant: "primary" | "secondary" | "tertiary" | "destructive"; Icon: Icon }[] = [
+  { label: "Request help", variant: "primary", Icon: Siren },
+  { label: "View safe route", variant: "secondary", Icon: MapPin },
+  { label: "Save for later", variant: "tertiary", Icon: ArrowRight },
+  { label: "Delete report", variant: "destructive", Icon: Trash },
+];
+
+const iconButtonExamples: { label: string; variant: "primary" | "secondary" | "tertiary" | "destructive"; Icon: Icon }[] = [
+  { label: "Call emergency services", variant: "primary", Icon: Phone },
+  { label: "Show incident location", variant: "secondary", Icon: MapPin },
+  { label: "Open emergency communications", variant: "tertiary", Icon: Radio },
+  { label: "Delete report", variant: "destructive", Icon: Trash },
 ];
 
 export default function DesignSystemPage() {
@@ -158,6 +177,74 @@ export default function DesignSystemPage() {
                     <span className="type-caption text-[var(--content-muted)]">{metrics}</span>
                   </div>
                 ))}
+              </div>
+            )}
+            {id === "components" && (
+              <div className="mt-8 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-raised)] p-5 sm:p-6">
+                <p className="type-caption max-w-2xl text-[var(--content-muted)]">
+                  Use a button for an in-place action and an anchor for navigation. Every action uses a 48px target, visible keyboard focus, and native disabled behavior.
+                </p>
+
+                <div className="mt-8 grid gap-8">
+                  <section aria-labelledby="text-buttons-heading">
+                    <div className="mb-4">
+                      <h3 className="type-h3" id="text-buttons-heading">Text buttons</h3>
+                      <p className="type-caption mt-1 text-[var(--content-muted)]">Use primary once per decision point; use destructive only for irreversible actions.</p>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                      {buttonExamples.map(({ label, variant, Icon }) => (
+                        <div className="flex min-h-28 flex-col items-start justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-4" key={variant}>
+                          <code className="font-mono text-xs text-[var(--content-muted)]">{variant}</code>
+                          <Button leadingIcon={Icon} variant={variant}>{label}</Button>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section aria-labelledby="icon-buttons-heading">
+                    <div className="mb-4">
+                      <h3 className="type-h3" id="icon-buttons-heading">Icon buttons</h3>
+                      <p className="type-caption mt-1 text-[var(--content-muted)]">Use only when the action is familiar; each icon has a required accessible name.</p>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                      {iconButtonExamples.map(({ label, variant, Icon }) => (
+                        <div className="flex min-h-28 flex-col items-start justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-4" key={variant}>
+                          <code className="font-mono text-xs text-[var(--content-muted)]">{variant}</code>
+                          <IconButton icon={Icon} label={label} variant={variant} />
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section aria-labelledby="button-states-heading">
+                    <div className="mb-4">
+                      <h3 className="type-h3" id="button-states-heading">Interaction states</h3>
+                      <p className="type-caption mt-1 text-[var(--content-muted)]">Hover and pressed samples are visual references. Tab to an interactive control to verify the real focus treatment.</p>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                      <div className="flex min-h-28 flex-col items-start justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-4">
+                        <code className="font-mono text-xs text-[var(--content-muted)]">default</code>
+                        <Button>Request help</Button>
+                      </div>
+                      <div className="flex min-h-28 flex-col items-start justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-4">
+                        <code className="font-mono text-xs text-[var(--content-muted)]">hover</code>
+                        <Button className="button--preview-hover">Request help</Button>
+                      </div>
+                      <div className="flex min-h-28 flex-col items-start justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-4">
+                        <code className="font-mono text-xs text-[var(--content-muted)]">pressed</code>
+                        <Button className="button--preview-pressed">Request help</Button>
+                      </div>
+                      <div className="flex min-h-28 flex-col items-start justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-4">
+                        <code className="font-mono text-xs text-[var(--content-muted)]">focus</code>
+                        <Button className="button--preview-focus">Request help</Button>
+                      </div>
+                      <div className="flex min-h-28 flex-col items-start justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-4">
+                        <code className="font-mono text-xs text-[var(--content-muted)]">disabled</code>
+                        <Button disabled>Request help</Button>
+                      </div>
+                    </div>
+                  </section>
+                </div>
               </div>
             )}
             {id === "icons" && (

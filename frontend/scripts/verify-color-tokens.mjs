@@ -16,6 +16,8 @@ const checks = [
   ["light link", "light", "--content-link", "--surface-raised", 4.5],
   ["light primary action", "light", "--action-primary-content", "--action-primary", 4.5],
   ["light pressed action", "light", "--action-primary-pressed-content", "--action-primary-pressed", 4.5],
+  ["light destructive action", "light", "--action-danger-pressed-content", "--action-danger-pressed", 4.5],
+  ["light destructive hover", "light", "--action-danger-hover-content", "--action-danger-hover", 4.5],
   ["light success feedback", "light", "--feedback-success-foreground", "--feedback-success-background", 4.5],
   ["light warning feedback", "light", "--feedback-warning-foreground", "--feedback-warning-background", 4.5],
   ["light danger feedback", "light", "--feedback-danger-foreground", "--feedback-danger-background", 4.5],
@@ -23,6 +25,8 @@ const checks = [
   ["dark primary content", "dark", "--content-primary", "--surface-raised", 4.5],
   ["dark link", "dark", "--content-link", "--surface-canvas", 4.5],
   ["dark primary action", "dark", "--action-primary-content", "--action-primary", 4.5],
+  ["dark destructive action", "dark", "--action-danger-pressed-content", "--action-danger-pressed", 4.5],
+  ["dark destructive hover", "dark", "--action-danger-hover-content", "--action-danger-hover", 4.5],
   ["dark success feedback", "dark", "--feedback-success-foreground", "--feedback-success-background", 4.5],
   ["dark warning feedback", "dark", "--feedback-warning-foreground", "--feedback-warning-background", 4.5],
   ["dark danger feedback", "dark", "--feedback-danger-foreground", "--feedback-danger-background", 4.5],
@@ -30,8 +34,11 @@ const checks = [
   ["light focus ring", "light", "--focus-ring", "--surface-raised", 3],
   ["dark focus ring", "dark", "--focus-ring", "--surface-raised", 3],
   ["grayscale primary action", "grayscale", "--action-primary-content", "--action-primary", 4.5],
+  ["grayscale destructive action", "grayscale", "--action-danger-pressed-content", "--action-danger-pressed", 4.5],
   ["high-contrast white action", "highContrastWhite", "--action-primary-content", "--action-primary", 4.5],
+  ["high-contrast white destructive action", "highContrastWhite", "--action-danger-pressed-content", "--action-danger-pressed", 4.5],
   ["high-contrast yellow action", "highContrastYellow", "--action-primary-content", "--action-primary", 4.5],
+  ["high-contrast yellow destructive action", "highContrastYellow", "--action-danger-pressed-content", "--action-danger-pressed", 4.5],
 ];
 
 function escapeRegExp(value) {

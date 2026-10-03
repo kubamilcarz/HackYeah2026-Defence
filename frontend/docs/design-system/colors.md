@@ -103,6 +103,8 @@ with white normal-size text.
 | `--action-primary` | `#FF0033` | Primary action fill with `#0A0A0A` foreground |
 | `--action-primary-hover` | `#FF4D6D` | Hovered primary action with `#0A0A0A` foreground |
 | `--action-primary-pressed` | `#D4002A` | Pressed primary action with `#FFFFFF` foreground |
+| `--action-danger` | `#D4002A` | Destructive action boundary and pressed fill with `#FFFFFF` foreground |
+| `--action-danger-hover` | `#FFE6EB` | Hovered destructive action with `#D4002A` foreground |
 | `--focus-ring` | `#0A0A0A` | 3px visible focus outline |
 
 ### Dark theme
@@ -124,6 +126,8 @@ with white normal-size text.
 | `--action-primary` | `#FF0033` | Primary action fill with `#0A0A0A` foreground |
 | `--action-primary-hover` | `#FF4D6D` | Hovered primary action with `#0A0A0A` foreground |
 | `--action-primary-pressed` | `#FF8099` | Pressed primary action with `#0A0A0A` foreground |
+| `--action-danger` | `#FF8AA0` | Destructive action boundary and pressed fill with `#0A0A0A` foreground |
+| `--action-danger-hover` | `#460014` | Hovered destructive action with `#FF8AA0` foreground |
 | `--focus-ring` | `#FFFFFF` | 3px visible focus outline |
 
 An action's foreground must change with its state where specified above. Do not
@@ -131,8 +135,8 @@ reuse white text with `--action-primary` in the light theme.
 
 ### Feedback roles
 
-Feedback roles describe the color treatment only. Components still need a
-status icon and explicit, understandable text.
+Feedback roles describe status treatment. Destructive actions use the separate
+`--action-danger-*` tokens and must still have clear, explicit wording.
 
 | Role | Light foreground / background | Dark foreground / background |
 | --- | --- | --- |
