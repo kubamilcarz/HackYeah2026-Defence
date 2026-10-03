@@ -4,8 +4,11 @@ import { useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AccessibilityIcon } from "./AccessibilityIcon";
 import { AccessibilityPreferencesControls } from "./AccessibilityPreferencesControls";
+import { useLocalization } from "@/components/localization/LocalizationProvider";
 
 export function AccessibilityMenu() {
+  const { messages } = useLocalization();
+  const copy = messages.accessibility;
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -66,14 +69,14 @@ export function AccessibilityMenu() {
       <button
         aria-controls={panelId}
         aria-expanded={isOpen}
-        aria-label="Accessibility preferences"
+        aria-label={copy.launcher}
         className="accessibility-launcher"
         onClick={handleLauncherClick}
         ref={launcherRef}
         type="button"
       >
         <AccessibilityIcon className="accessibility-launcher-icon" />
-        <span>Accessibility</span>
+        <span>{copy.title}</span>
       </button>
 
       <section
@@ -85,9 +88,9 @@ export function AccessibilityMenu() {
         role="dialog"
       >
         <div className="accessibility-panel-header">
-          <h2 id={titleId}>Accessibility</h2>
+          <h2 id={titleId}>{copy.title}</h2>
           <button
-            aria-label="Close accessibility preferences"
+            aria-label={copy.close}
             className="accessibility-close"
             onClick={closeAndRestoreFocus}
             type="button"

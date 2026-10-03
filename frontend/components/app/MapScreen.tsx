@@ -5,26 +5,21 @@ import { useRef, useState } from "react";
 import { Map, type MapPosition } from "@/components/ui/Map";
 import { IconButton } from "@/components/ui/Button";
 import { SearchField } from "@/components/ui/FormControls";
+import { useLocalization } from "@/components/localization/LocalizationProvider";
 
 type SheetSize = "compact" | "browse" | "expanded";
 type MapFilter = "all" | "shelters" | "hospitals" | "pharmacies" | "meeting-places";
 
 const SHEET_SIZES: SheetSize[] = ["compact", "browse", "expanded"];
-const SHEET_LABELS: Record<SheetSize, string> = {
-  compact: "compact",
-  browse: "browse",
-  expanded: "expanded",
-};
 const DEFAULT_CENTER: MapPosition = { lat: 50.0674, lng: 19.9915 };
-const MAP_FILTERS: { id: MapFilter; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "shelters", label: "Shelters" },
-  { id: "hospitals", label: "Hospitals" },
-  { id: "pharmacies", label: "Pharmacies" },
-  { id: "meeting-places", label: "Meeting places" },
-];
 
 export function MapScreen() {
+  const { messages } = useLocalization();
+  const copy = messages.map;
+  const sheetLabels: Record<SheetSize, string> = copy.sizes;
+  const mapFilters: { id: MapFilter; label: string }[] = [
+    { id: "all", label: copy.all }, { id: "shelters", label: copy.shelters }, { id: "hospitals", label: copy.hospitals }, { id: "pharmacies", label: copy.pharmacies }, { id: "meeting-places", label: copy.meetingPlaces },
+  ];
   const [center, setCenter] = useState(DEFAULT_CENTER);
   const [locationStatus, setLocationStatus] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<MapFilter>("all");
@@ -55,33 +50,33 @@ export function MapScreen() {
 
   function findMyLocation() {
     if (!navigator.geolocation) {
-      setLocationStatus("Location is not available in this browser. Search for an address or place instead.");
+      setLocationStatus(copy.locationUnavailable);
       return;
     }
 
-    setLocationStatus("Requesting your location…");
+    setLocationStatus(copy.requestingLocation);
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         setCenter({ lat: coords.latitude, lng: coords.longitude });
-        setLocationStatus("Map centered on your current location.");
+        setLocationStatus(copy.centeredOnLocation);
       },
-      () => setLocationStatus("We could not access your location. Search for an address or place instead."),
+      () => setLocationStatus(copy.locationDenied),
       { enableHighAccuracy: false, timeout: 10_000 },
     );
   }
 
   return (
     <main className={`map-screen map-screen--${sheetSize}`}>
-      <Map ariaLabel="Map of nearby important locations" center={center} className="map-screen__map" zoom={14} />
+      <Map ariaLabel={copy.ariaLabel} center={center} className="map-screen__map" zoom={14} />
       <p className="sr-only" role="status">{locationStatus}</p>
 
       <div className="map-screen__map-actions">
-        <IconButton icon={Crosshair} label="Center map on my location" onClick={findMyLocation} />
+        <IconButton icon={Crosshair} label={copy.centerOnLocation} onClick={findMyLocation} />
       </div>
 
-      <section aria-label="Map search and locations" className="map-sheet">
+      <section aria-label={copy.searchAndLocations} className="map-sheet">
         <button
-          aria-label={`Resize map panel. Current size: ${SHEET_LABELS[sheetSize]}. Use the up and down arrow keys to change its size.`}
+          aria-label={copy.resizePanel.replace("{size}", sheetLabels[sheetSize])}
           className="map-sheet__handle"
           onKeyDown={(event) => {
             if (event.key === "ArrowUp") {
@@ -114,11 +109,12 @@ export function MapScreen() {
         <div className="map-sheet__context">
           <SearchField
             hideLabel
-            label="Search places and addresses"
-            placeholder="Search places and addresses"
+            clearLabel={copy.clearSearch}
+            label={copy.search}
+            placeholder={copy.search}
           />
-          <div aria-label="Filter map locations" className="map-sheet__filters" role="group">
-            {MAP_FILTERS.map((filter) => (
+          <div aria-label={copy.filterLocations} className="map-sheet__filters" role="group">
+            {mapFilters.map((filter) => (
               <button
                 aria-pressed={selectedFilter === filter.id}
                 className="map-sheet__filter"

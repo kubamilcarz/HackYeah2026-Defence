@@ -94,7 +94,7 @@ export function TextField({
   );
 }
 
-export type SearchFieldProps = FieldProps & Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type">;
+export type SearchFieldProps = FieldProps & Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "type"> & { clearLabel?: string };
 
 export function SearchField({
   className,
@@ -107,6 +107,7 @@ export function SearchField({
   onChange,
   optional,
   required,
+  clearLabel,
   value,
   ...props
 }: SearchFieldProps) {
@@ -149,7 +150,7 @@ export function SearchField({
           {...props}
         />
         {currentValue && (
-          <button aria-label={`Clear ${label}`} className="control-input__clear" onClick={clear} type="button">
+          <button aria-label={clearLabel ?? `Clear ${label}`} className="control-input__clear" onClick={clear} type="button">
             <span aria-hidden="true">×</span>
           </button>
         )}

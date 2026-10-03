@@ -4,6 +4,7 @@ import Script from "next/script";
 import { AccessibilityMenu } from "@/components/accessibility/AccessibilityMenu";
 import { AccessibilityProvider } from "@/components/accessibility/AccessibilityProvider";
 import { LocalizationProvider } from "@/components/localization/LocalizationProvider";
+import { DocumentLanguage } from "@/components/localization/DocumentLanguage";
 import "./globals.css";
 
 const inter = Inter({
@@ -70,6 +71,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {preferenceScript}
         </Script>
         <LocalizationProvider>
+          <DocumentLanguage />
           <AccessibilityProvider>
             {children}
             <AccessibilityMenu />

@@ -2,6 +2,7 @@
 
 import mapboxgl from "mapbox-gl";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useLocalization } from "@/components/localization/LocalizationProvider";
 
 export type MapPosition = {
   lat: number;
@@ -32,13 +33,16 @@ const EMPTY_MARKERS: MapMarker[] = [];
 const DEFAULT_STYLE_URL = "mapbox://styles/mapbox/standard";
 
 export function Map({
-  ariaLabel = "Operational map",
+  ariaLabel,
   center = TAURON_ARENA_KRAKOW,
   className,
   markers = EMPTY_MARKERS,
   styleUrl = DEFAULT_STYLE_URL,
   zoom = 16,
 }: MapProps) {
+  const { messages } = useLocalization();
+  const copy = messages.map;
+  const resolvedAriaLabel = ariaLabel ?? copy.ariaLabel;
   const accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -52,7 +56,7 @@ export function Map({
     [markers, selectedMarkerId],
   );
   const configurationError = !accessToken
-    ? "Mapbox is not configured. Add a public Mapbox access token to view the map."
+    ? copy.mapNotConfigured
     : undefined;
 
   function selectMarker(marker: MapMarker) {
@@ -81,7 +85,7 @@ export function Map({
       const element = document.createElement("button");
       element.type = "button";
       element.className = `map__pin map__pin--${marker.tone ?? "info"}`;
-      element.setAttribute("aria-label", `Show ${marker.title}`);
+      element.setAttribute("aria-label", copy.showLocation.replace("{title}", marker.title));
       element.addEventListener("click", () => selectMarker(marker));
 
       mapMarkers.push(
@@ -96,7 +100,7 @@ export function Map({
       setIsLoading(false);
     };
     const handleError = (event: mapboxgl.ErrorEvent) => {
-      setError(event.error.message || "Mapbox could not be loaded. Please try again later.");
+      setError(event.error.message || copy.mapUnavailable);
       setIsLoading(false);
     };
 
@@ -108,13 +112,13 @@ export function Map({
       map.remove();
       mapRef.current = null;
     };
-  }, [accessToken, center, markers, styleUrl, zoom]);
+  }, [accessToken, center, copy.mapUnavailable, copy.showLocation, markers, styleUrl, zoom]);
 
   return (
-    <section className={`map${className ? ` ${className}` : ""}`} aria-label={ariaLabel}>
+    <section className={`map${className ? ` ${className}` : ""}`} aria-label={resolvedAriaLabel}>
       <div className="map__canvas-wrap">
-        <div aria-label={ariaLabel} className="map__canvas" ref={containerRef} role="region" />
-        {isLoading && !configurationError && <p className="map__status" role="status">Loading map…</p>}
+        <div aria-label={resolvedAriaLabel} className="map__canvas" ref={containerRef} role="region" />
+        {isLoading && !configurationError && <p className="map__status" role="status">{copy.mapLoading}</p>}
         {(configurationError ?? error) && <p className="map__status map__status--error" role="alert">{configurationError ?? error}</p>}
       </div>
 
@@ -125,12 +129,12 @@ export function Map({
               <p className="type-caption font-semibold">{selectedMarker.title}</p>
               {selectedMarker.description && <p className="type-caption mt-1 text-[var(--content-secondary)]">{selectedMarker.description}</p>}
             </>
-          ) : <p className="type-caption text-[var(--content-muted)]">Select a location on the map or from the list.</p>}
+          ) : <p className="type-caption text-[var(--content-muted)]">{copy.selectLocation}</p>}
         </div>
 
         {markers.length > 0 && (
           <div>
-            <h3 className="type-h3" id={listId}>Locations</h3>
+            <h3 className="type-h3" id={listId}>{copy.locations}</h3>
             <ul aria-labelledby={listId} className="map__marker-list">
               {markers.map((marker) => (
                 <li key={marker.id}>

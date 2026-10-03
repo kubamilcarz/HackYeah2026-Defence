@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+"use client";
 import {
   Bell,
   BookOpenText,
@@ -15,8 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AccessibilityIcon } from "@/components/accessibility/AccessibilityIcon";
 import { PageNavigationBar } from "@/components/ui/PageNavigationBar";
-
-export const metadata: Metadata = { title: "Settings" };
+import { useLocalization } from "@/components/localization/LocalizationProvider";
 
 type SettingsLink = {
   href: string;
@@ -24,36 +23,19 @@ type SettingsLink = {
   label: string;
 };
 
-const settingsSections: Array<{ id: string; items: SettingsLink[]; title: string }> = [
-  {
-    id: "account-and-app",
-    title: "Account & app",
-    items: [
-      { href: "/settings/profile", icon: User, label: "My profile" },
-      { href: "/settings/notifications", icon: Bell, label: "Notifications" },
-      { href: "/settings/preferences", icon: Gear, label: "Preferences" },
-      { href: "/settings/language", icon: Globe, label: "Language" },
-      { href: "/settings/about", icon: Info, label: "About PLAN:0" },
-    ],
-  },
-  {
-    id: "resources",
-    title: "Resources",
-    items: [
-      { href: "/settings/guides", icon: BookOpenText, label: "Guides" },
-      { href: "/settings/important-numbers", icon: Phone, label: "Important numbers" },
-      { href: "/settings/announcements-alerts", icon: ShieldWarning, label: "Announcements & alerts" },
-    ],
-  },
-];
-
 export default function SettingsPage() {
+  const { messages } = useLocalization();
+  const copy = messages.settings;
+  const settingsSections: Array<{ id: string; items: SettingsLink[]; title: string }> = [
+    { id: "account-and-app", title: copy.accountAndApp, items: [{ href: "/settings/profile", icon: User, label: copy.profile }, { href: "/settings/notifications", icon: Bell, label: copy.notifications }, { href: "/settings/preferences", icon: Gear, label: copy.preferences }, { href: "/settings/language", icon: Globe, label: copy.language }, { href: "/settings/about", icon: Info, label: copy.about }] },
+    { id: "resources", title: copy.resources, items: [{ href: "/settings/guides", icon: BookOpenText, label: copy.guides }, { href: "/settings/important-numbers", icon: Phone, label: copy.importantNumbers }, { href: "/settings/announcements-alerts", icon: ShieldWarning, label: copy.announcementsAlerts }] },
+  ];
   return (
     <main className="settings-page">
-      <PageNavigationBar title="Settings" />
+      <PageNavigationBar title={copy.title} />
       <div className="settings-page__content">
-        <h1 className="sr-only">Settings</h1>
-        <nav aria-label="Settings pages" className="settings-page__sections">
+        <h1 className="sr-only">{copy.title}</h1>
+        <nav aria-label={copy.pagesLabel} className="settings-page__sections">
           {settingsSections.map(({ id, items, title }) => (
             <section aria-labelledby={`${id}-heading`} className="settings-page__section" key={id}>
               <h2 className="type-h2 settings-page__section-heading" id={`${id}-heading`}>{title}</h2>
@@ -73,13 +55,13 @@ export default function SettingsPage() {
             </section>
           ))}
           <section aria-labelledby="accessibility-heading" className="settings-page__section">
-            <h2 className="type-h2 settings-page__section-heading" id="accessibility-heading">Accessibility</h2>
+            <h2 className="type-h2 settings-page__section-heading" id="accessibility-heading">{copy.accessibility}</h2>
             <ul className="settings-page__list">
               <li>
                 <Link className="settings-page__link" href="/settings/accessibility">
                   <span className="settings-page__link-label">
                     <AccessibilityIcon className="settings-page__accessibility-icon" />
-                    <span>Accessibility</span>
+                    <span>{copy.accessibility}</span>
                   </span>
                   <CaretRight aria-hidden="true" size={20} weight="bold" />
                 </Link>
@@ -94,7 +76,7 @@ export default function SettingsPage() {
           <div className="settings-page__app-details">
             <p className="type-h3">PLAN:0</p>
             <p className="type-caption">© 2026 Na Wszelki</p>
-            <p className="type-caption">Made for HackYeah 2026.</p>
+            <p className="type-caption">{copy.madeFor}</p>
           </div>
         </footer>
       </div>

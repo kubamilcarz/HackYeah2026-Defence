@@ -19,6 +19,7 @@ export type AppNavigationProps = {
   desktopItems: NavigationItem[];
   mobileItems: NavigationItem[];
   mode?: NavigationMode;
+  navigationLabel?: string;
 };
 
 function NavigationLinks({
@@ -68,11 +69,12 @@ export function AppNavigation({
   desktopItems,
   mobileItems,
   mode = "responsive",
+  navigationLabel = "Primary navigation",
 }: AppNavigationProps) {
   return (
     <div className={`app-navigation app-navigation--${mode}`}>
       {mode !== "desktop" && (
-        <nav aria-label="Primary navigation" className="app-navigation__mobile">
+        <nav aria-label={navigationLabel} className="app-navigation__mobile">
           <NavigationLinks activeItem={activeItem} items={mobileItems} variant="mobile" />
         </nav>
       )}
@@ -83,7 +85,7 @@ export function AppNavigation({
             <Image alt="" className="app-navigation__brand-logo app-navigation__brand-logo--color" height={80} src="/brand/logo-color.svg" width={80} />
             <Image alt="" className="app-navigation__brand-logo app-navigation__brand-logo--contrast" height={80} src="/brand/logo-white.svg" width={80} />
           </Link>
-          <nav aria-label="Primary navigation">
+          <nav aria-label={navigationLabel}>
             <NavigationLinks activeItem={activeItem} items={desktopItems} variant="desktop" />
           </nav>
         </aside>

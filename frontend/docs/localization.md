@@ -31,8 +31,7 @@ this device-local behavior is the product requirement.
 
 ## Staged rollout and language metadata
 
-Only the language screen is translated in the initial rollout. Its `<main>` is
-marked with the selected `lang`; its native language names carry their own
-language tags. The root document remains `lang="en"` until all visible app
-content is translated, so screen readers do not interpret English-only screens
-as Polish.
+All currently implemented product screens use the selected catalog. After
+hydration, the root document `lang` is synchronized with the selected locale;
+the native language names on the language screen retain their own language
+tags.
