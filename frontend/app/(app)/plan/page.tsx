@@ -1,7 +1,5 @@
-import { PlaceholderScreen } from "@/components/app/PlaceholderScreen";
+import { PlanScreen } from "@/components/app/PlanScreen";
 
 export default function PlanPage() {
-  return (
-    <PlaceholderScreen page="plan" />
-  );
+  return <PlanScreen />;
 }
