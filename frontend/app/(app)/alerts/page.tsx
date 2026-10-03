@@ -1,7 +1,5 @@
-import { PlaceholderScreen } from "@/components/app/PlaceholderScreen";
+import { NotificationsScreen } from "@/components/app/NotificationsScreen";
 
 export default function AlertsPage() {
-  return (
-    <PlaceholderScreen page="alerts" />
-  );
+  return <NotificationsScreen context="alerts" />;
 }
