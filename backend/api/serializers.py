@@ -1,4 +1,29 @@
 from rest_framework import serializers
+from .models import ShelterPoint
+
+
+class ShelterPointSerializer(serializers.ModelSerializer):
+    """
+    Serializer for shelter points (punkty schronienia).
+    Includes optional distance_km when queried via geo-search.
+    """
+    distance_km = serializers.FloatField(required=False, read_only=True, allow_null=True)
+
+    class Meta:
+        model = ShelterPoint
+        fields = [
+            "id",
+            "name",
+            "object_type",
+            "voivodeship",
+            "county",
+            "commune",
+            "address",
+            "accessibility",
+            "latitude",
+            "longitude",
+            "distance_km",
+        ]
 
 
 class LLMProcessRequestSerializer(serializers.Serializer):
