@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import Script from "next/script";
 import { AccessibilityMenu } from "@/components/accessibility/AccessibilityMenu";
 import { AccessibilityProvider } from "@/components/accessibility/AccessibilityProvider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -16,8 +17,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "72H",
-  description: "72H",
+  title: {
+    default: "Plan: 0",
+    template: "%s | Plan: 0",
+  },
+  description: "Plan: 0 emergency readiness.",
+  applicationName: "Plan: 0",
 };
 
 const preferenceScript = `
@@ -27,7 +32,7 @@ const preferenceScript = `
     const defaultPreferences = { appearance: "system", textScale: 100, underlineLinks: false };
 
     try {
-      const stored = window.localStorage.getItem("72h-accessibility-preferences");
+      const stored = window.localStorage.getItem("plan-0-accessibility-preferences");
       const parsed = stored ? JSON.parse(stored) : defaultPreferences;
       const appearance = themes.includes(parsed.appearance)
         ? parsed.appearance
@@ -56,7 +61,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
