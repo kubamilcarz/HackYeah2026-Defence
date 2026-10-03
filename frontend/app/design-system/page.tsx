@@ -20,6 +20,7 @@ import { Alert, Banner } from "@/components/ui/Alert";
 import { ControlsShowcase } from "@/components/ui/ControlsShowcase";
 import { DataTable } from "@/components/ui/DataTable";
 import { FeedbackShowcase } from "@/components/ui/FeedbackShowcase";
+import { Map, type MapMarker } from "@/components/ui/Map";
 import { NavigationShowcase } from "@/components/ui/NavigationShowcase";
 import { CircularProgress, LinearProgress } from "@/components/ui/Progress";
 import { Badge, Tag } from "@/components/ui/Tag";
@@ -35,8 +36,9 @@ const sections = [
   ["03 / Actions & inputs", "Components", "components"],
   ["04 / Status", "Feedback", "feedback"],
   ["05 / Navigation", "Navigation", "navigation"],
-  ["06 / Iconography", "Emergency reference", "icons"],
-  ["07 / Brand", "Logo assets", "brand"],
+  ["06 / Mapping", "Operational map", "mapping"],
+  ["07 / Iconography", "Emergency reference", "icons"],
+  ["08 / Brand", "Logo assets", "brand"],
 ] as const;
 
 const appearanceVariants = [
@@ -142,6 +144,13 @@ const supplyRows = [
   { id: "food", supply: "Food reserve", available: "6 / 14 days", status: "Needs review" },
   { id: "first-aid", supply: "First aid kit", available: "Complete", status: "Ready" },
   { id: "flashlight", supply: "Flashlight batteries", available: "2 / 4 sets", status: "Restock" },
+];
+
+const tauronArenaMarkers: MapMarker[] = [
+  { id: "information", title: "Information point", description: "Example operational location for venue updates.", position: { lat: 50.06775, lng: 19.99025 }, tone: "info" },
+  { id: "first-aid", title: "First-aid point", description: "Example location for medical support.", position: { lat: 50.06694, lng: 19.99087 }, tone: "success" },
+  { id: "assembly", title: "Assembly point", description: "Example location for an agreed meeting place.", position: { lat: 50.06726, lng: 19.99318 }, tone: "warning" },
+  { id: "alert", title: "Restricted area", description: "Example location requiring attention before entry.", position: { lat: 50.06802, lng: 19.99233 }, tone: "danger" },
 ];
 
 export default function DesignSystemPage() {
@@ -431,6 +440,21 @@ export default function DesignSystemPage() {
                   </p>
                 </div>
                 <NavigationShowcase />
+              </div>
+            )}
+            {id === "mapping" && (
+              <div className="mt-8 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-raised)] p-5 sm:p-6">
+                <div className="max-w-2xl">
+                  <p className="type-caption text-[var(--content-muted)]">
+                    Use the map for spatial operational information. Provide a text location list alongside markers so every location remains available to keyboard and assistive-technology users.
+                  </p>
+                  <p className="type-caption mt-3 text-[var(--content-muted)]">
+                    The component reads <code>NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN</code>. Configure a dedicated, URL-restricted public Mapbox token before production use.
+                  </p>
+                </div>
+                <div className="mt-8">
+                  <Map ariaLabel="Operational locations around Tauron Arena Kraków" markers={tauronArenaMarkers} />
+                </div>
               </div>
             )}
             {id === "icons" && (

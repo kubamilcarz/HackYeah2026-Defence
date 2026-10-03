@@ -1,3 +1,4 @@
+@import "mapbox-gl/dist/mapbox-gl.css";
 @import "tailwindcss";
 
 :root {
@@ -1914,4 +1915,166 @@ a.app-navigation__link {
   :root:not([data-theme]) .brand-logo__asset--white {
     display: block;
   }
+}
+
+.map {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.map__canvas-wrap {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-strong);
+  border-radius: 0.75rem;
+  min-height: 22rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.map__canvas {
+  height: 22rem;
+  width: 100%;
+}
+
+.map__canvas:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: -3px;
+}
+
+.map__pin {
+  background: var(--feedback-info-foreground);
+  border: 2px solid var(--surface-raised);
+  border-radius: 50% 50% 50% 0;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 35%);
+  cursor: pointer;
+  height: 1.5rem;
+  padding: 0;
+  transform: rotate(-45deg);
+  width: 1.5rem;
+}
+
+.map__pin--success { background: var(--feedback-success-foreground); }
+.map__pin--warning { background: var(--feedback-warning-foreground); }
+.map__pin--danger { background: var(--feedback-danger-foreground); }
+
+.map__pin:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.map .mapboxgl-ctrl-group {
+  border: 1px solid var(--border-strong);
+  border-radius: 0.5rem;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.map .mapboxgl-ctrl-group button {
+  background-color: var(--surface-raised);
+}
+
+.map .mapboxgl-ctrl-group button + button {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.map .mapboxgl-ctrl-group button:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: -3px;
+}
+
+.map__status {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: 0.5rem;
+  color: var(--content-primary);
+  left: 50%;
+  margin: 0;
+  max-width: calc(100% - 2rem);
+  padding: var(--space-3) var(--space-4);
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: max-content;
+}
+
+.map__status--error {
+  background: var(--feedback-danger-background);
+  color: var(--feedback-danger-foreground);
+}
+
+.map__supporting-content {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.map__detail {
+  background: var(--surface-subtle);
+  border-left: 4px solid var(--action-primary);
+  min-height: 4.5rem;
+  padding: var(--space-3) var(--space-4);
+}
+
+.map__marker-list {
+  display: grid;
+  gap: var(--space-2);
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+}
+
+.map__marker-button {
+  align-items: center;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: 0.5rem;
+  color: var(--content-primary);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-3);
+  min-height: 3rem;
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  width: 100%;
+}
+
+.map__marker-button[aria-pressed="true"] {
+  background: var(--action-secondary-hover);
+  border-width: 2px;
+}
+
+.map__marker-button:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.map__marker-tone {
+  background: var(--feedback-info-foreground);
+  border-radius: 50%;
+  flex: 0 0 auto;
+  height: 0.75rem;
+  width: 0.75rem;
+}
+
+.map__marker-tone--success { background: var(--feedback-success-foreground); }
+.map__marker-tone--warning { background: var(--feedback-warning-foreground); }
+.map__marker-tone--danger { background: var(--feedback-danger-foreground); }
+
+@media (hover: hover) {
+  .map__marker-button:hover { background: var(--action-secondary-hover); }
+}
+
+@media (min-width: 48rem) {
+  .map__supporting-content { grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.8fr); }
+  .map__marker-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (forced-colors: active) {
+  .map__canvas-wrap,
+  .map__status,
+  .map__marker-button { border: 1px solid CanvasText; }
+
+  .map__marker-tone { background: CanvasText; }
 }
