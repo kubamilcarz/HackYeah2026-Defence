@@ -33,8 +33,18 @@ export default function SettingsPage() {
   return (
     <main className="settings-page">
       <PageNavigationBar title={copy.title} />
-      <div className="settings-page__content">
+      <div className="settings-page__content settings-page__content--overview">
         <h1 className="sr-only">{copy.title}</h1>
+        <header className="settings-page__hero">
+          <div className="settings-page__hero-copy">
+            <p className="type-caption settings-page__eyebrow">PLAN:0</p>
+            <p className="type-h1">{copy.title}</p>
+            <p className="type-body settings-page__hero-description">{copy.madeFor}</p>
+          </div>
+          <div aria-hidden="true" className="settings-page__hero-mark">
+            <Image alt="" height={64} src="/brand/logo-icon.svg" width={64} />
+          </div>
+        </header>
         <nav aria-label={copy.pagesLabel} className="settings-page__sections">
           {settingsSections.map(({ id, items, title }) => (
             <section aria-labelledby={`${id}-heading`} className="settings-page__section" key={id}>
@@ -70,14 +80,7 @@ export default function SettingsPage() {
           </section>
         </nav>
         <footer className="settings-page__footer">
-          <div className="settings-page__app-icon">
-            <Image alt="" height={64} src="/brand/logo-icon.svg" width={64} />
-          </div>
-          <div className="settings-page__app-details">
-            <p className="type-h3">PLAN:0</p>
-            <p className="type-caption">© 2026 Na Wszelki</p>
-            <p className="type-caption">{copy.madeFor}</p>
-          </div>
+          <p className="type-caption">© 2026 Na Wszelki</p>
         </footer>
       </div>
     </main>
