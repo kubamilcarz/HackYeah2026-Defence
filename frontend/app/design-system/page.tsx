@@ -18,6 +18,7 @@ import type { Icon } from "@phosphor-icons/react/lib";
 import { Button, IconButton } from "@/components/ui/Button";
 import { Alert, Banner } from "@/components/ui/Alert";
 import { ControlsShowcase } from "@/components/ui/ControlsShowcase";
+import { DataTable } from "@/components/ui/DataTable";
 import { FeedbackShowcase } from "@/components/ui/FeedbackShowcase";
 import { NavigationShowcase } from "@/components/ui/NavigationShowcase";
 import { CircularProgress, LinearProgress } from "@/components/ui/Progress";
@@ -134,6 +135,13 @@ const iconButtonExamples: { label: string; variant: "primary" | "secondary" | "t
   { label: "Show incident location", variant: "secondary", Icon: MapPin },
   { label: "Open emergency communications", variant: "tertiary", Icon: Radio },
   { label: "Delete report", variant: "destructive", Icon: Trash },
+];
+
+const supplyRows = [
+  { id: "water", supply: "Water reserve", available: "18 / 24 L", status: "Ready" },
+  { id: "food", supply: "Food reserve", available: "6 / 14 days", status: "Needs review" },
+  { id: "first-aid", supply: "First aid kit", available: "Complete", status: "Ready" },
+  { id: "flashlight", supply: "Flashlight batteries", available: "2 / 4 sets", status: "Restock" },
 ];
 
 export default function DesignSystemPage() {
@@ -300,6 +308,24 @@ export default function DesignSystemPage() {
                         </div>
                       </div>
                     </div>
+                  </section>
+
+                  <section aria-labelledby="data-table-heading">
+                    <div className="mb-4 max-w-2xl">
+                      <h3 className="type-h3" id="data-table-heading">Data table</h3>
+                      <p className="type-caption mt-1 text-[var(--content-muted)]">Use tables for comparable records. Enable sorting only for columns where order is useful, and include search when people need to find a record quickly.</p>
+                    </div>
+                    <DataTable
+                      columns={[
+                        { key: "supply", label: "Supply", sortable: true },
+                        { key: "available", label: "Available", sortable: true },
+                        { key: "status", label: "Status", sortable: true },
+                      ]}
+                      heading="Emergency supply readiness"
+                      rowKey="id"
+                      rows={supplyRows}
+                      searchLabel="Search emergency supplies"
+                    />
                   </section>
 
                   <section aria-labelledby="button-states-heading">
