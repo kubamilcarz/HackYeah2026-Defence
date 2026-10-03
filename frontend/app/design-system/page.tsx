@@ -34,6 +34,46 @@ const typeStyles = [
   ["Caption", "Supporting text", "Regular", "14 / 20", "type-caption"],
 ] as const;
 
+const colorGroups = [
+  {
+    name: "Surfaces",
+    tokens: [
+      ["Canvas", "--surface-canvas"],
+      ["Raised", "--surface-raised"],
+      ["Subtle", "--surface-subtle"],
+      ["Inverse", "--surface-inverse"],
+    ],
+  },
+  {
+    name: "Content & borders",
+    tokens: [
+      ["Primary", "--content-primary"],
+      ["Secondary", "--content-secondary"],
+      ["Muted", "--content-muted"],
+      ["Link", "--content-link"],
+      ["Strong border", "--border-strong"],
+    ],
+  },
+  {
+    name: "Actions",
+    tokens: [
+      ["Primary", "--action-primary"],
+      ["Primary hover", "--action-primary-hover"],
+      ["Primary pressed", "--action-primary-pressed"],
+      ["Focus ring", "--focus-ring"],
+    ],
+  },
+  {
+    name: "Feedback",
+    tokens: [
+      ["Success", "--feedback-success-foreground"],
+      ["Warning", "--feedback-warning-foreground"],
+      ["Danger", "--feedback-danger-foreground"],
+      ["Information", "--feedback-info-foreground"],
+    ],
+  },
+] as const;
+
 const emergencyIcons: { name: string; use: string; Icon: Icon }[] = [
   { name: "Siren", use: "Active emergency or urgent alert", Icon: Siren },
   { name: "Warning", use: "Hazard or important caution", Icon: Warning },
@@ -73,6 +113,35 @@ export default function DesignSystemPage() {
               {eyebrow}
             </p>
             <h2 className="type-h2">{title}</h2>
+            {id === "foundations" && (
+              <div className="mt-8 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-raised)] p-5 sm:p-6">
+                <p className="type-caption mb-6 max-w-2xl text-[var(--content-muted)]">
+                  Use semantic tokens in components, never raw color values. This reference responds to the active appearance setting.
+                </p>
+                <div className="grid gap-6 md:grid-cols-2">
+                  {colorGroups.map(({ name, tokens }) => (
+                    <section key={name} aria-labelledby={`${name.toLowerCase().replaceAll(" ", "-")}-colors`}>
+                      <h3 className="type-h3 mb-3" id={`${name.toLowerCase().replaceAll(" ", "-")}-colors`}>{name}</h3>
+                      <div className="overflow-hidden rounded-lg border border-[var(--border-subtle)]">
+                        {tokens.map(([label, token]) => (
+                          <div className="flex items-center gap-3 border-b border-[var(--border-subtle)] p-3 last:border-b-0" key={token}>
+                            <span
+                              aria-hidden="true"
+                              className="h-10 w-10 shrink-0 rounded-md border border-[var(--border-strong)]"
+                              style={{ backgroundColor: `var(${token})` }}
+                            />
+                            <div className="min-w-0">
+                              <p className="type-caption font-semibold text-[var(--content-primary)]">{label}</p>
+                              <code className="break-all font-mono text-xs text-[var(--content-muted)]">{token}</code>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              </div>
+            )}
             {id === "type" && (
               <div className="mt-8 overflow-hidden rounded-xl border border-[var(--border-strong)] bg-[var(--surface-raised)]">
                 <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] border-b border-[var(--border-subtle)] px-5 py-6 sm:grid-cols-[5rem_minmax(0,1fr)_8rem_5rem] sm:items-center sm:gap-4">
