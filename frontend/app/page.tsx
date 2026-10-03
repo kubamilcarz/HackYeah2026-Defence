@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-[var(--surface-page)] font-sans text-[var(--content-primary)]">
+    <div className="flex flex-1 flex-col items-center justify-center bg-[var(--surface-canvas)] font-sans text-[var(--content-primary)]">
       <main className="flex w-full max-w-3xl flex-1 flex-col items-center justify-between bg-[var(--surface-raised)] px-8 py-24 sm:items-start sm:px-16 sm:py-32">
         <Image
           className="h-5 w-[100px] [filter:var(--brand-image-filter)]"
@@ -15,7 +15,7 @@ export default function Home() {
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
           <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight">
             To get started, edit the{" "}
-            <code className="rounded bg-[var(--surface-sunken)] px-1.5 py-0.5 font-mono text-[0.9em]">
+            <code className="rounded bg-[var(--surface-subtle)] px-1.5 py-0.5 font-mono text-[0.9em]">
               page.tsx
             </code>{" "}
             file.
@@ -40,7 +40,7 @@ export default function Home() {
         </div>
         <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
           <a
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--interactive-primary)] px-5 text-[var(--interactive-primary-content)] transition-colors hover:bg-[var(--interactive-primary-hover)] md:w-[158px]"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--action-primary)] px-5 text-[var(--action-primary-content)] transition-colors hover:bg-[var(--action-primary-hover)] hover:text-[var(--action-primary-hover-content)] active:bg-[var(--action-primary-pressed)] active:text-[var(--action-primary-pressed-content)] md:w-[158px]"
             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             target="_blank"
             rel="noopener noreferrer"
@@ -55,7 +55,7 @@ export default function Home() {
             Deploy Now
           </a>
           <a
-            className="flex min-h-12 w-full items-center justify-center rounded-full border border-[var(--border-default)] px-5 text-[var(--content-primary)] transition-colors hover:bg-[var(--interactive-secondary-hover)] md:w-[158px]"
+            className="flex min-h-12 w-full items-center justify-center rounded-full border border-[var(--border-strong)] px-5 text-[var(--content-primary)] transition-colors hover:bg-[var(--action-secondary-hover)] md:w-[158px]"
             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             target="_blank"
             rel="noopener noreferrer"

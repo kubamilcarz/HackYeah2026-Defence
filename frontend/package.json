@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "verify:colors": "node scripts/verify-color-tokens.mjs"
   },
   "dependencies": {
     "next": "16.3.8",

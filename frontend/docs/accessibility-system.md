@@ -14,6 +14,11 @@ management and persistence, semantic theme tokens, and the floating
 accessibility control. It gives the forthcoming design system one stable
 accessibility contract to adopt as product components are built.
 
+The canonical color palette, semantic role definitions, accessible pairings,
+and theme maps live in [Plan: 0 Design System — Color Foundations](design-system/colors.md).
+This guide defines the accessibility behavior that every use of those color
+tokens must preserve.
+
 ## Guiding principles
 
 - Use native HTML before ARIA. A real `button`, `input`, `label`, heading, link,
