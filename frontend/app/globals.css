@@ -902,6 +902,22 @@ a.app-navigation__link--active {
   gap: var(--space-8);
 }
 
+.language-settings__choices .choice-group__options {
+  border: 0;
+  border-radius: var(--space-2);
+  overflow: hidden;
+}
+
+.language-settings__choices .choice-option {
+  background: var(--surface-raised);
+  min-height: var(--space-12);
+  padding: var(--space-3) var(--space-4);
+}
+
+.language-settings__choices .choice-option:has(input:checked) {
+  background: var(--surface-subtle);
+}
+
 .settings-page__placeholder {
   align-content: start;
   min-height: calc(100dvh - var(--space-16));

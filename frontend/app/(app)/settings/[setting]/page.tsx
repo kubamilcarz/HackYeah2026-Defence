@@ -19,10 +19,6 @@ const placeholderPages = {
     description: "Important emergency and support numbers will appear here.",
     title: "Important numbers",
   },
-  language: {
-    description: "Language selection will be available here.",
-    title: "Language",
-  },
   notifications: {
     description: "Notification delivery preferences will be available here.",
     title: "Notifications",

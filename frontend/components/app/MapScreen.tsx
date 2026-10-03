@@ -29,7 +29,7 @@ export function MapScreen() {
   const [locationStatus, setLocationStatus] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<MapFilter>("all");
   const [sheetSize, setSheetSize] = useState<SheetSize>("browse");
-  const dragStartY = useRef<number>();
+  const dragStartY = useRef<number | undefined>(undefined);
 
   function resizeSheet(next: SheetSize) {
     setSheetSize(next);

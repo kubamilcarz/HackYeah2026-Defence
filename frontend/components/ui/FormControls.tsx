@@ -204,8 +204,8 @@ export function DateField({ className, error, helperText, hideLabel, id, label, 
   );
 }
 
-export type ChoiceOption = { description?: string; disabled?: boolean; label: string; value: string };
-type ChoiceGroupProps = FieldProps & { name: string; options: ChoiceOption[]; required?: boolean };
+export type ChoiceOption = { description?: ReactNode; disabled?: boolean; label: ReactNode; value: string };
+type ChoiceGroupProps = FieldProps & { name: string; options: readonly ChoiceOption[]; required?: boolean };
 
 function ChoiceMessages({ error, helperText, ids }: Pick<FieldProps, "error" | "helperText"> & { ids: FieldIds }) {
   return <>{helperText && <p className="field__helper" id={ids.helperId}>{helperText}</p>}{error && <p className="field__error" id={ids.errorId}>{error}</p>}</>;

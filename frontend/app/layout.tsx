@@ -3,11 +3,12 @@ import { Geist_Mono, Inter } from "next/font/google";
 import Script from "next/script";
 import { AccessibilityMenu } from "@/components/accessibility/AccessibilityMenu";
 import { AccessibilityProvider } from "@/components/accessibility/AccessibilityProvider";
+import { LocalizationProvider } from "@/components/localization/LocalizationProvider";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
@@ -68,10 +69,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Script id="accessibility-preferences" strategy="beforeInteractive">
           {preferenceScript}
         </Script>
-        <AccessibilityProvider>
-          {children}
-          <AccessibilityMenu />
-        </AccessibilityProvider>
+        <LocalizationProvider>
+          <AccessibilityProvider>
+            {children}
+            <AccessibilityMenu />
+          </AccessibilityProvider>
+        </LocalizationProvider>
       </body>
     </html>
   );
