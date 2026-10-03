@@ -63,6 +63,7 @@
   --focus-ring: #0a0a0a;
   --link-decoration: underline;
   --brand-image-filter: none;
+  --brand-yellow-filter: brightness(0) saturate(100%) invert(93%) sepia(97%) saturate(1700%) hue-rotate(2deg) brightness(110%) contrast(105%);
   --button-image-filter: invert(1);
 }
 
@@ -848,5 +849,49 @@ a[href] {
   .accessibility-reset,
   .accessibility-close {
     border: 1px solid CanvasText;
+  }
+}
+
+.brand-logo {
+  height: 5rem;
+  width: 5rem;
+}
+
+.brand-logo__asset {
+  height: 100%;
+  width: 100%;
+}
+
+.brand-logo__asset--white {
+  display: none;
+}
+
+:root[data-theme="dark"] .brand-logo__asset--color,
+:root[data-theme="hc-black-white"] .brand-logo__asset--color,
+:root[data-theme="hc-black-yellow"] .brand-logo__asset--color {
+  display: none;
+}
+
+:root[data-theme="dark"] .brand-logo__asset--white,
+:root[data-theme="hc-black-white"] .brand-logo__asset--white,
+:root[data-theme="hc-black-yellow"] .brand-logo__asset--white {
+  display: block;
+}
+
+:root[data-theme="hc-black-yellow"] .brand-logo__asset--white {
+  filter: var(--brand-yellow-filter);
+}
+
+:root[data-theme="grayscale"] .brand-logo__asset--color {
+  filter: grayscale(1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .brand-logo__asset--color {
+    display: none;
+  }
+
+  :root:not([data-theme]) .brand-logo__asset--white {
+    display: block;
   }
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import {
   Ambulance,
   ArrowRight,
@@ -17,7 +18,7 @@ import type { Icon } from "@phosphor-icons/react/lib";
 import { Button, IconButton } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
-  title: "Design system | 72H",
+  title: "Design system",
   description: "The 72H interface design system.",
 };
 
@@ -27,6 +28,15 @@ const sections = [
   ["03 / Actions & inputs", "Components", "components"],
   ["04 / Status", "Feedback", "feedback"],
   ["05 / Iconography", "Emergency reference", "icons"],
+  ["06 / Brand", "Logo assets", "brand"],
+] as const;
+
+const appearanceVariants = [
+  { name: "Light", asset: "/brand/logo-color.svg", background: "#ffffff", filter: "none" },
+  { name: "Dark", asset: "/brand/logo-white.svg", background: "#0a0a0a", filter: "none" },
+  { name: "Black / white", asset: "/brand/logo-white.svg", background: "#000000", filter: "none" },
+  { name: "Black / yellow", asset: "/brand/logo-white.svg", background: "#000000", filter: "var(--brand-yellow-filter)" },
+  { name: "Grayscale", asset: "/brand/logo-color.svg", background: "#ffffff", filter: "grayscale(1)" },
 ] as const;
 
 const typeStyles = [
@@ -299,6 +309,52 @@ export default function DesignSystemPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+            {id === "brand" && (
+              <div className="mt-8 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-raised)] p-5 sm:p-6">
+                <p className="type-caption mb-6 max-w-2xl text-[var(--content-muted)]">
+                  Use the color logo as the default brand mark. The white version is reserved for dark, high-contrast backgrounds; use the icon where space is limited. Keep every mark clear of surrounding content.
+                </p>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <section className="rounded-lg border border-[var(--border-subtle)] p-4" aria-labelledby="logo-color-heading">
+                    <div className="flex min-h-36 items-center justify-center rounded-md bg-[var(--surface-canvas)] p-5">
+                      <Image src="/brand/logo-color.svg" alt="72H color logo" width={112} height={112} />
+                    </div>
+                    <h3 className="type-h3 mt-4" id="logo-color-heading">Color logo</h3>
+                    <code className="mt-1 block font-mono text-xs text-[var(--content-muted)]">/brand/logo-color.svg</code>
+                  </section>
+                  <section className="rounded-lg border border-[var(--border-subtle)] p-4" aria-labelledby="logo-white-heading">
+                    <div className="flex min-h-36 items-center justify-center rounded-md bg-[var(--surface-inverse)] p-5">
+                      <Image src="/brand/logo-white.svg" alt="72H white logo" width={112} height={112} />
+                    </div>
+                    <h3 className="type-h3 mt-4" id="logo-white-heading">White logo</h3>
+                    <code className="mt-1 block font-mono text-xs text-[var(--content-muted)]">/brand/logo-white.svg</code>
+                  </section>
+                  <section className="rounded-lg border border-[var(--border-subtle)] p-4" aria-labelledby="logo-icon-heading">
+                    <div className="flex min-h-36 items-center justify-center rounded-md bg-[var(--surface-canvas)] p-5">
+                      <Image src="/brand/logo-icon.svg" alt="72H icon" width={112} height={112} />
+                    </div>
+                    <h3 className="type-h3 mt-4" id="logo-icon-heading">App icon</h3>
+                    <code className="mt-1 block font-mono text-xs text-[var(--content-muted)]">app/favicon.ico</code>
+                  </section>
+                </div>
+                <section className="mt-8" aria-labelledby="appearance-variants-heading">
+                  <div className="mb-4">
+                    <h3 className="type-h3" id="appearance-variants-heading">Appearance variants</h3>
+                    <p className="type-caption mt-1 text-[var(--content-muted)]">The product logo switches to the matching asset when an appearance setting changes. Yellow and grayscale preserve the selected high-contrast treatment without introducing a separate, non-accessible mark.</p>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                    {appearanceVariants.map(({ name, asset, background, filter }) => (
+                      <div className="rounded-lg border border-[var(--border-subtle)] p-3" key={name}>
+                        <div className="flex h-28 items-center justify-center rounded-md p-4" style={{ backgroundColor: background }}>
+                          <Image src={asset} alt={`${name} 72H logo`} width={72} height={72} style={{ filter }} />
+                        </div>
+                        <p className="type-caption mt-3 font-semibold">{name}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
               </div>
             )}
           </section>

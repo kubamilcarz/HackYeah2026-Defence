@@ -17,8 +17,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "72H",
-  description: "72H",
+  title: {
+    default: "72H",
+    template: "%s | 72H",
+  },
+  description: "72H emergency readiness.",
+  applicationName: "72H",
 };
 
 const preferenceScript = `
