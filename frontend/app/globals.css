@@ -4144,9 +4144,99 @@ a.app-navigation__link--active {
   margin-top: var(--space-4);
 }
 
+/* Medical Notes Section */
+.medical-notes-section {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.medical-notes-header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: space-between;
+}
+
+.medical-empty-notes {
+  align-items: flex-start;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-3);
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+
+.medical-empty-notes svg {
+  color: var(--content-secondary);
+  flex: 0 0 auto;
+  margin-top: var(--space-1);
+}
+
+.medical-empty-notes__content {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.medical-empty-notes__content .button {
+  justify-self: start;
+  margin-top: var(--space-2);
+}
+
+.medical-notes-list {
+  display: grid;
+  gap: var(--space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.medical-note-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  transition: border-color 150ms ease;
+}
+
+.medical-note-card__header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+
+.medical-note-card__title {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-h3);
+  margin: 0;
+}
+
+.medical-note-card__actions {
+  align-items: center;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.medical-note-card__content {
+  color: var(--content-secondary);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  margin: 0;
+  white-space: pre-line;
+}
+
 @media (min-width: 64rem) {
   .medical-page__content {
     padding: var(--space-10) var(--space-6);
   }
 }
+
 

@@ -51,7 +51,10 @@ export default function FamilyPage() {
                   <Plus aria-hidden="true" className="button__icon" size={20} weight="bold" />
                   <span>{copy.addMedicalInformation}</span>
                 </Link>
-                <Button disabled leadingIcon={Plus} variant="secondary">{copy.addNotes}</Button>
+                <Link className="button button--secondary" href="/family/medical?addNote=true">
+                  <Plus aria-hidden="true" className="button__icon" size={20} weight="bold" />
+                  <span>{copy.addNotes}</span>
+                </Link>
               </div>
             </div>
           </div>
