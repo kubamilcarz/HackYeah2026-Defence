@@ -93,8 +93,8 @@ high-contrast palettes are explicit, complete token maps:
   indicators.
 - `hc-black-yellow`: black surfaces with yellow content, controls, and focus
   indicators chosen for sufficient contrast.
-- `grayscale`: a full neutral token map that preserves contrast and underlines
-  links; it is not a blanket CSS filter that could make media illegible.
+- `grayscale`: a full neutral token map that preserves contrast; it is not a
+  blanket CSS filter that could make media illegible.
 
 Do not use color as the only way to communicate status or selection. Supply a
 text label, icon with an accessible name, pattern, or other non-color cue as
@@ -138,8 +138,10 @@ The panel contains:
    **Grayscale**.
 2. A text-size group with **Decrease text size**, a live current-value label,
    **Increase text size**, and **Reset text size**.
-3. A native switch for **Underline links**, which changes the semantic link
-   token rather than adding an ad-hoc treatment to individual links.
+3. A native switch for **Underline links**, which lets people opt in to
+   underlining every link through the semantic link token rather than adding
+   ad-hoc treatment to individual links. It is off by default in every
+   appearance mode.
 4. **Read aloud** controls that use the browser's speech-synthesis API to read
    the route's `main` content, with play/pause/resume, stop, and a live status.
    Playback is transient and does not replace screen-reader support.
