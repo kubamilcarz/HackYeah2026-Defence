@@ -103,6 +103,7 @@ with white normal-size text.
 | `--action-primary` | `#FF0033` | Primary action fill with `#0A0A0A` foreground |
 | `--action-primary-hover` | `#FF4D6D` | Hovered primary action with `#0A0A0A` foreground |
 | `--action-primary-pressed` | `#D4002A` | Pressed primary action with `#FFFFFF` foreground |
+| `--action-selected` | `#D4002A` | Persistent selected state with `#FFFFFF` foreground |
 | `--action-danger` | `#D4002A` | Destructive action boundary and pressed fill with `#FFFFFF` foreground |
 | `--action-danger-hover` | `#FFE6EB` | Hovered destructive action with `#D4002A` foreground |
 | `--focus-ring` | `#0A0A0A` | 3px visible focus outline |
@@ -126,6 +127,7 @@ with white normal-size text.
 | `--action-primary` | `#FF0033` | Primary action fill with `#0A0A0A` foreground |
 | `--action-primary-hover` | `#FF4D6D` | Hovered primary action with `#0A0A0A` foreground |
 | `--action-primary-pressed` | `#FF8099` | Pressed primary action with `#0A0A0A` foreground |
+| `--action-selected` | `#FF8099` | Persistent selected state with `#0A0A0A` foreground |
 | `--action-danger` | `#FF8AA0` | Destructive action boundary and pressed fill with `#0A0A0A` foreground |
 | `--action-danger-hover` | `#460014` | Hovered destructive action with `#FF8AA0` foreground |
 | `--focus-ring` | `#FFFFFF` | 3px visible focus outline |
@@ -161,7 +163,7 @@ Grayscale is an explicit neutral theme, not a CSS filter. Its semantic map is:
 | Canvas / raised / subtle | `#F1F1F1` / `#FFFFFF` / `#DEDEDE` |
 | Primary / secondary / muted content | `#111111` / `#414141` / `#575757` |
 | Link / action / focus | `#111111` / `#111111` / `#111111` |
-| Action foreground | `#FFFFFF` |
+| Action / selected foreground | `#FFFFFF` |
 | Strong border | `#575757` |
 
 Links remain underlined. All feedback tokens resolve to neutral foreground and
@@ -170,9 +172,10 @@ background values, so feedback components must preserve their icon and text.
 ### High contrast
 
 `hc-black-white` resolves surfaces to black and all essential content,
-boundaries, actions, and focus to white, with black action foregrounds.
-`hc-black-yellow` follows the same map using yellow (`#FFFF00`) for essential
-content, boundaries, actions, and focus, with black action foregrounds.
+boundaries, actions, and focus to white, with black action and selected-state
+foregrounds. `hc-black-yellow` follows the same map using yellow (`#FFFF00`)
+for essential content, boundaries, actions, focus, and selected surfaces, with
+black action and selected-state foregrounds.
 
 For both themes, feedback semantic tokens alias the active high-contrast
 foreground/background roles. They do not introduce category colors. In

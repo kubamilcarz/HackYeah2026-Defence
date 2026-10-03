@@ -1,6 +1,7 @@
-import { ArrowLeft } from "@phosphor-icons/react";
+import { ArrowLeft } from "@phosphor-icons/react/ssr";
 import type { Icon } from "@phosphor-icons/react/lib";
 import type { MouseEventHandler } from "react";
+import Link from "next/link";
 import { IconButton } from "@/components/ui/Button";
 
 export type PageNavigationAction = {
@@ -13,6 +14,7 @@ export type PageNavigationAction = {
 export type PageNavigationBarProps = {
   action?: PageNavigationAction;
   backDisabled?: boolean;
+  backHref?: string;
   backLabel?: string;
   className?: string;
   onBack?: MouseEventHandler<HTMLButtonElement>;
@@ -22,6 +24,7 @@ export type PageNavigationBarProps = {
 export function PageNavigationBar({
   action,
   backDisabled = false,
+  backHref,
   backLabel = "Go back",
   className,
   onBack,
@@ -30,7 +33,15 @@ export function PageNavigationBar({
   return (
     <header className={`page-navigation-bar${className ? ` ${className}` : ""}`}>
       <div className="page-navigation-bar__slot page-navigation-bar__slot--leading">
-        {onBack && (
+        {backHref ? (
+          <Link
+            aria-label={backLabel}
+            className="icon-button icon-button--tertiary page-navigation-bar__button"
+            href={backHref}
+          >
+            <ArrowLeft aria-hidden="true" size={20} weight="bold" />
+          </Link>
+        ) : onBack && (
           <IconButton
             className="page-navigation-bar__button"
             disabled={backDisabled}

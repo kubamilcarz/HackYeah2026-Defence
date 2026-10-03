@@ -14,7 +14,7 @@ documents for every entry below. The live visual reference is `/design-system`.
 | --- | --- | --- |
 | `Button`, `IconButton` | `ui/Button.tsx` | Standard actions. `IconButton` requires its text `label` prop to provide an accessible name. |
 | `Dialog` | `ui/Dialog.tsx` | Controlled modal for blocking decisions; provides labelled native-dialog semantics and restores focus on close. |
-| `PageNavigationBar` | `ui/PageNavigationBar.tsx` | Compact page heading with optional back and trailing icon actions. |
+| `PageNavigationBar` | `ui/PageNavigationBar.tsx` | Compact page heading with an optional callback or link-based back action and trailing icon action. |
 
 ## Forms
 
@@ -50,4 +50,6 @@ documents for every entry below. The live visual reference is `/design-system`.
 | Component | Source | Use and contract |
 | --- | --- | --- |
 | `AccessibilityProvider`, `useAccessibilityPreferences` | `accessibility/AccessibilityProvider.tsx` | Root preference owner for appearance, text scale, and link underlining; components must not read or write preference storage independently. |
+| `AccessibilityIcon` | `accessibility/AccessibilityIcon.tsx` | Shared universal-access symbol. It is decorative when paired with a visible Accessibility label. |
 | `AccessibilityMenu` | `accessibility/AccessibilityMenu.tsx` | Global preference launcher and panel. Keep its keyboard, focus, theme, text-scale, read-aloud, and reset behavior intact. |
+| `AccessibilityPreferencesControls` | `accessibility/AccessibilityPreferencesControls.tsx` | Shared preference controls for the compact launcher and sectioned settings page; always use the root accessibility provider for state and persistence. |

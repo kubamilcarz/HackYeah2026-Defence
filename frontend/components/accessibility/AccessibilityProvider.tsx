@@ -39,13 +39,13 @@ type AccessibilityContextValue = AccessibilityPreferences & {
   resetSettings: () => void;
 };
 
-const STORAGE_KEY = "hubmi-accessibility-preferences";
+const STORAGE_KEY = "plan-0-accessibility-preferences";
 const DEFAULT_PREFERENCES: AccessibilityPreferences = {
   appearance: "system",
   textScale: 100,
   underlineLinks: false,
 };
-const CHANGE_EVENT = "hubmi-accessibility-preferences-change";
+const CHANGE_EVENT = "plan-0-accessibility-preferences-change";
 
 let clientPreferences: AccessibilityPreferences | null = null;
 
