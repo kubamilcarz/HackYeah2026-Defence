@@ -1,3 +1,12 @@
+import {
+  putManyInStore,
+  deleteFromStore,
+  subscribeToDatabase,
+  DB_STORES,
+  type DbSupplyItem,
+} from "@/lib/db";
+import type { MedicalProfile } from "@/components/app/medical";
+
 export const SUPPLY_CATEGORIES = [
   "water-food",
   "health",
@@ -23,6 +32,7 @@ export type SupplyItem = {
   target: number;
   unit: SupplyUnit;
   updatedAt: string;
+  memberId?: string | null;
 };
 
 export type SupplyItemInput = Omit<SupplyItem, "createdAt" | "id" | "updatedAt">;
@@ -41,8 +51,6 @@ export interface SuppliesRepository {
 
 const STORAGE_KEY = "plan-0-supplies-v1";
 const CHANGE_EVENT = "plan-0-supplies-change";
-
-let clientSnapshot: SupplyLoadResult | null = null;
 
 export const STARTER_ITEM_NAMES = {
   "starter-water": "Water",
@@ -83,20 +91,23 @@ function isDate(value: unknown) {
 function isSupplyItem(value: unknown): value is SupplyItem {
   if (!value || typeof value !== "object") return false;
   const item = value as Partial<SupplyItem>;
-  return typeof item.id === "string"
-    && typeof item.name === "string"
-    && isSupplyCategory(item.category)
-    && Number.isFinite(item.onHand)
-    && Number.isFinite(item.target)
-    && item.onHand >= 0
-    && item.target >= 0
-    && isSupplyUnit(item.unit)
-    && isDate(item.expiresOn)
-    && typeof item.createdAt === "string"
-    && typeof item.updatedAt === "string";
+  return (
+    typeof item.id === "string" &&
+    typeof item.name === "string" &&
+    isSupplyCategory(item.category) &&
+    Number.isFinite(item.onHand) &&
+    Number.isFinite(item.target) &&
+    item.onHand >= 0 &&
+    item.target >= 0 &&
+    isSupplyUnit(item.unit) &&
+    isDate(item.expiresOn) &&
+    (item.memberId === undefined || item.memberId === null || typeof item.memberId === "string") &&
+    typeof item.createdAt === "string" &&
+    typeof item.updatedAt === "string"
+  );
 }
 
-function starterItems() {
+function starterItems(): SupplyItem[] {
   const timestamp = new Date().toISOString();
   return STARTER_ITEMS.map((item) => ({ ...item, createdAt: timestamp, updatedAt: timestamp }));
 }
@@ -127,74 +138,251 @@ export function supplyIssues(item: SupplyItem, now = startOfToday()): InventoryI
   return issues;
 }
 
-import {
-  putManyInStore,
-  subscribeToDatabase,
-  DB_STORES,
-  type DbSupplyItem,
-} from "@/lib/db";
-
 export function isSupplyReady(item: SupplyItem, now?: Date) {
   return supplyIssues(item, now).length === 0;
 }
 
-export const localSuppliesRepository: SuppliesRepository = {
-  load() {
-    if (clientSnapshot) return clientSnapshot;
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (!stored) {
-        clientSnapshot = { items: starterItems() };
-        // Asynchronously backfill into IndexedDB
-        putManyInStore(DB_STORES.SUPPLIES, clientSnapshot.items as DbSupplyItem[]).catch(() => {});
-        return clientSnapshot;
-      }
-      const parsed: unknown = JSON.parse(stored);
-      if (!Array.isArray(parsed) || !parsed.every(isSupplyItem)) {
-        clientSnapshot = { items: starterItems(), issue: "stored-data-invalid" };
-        return clientSnapshot;
-      }
-      clientSnapshot = { items: parsed };
-      return clientSnapshot;
-    } catch {
-      clientSnapshot = { items: starterItems(), issue: "storage-unavailable" };
-      return clientSnapshot;
-    }
-  },
-  save(items) {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-      clientSnapshot = { items };
-    } catch {
-      clientSnapshot = { items, issue: "storage-unavailable" };
-    }
-    // Also persist in IndexedDB
-    putManyInStore(DB_STORES.SUPPLIES, items as DbSupplyItem[]).catch(() => {});
-    window.dispatchEvent(new Event(CHANGE_EVENT));
-    return clientSnapshot.issue === "storage-unavailable" ? "storage-unavailable" : "saved";
-  },
-};
+/* Storage & Synchronization like Medical & Contacts */
 
-export function subscribeToSupplies(onStoreChange: () => void) {
-  const synchronize = () => {
-    clientSnapshot = null;
+let cachedSupplies: SupplyItem[] | null = null;
+let cachedSnapshot: SupplyLoadResult | null = null;
+let lastLoadIssue: SupplyLoadResult["issue"] = undefined;
+
+const SERVER_STARTERS = starterItems();
+const SERVER_SNAPSHOT: SupplyLoadResult = { items: SERVER_STARTERS };
+
+export function resetSuppliesCache(): void {
+  cachedSupplies = null;
+  cachedSnapshot = null;
+  lastLoadIssue = undefined;
+}
+
+function getStoredSupplies(): SupplyItem[] {
+  if (typeof window === "undefined") {
+    return starterItems();
+  }
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      const defaults = starterItems();
+      putManyInStore(DB_STORES.SUPPLIES, defaults as DbSupplyItem[]).catch(() => {});
+      return defaults;
+    }
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed) || !parsed.every(isSupplyItem)) {
+      lastLoadIssue = "stored-data-invalid";
+      return starterItems();
+    }
+    return parsed;
+  } catch {
+    lastLoadIssue = "storage-unavailable";
+    return starterItems();
+  }
+}
+
+if (typeof window !== "undefined") {
+  const reset = () => {
+    cachedSupplies = null;
+    cachedSnapshot = null;
+  };
+  window.addEventListener("storage", reset);
+  window.addEventListener("plan-0-db-change", reset);
+  window.addEventListener(CHANGE_EVENT, reset);
+}
+
+export function getSupplyItemsSnapshot(): SupplyItem[] {
+  if (!cachedSupplies) {
+    cachedSupplies = getStoredSupplies();
+  }
+  return cachedSupplies;
+}
+
+export function getSupplyItemsServerSnapshot(): SupplyItem[] {
+  return SERVER_STARTERS;
+}
+
+export function getSuppliesSnapshot(): SupplyLoadResult {
+  if (!cachedSnapshot) {
+    const items = getSupplyItemsSnapshot();
+    cachedSnapshot = { items, issue: lastLoadIssue };
+  }
+  return cachedSnapshot;
+}
+
+export function getSuppliesServerSnapshot(): SupplyLoadResult {
+  return SERVER_SNAPSHOT;
+}
+
+export function subscribeToSupplies(onStoreChange: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+
+  const handleUpdate = () => {
+    cachedSupplies = getStoredSupplies();
+    cachedSnapshot = { items: cachedSupplies, issue: lastLoadIssue };
     onStoreChange();
   };
-  window.addEventListener("storage", synchronize);
-  window.addEventListener(CHANGE_EVENT, onStoreChange);
-  const unsubscribeDb = subscribeToDatabase(synchronize);
+
+  window.addEventListener("storage", handleUpdate);
+  window.addEventListener(CHANGE_EVENT, handleUpdate);
+  const unsubscribeDb = subscribeToDatabase(handleUpdate);
+
   return () => {
-    window.removeEventListener("storage", synchronize);
-    window.removeEventListener(CHANGE_EVENT, onStoreChange);
+    window.removeEventListener("storage", handleUpdate);
+    window.removeEventListener(CHANGE_EVENT, handleUpdate);
     unsubscribeDb();
   };
 }
 
-export function getSuppliesSnapshot() {
-  return localSuppliesRepository.load();
+export function saveAllSupplies(items: SupplyItem[]): "saved" | "storage-unavailable" {
+  cachedSupplies = items;
+  cachedSnapshot = { items, issue: lastLoadIssue };
+  let status: "saved" | "storage-unavailable" = "saved";
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    status = "storage-unavailable";
+    lastLoadIssue = "storage-unavailable";
+    cachedSnapshot = { items, issue: "storage-unavailable" };
+  }
+  putManyInStore(DB_STORES.SUPPLIES, items as DbSupplyItem[]).catch(() => {});
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(CHANGE_EVENT));
+  }
+  return status;
 }
 
-export function getSuppliesServerSnapshot() {
-  return null;
+export function saveSupplyItem(updated: SupplyItem): void {
+  const current = getSupplyItemsSnapshot();
+  const existingIndex = current.findIndex((item) => item.id === updated.id);
+  let next: SupplyItem[];
+  if (existingIndex >= 0) {
+    next = [...current];
+    next[existingIndex] = { ...updated, updatedAt: new Date().toISOString() };
+  } else {
+    next = [...current, { ...updated, updatedAt: new Date().toISOString() }];
+  }
+  saveAllSupplies(next);
 }
 
+export function deleteSupplyItem(itemId: string): void {
+  const current = getSupplyItemsSnapshot();
+  const next = current.filter((item) => item.id !== itemId);
+  cachedSupplies = next;
+  cachedSnapshot = { items: next, issue: lastLoadIssue };
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  } catch {
+    // Graceful fallback
+  }
+  deleteFromStore(DB_STORES.SUPPLIES, itemId).catch(() => {});
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(CHANGE_EVENT));
+  }
+}
+
+export const localSuppliesRepository: SuppliesRepository = {
+  load() {
+    return getSuppliesSnapshot();
+  },
+  save(items) {
+    return saveAllSupplies(items);
+  },
+};
+
+/* Household / Family Integration Logic */
+
+export interface RecommendedHouseholdTargets {
+  memberCount: number;
+  waterTargetLitres: number; // 3L per person * 3 days = 9L per person
+  foodTargetDays: number; // 3 days
+  hygieneTargetDays: number; // 3 days
+  flashlightTargetItems: number; // 1 per adult/person (min 1, max 4)
+  powerTargetSets: number; // 1 set per 2 people (min 1)
+  firstAidTargetSets: number; // 1 kit per 4 people (min 1)
+}
+
+export function calculateRecommendedTargets(members: MedicalProfile[]): RecommendedHouseholdTargets {
+  const memberCount = Math.max(1, members.length);
+  return {
+    memberCount,
+    waterTargetLitres: memberCount * 9,
+    foodTargetDays: 3,
+    hygieneTargetDays: 3,
+    flashlightTargetItems: Math.max(1, Math.min(memberCount, 4)),
+    powerTargetSets: Math.max(1, Math.ceil(memberCount / 2)),
+    firstAidTargetSets: Math.max(1, Math.ceil(memberCount / 4)),
+  };
+}
+
+export interface FamilyMedicalNeed {
+  memberId: string;
+  fullName: string;
+  relationship?: string;
+  medications: string;
+  allergies?: string;
+  chronicDiseases?: string;
+  hasAssignedSupply: boolean;
+}
+
+export function getFamilyMedicalRequirements(
+  members: MedicalProfile[],
+  supplies: SupplyItem[],
+): FamilyMedicalNeed[] {
+  const isNone = (val?: string) =>
+    !val ||
+    val.trim().toLowerCase() === "brak" ||
+    val.trim().toLowerCase() === "none" ||
+    val.trim() === "—" ||
+    val.trim() === "-";
+
+  return members
+    .filter((member) => !isNone(member.medications) || !isNone(member.chronicDiseases))
+    .map((member) => {
+      const hasAssigned = supplies.some(
+        (item) =>
+          item.memberId === member.id ||
+          item.name.toLowerCase().includes(member.fullName.toLowerCase()),
+      );
+      return {
+        memberId: member.id,
+        fullName: member.fullName,
+        relationship: member.relationship,
+        medications: isNone(member.medications) ? (member.chronicDiseases || "") : member.medications,
+        allergies: member.allergies,
+        chronicDiseases: member.chronicDiseases,
+        hasAssignedSupply: hasAssigned,
+      };
+    });
+}
+
+/**
+ * Adjusts supplies to match the current household members:
+ * - Updates starter water, food, first aid, power, hygiene, and flashlight targets.
+ * - Leaves onHand quantities intact.
+ */
+export function autoAdjustSuppliesForFamily(
+  currentSupplies: SupplyItem[],
+  members: MedicalProfile[],
+): SupplyItem[] {
+  const targets = calculateRecommendedTargets(members);
+  const now = new Date().toISOString();
+
+  return currentSupplies.map((item) => {
+    switch (item.id) {
+      case "starter-water":
+        return { ...item, target: targets.waterTargetLitres, updatedAt: now };
+      case "starter-food":
+        return { ...item, target: targets.foodTargetDays, updatedAt: now };
+      case "starter-hygiene":
+        return { ...item, target: targets.hygieneTargetDays, updatedAt: now };
+      case "starter-first-aid":
+        return { ...item, target: targets.firstAidTargetSets, updatedAt: now };
+      case "starter-flashlight":
+        return { ...item, target: targets.flashlightTargetItems, updatedAt: now };
+      case "starter-power":
+        return { ...item, target: targets.powerTargetSets, updatedAt: now };
+      default:
+        return item;
+    }
+  });
+}

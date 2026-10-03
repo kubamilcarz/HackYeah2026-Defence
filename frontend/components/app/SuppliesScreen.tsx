@@ -1,7 +1,15 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
-import { PencilSimple, Plus, Trash, WarningCircle } from "@phosphor-icons/react/ssr";
+import {
+  Check,
+  FirstAidKit,
+  PencilSimple,
+  Plus,
+  Trash,
+  UsersThree,
+  WarningCircle,
+} from "@phosphor-icons/react/ssr";
 import { Alert } from "@/components/ui/Alert";
 import { Button, IconButton } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
@@ -11,17 +19,28 @@ import { CircularProgress } from "@/components/ui/Progress";
 import { Tag, type TagVariant } from "@/components/ui/Tag";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 import {
+  getInitials,
+  getMedicalProfilesServerSnapshot,
+  getMedicalProfilesSnapshot,
+  subscribeToMedicalProfiles,
+} from "@/components/app/medical";
+import {
   SUPPLY_CATEGORIES,
   SUPPLY_UNITS,
   STARTER_ITEM_NAMES,
+  autoAdjustSuppliesForFamily,
+  calculateRecommendedTargets,
   createSupplyItem,
+  deleteSupplyItem,
+  getFamilyMedicalRequirements,
   getSuppliesServerSnapshot,
   getSuppliesSnapshot,
   isSupplyReady,
-  localSuppliesRepository,
+  saveAllSupplies,
   supplyIssues,
   subscribeToSupplies,
   updateSupplyItem,
+  type FamilyMedicalNeed,
   type InventoryIssue,
   type SupplyItem,
   type SupplyItemInput,
@@ -34,6 +53,7 @@ type SupplyFormValues = {
   onHand: string;
   target: string;
   unit: SupplyItem["unit"];
+  memberId: string;
 };
 
 type StatusFilter = "all" | "attention" | "ready";
@@ -45,7 +65,29 @@ const EMPTY_FORM: SupplyFormValues = {
   target: "1",
   unit: "items",
   expiresOn: "",
+  memberId: "",
 };
+
+function formatPeopleCount(count: number, locale: string): string {
+  if (locale === "pl") {
+    if (count === 1) return "1 osoby";
+    return `${count} osób`;
+  }
+  return count === 1 ? "1 person" : `${count} people`;
+}
+
+function formatHouseholdPeople(count: number, locale: string): string {
+  if (locale === "pl") {
+    if (count === 1) return "1 osoba";
+    const mod10 = count % 10;
+    const mod100 = count % 100;
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+      return `${count} osoby`;
+    }
+    return `${count} osób`;
+  }
+  return count === 1 ? "1 person" : `${count} people`;
+}
 
 function formValues(item?: SupplyItem): SupplyFormValues {
   if (!item) return EMPTY_FORM;
@@ -56,6 +98,7 @@ function formValues(item?: SupplyItem): SupplyFormValues {
     target: String(item.target),
     unit: item.unit,
     expiresOn: item.expiresOn ?? "",
+    memberId: item.memberId ?? "",
   };
 }
 
@@ -70,8 +113,16 @@ function validation(values: SupplyFormValues, copy: ReturnType<typeof useLocaliz
 export function SuppliesScreen() {
   const { locale, messages } = useLocalization();
   const copy = messages.supplies;
+
   const loaded = useSyncExternalStore(subscribeToSupplies, getSuppliesSnapshot, getSuppliesServerSnapshot);
   const items = loaded?.items ?? null;
+
+  const members = useSyncExternalStore(
+    subscribeToMedicalProfiles,
+    getMedicalProfilesSnapshot,
+    getMedicalProfilesServerSnapshot,
+  );
+
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [query, setQuery] = useState("");
   const [editingItem, setEditingItem] = useState<SupplyItem | undefined>();
@@ -83,18 +134,63 @@ export function SuppliesScreen() {
   const [storageWarning, setStorageWarning] = useState(false);
 
   const readyCount = useMemo(() => items?.filter((item) => isSupplyReady(item)).length ?? 0, [items]);
+
+  const recommendedTargets = useMemo(() => calculateRecommendedTargets(members), [members]);
+  const medicalNeeds = useMemo(() => getFamilyMedicalRequirements(members, items ?? []), [members, items]);
+
+  const isTargetsAdjusted = useMemo(() => {
+    if (!items) return false;
+    const waterItem = items.find((i) => i.id === "starter-water");
+    if (!waterItem) return false;
+    return waterItem.target === recommendedTargets.waterTargetLitres;
+  }, [items, recommendedTargets.waterTargetLitres]);
+
+  const memberNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const member of members) {
+      map.set(member.id, member.fullName);
+    }
+    return map;
+  }, [members]);
+
   const displayedItems = useMemo(() => {
     if (!items) return [];
     const normalizedQuery = query.trim().toLocaleLowerCase();
     return items.filter((item) => {
-      const matchesQuery = !normalizedQuery || item.name.toLocaleLowerCase().includes(normalizedQuery);
+      const assignedName = item.memberId ? memberNameMap.get(item.memberId) ?? "" : "";
+      const matchesQuery =
+        !normalizedQuery ||
+        item.name.toLocaleLowerCase().includes(normalizedQuery) ||
+        assignedName.toLocaleLowerCase().includes(normalizedQuery);
       const isReady = isSupplyReady(item);
       return matchesQuery && (filter === "all" || (filter === "ready" ? isReady : !isReady));
     });
-  }, [filter, items, query]);
+  }, [filter, items, memberNameMap, query]);
 
   function persist(next: SupplyItem[]) {
-    if (localSuppliesRepository.save(next) === "storage-unavailable") setStorageWarning(true);
+    if (saveAllSupplies(next) === "storage-unavailable") setStorageWarning(true);
+  }
+
+  function handleAutoAdjustForFamily() {
+    if (!items) return;
+    const next = autoAdjustSuppliesForFamily(items, members);
+    persist(next);
+    setStatus(copy.familyBanner.adjustedSuccess.replace("{count}", String(members.length)));
+  }
+
+  function handleAddMedicationSupply(need: FamilyMedicalNeed) {
+    setEditingItem(undefined);
+    setForm({
+      name: `${copy.starters["starter-medication"]}: ${need.fullName}`,
+      category: "health",
+      onHand: "0",
+      target: "3",
+      unit: "days",
+      expiresOn: "",
+      memberId: need.memberId,
+    });
+    setErrors({});
+    setEditorOpen(true);
   }
 
   function openCreate() {
@@ -125,6 +221,7 @@ export function SuppliesScreen() {
       target: Number(form.target),
       unit: form.unit,
       expiresOn: form.expiresOn || null,
+      memberId: form.memberId || null,
     };
     const next = editingItem
       ? items?.map((item) => item.id === editingItem.id ? updateSupplyItem(item, input) : item) ?? []
@@ -136,7 +233,7 @@ export function SuppliesScreen() {
 
   function removeItem() {
     if (!editingItem) return;
-    persist((items ?? []).filter((item) => item.id !== editingItem.id));
+    deleteSupplyItem(editingItem.id);
     setDeleteOpen(false);
     setStatus(copy.status.deleted);
   }
@@ -170,6 +267,88 @@ export function SuppliesScreen() {
 
         <Alert actionHref="https://www.gov.pl/web/poradnikbezpieczenstwa/dlugotrwaly-brak-pradu-blackout" actionLabel={copy.sourceAction} description={copy.guidance.description} title={copy.guidance.title} variant="info" />
         {(storageWarning || loaded?.issue) && <Alert description={copy.storageWarning} title={copy.storageWarningTitle} variant="warning" />}
+
+        {/* Household Sizing Bar */}
+        <section
+          aria-labelledby="supplies-family-heading"
+          className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-default)] shadow-xs"
+        >
+          <div className="flex items-center gap-3 min-w-0">
+            <UsersThree size={24} weight="bold" className="text-[var(--accent-default)] shrink-0" />
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="type-h3 font-semibold" id="supplies-family-heading">
+                  {copy.familyBanner.title}: {formatHouseholdPeople(members.length, locale)}
+                </h2>
+                {members.length > 0 && (
+                  <ul className="flex items-center -space-x-1" aria-label={formatHouseholdPeople(members.length, locale)}>
+                    {members.map((member) => (
+                      <li key={member.id}>
+                        <span
+                          className="inline-flex items-center justify-center w-6 h-6 text-[10px] font-bold rounded-full bg-[var(--accent-subtle)] text-[var(--accent-strong)] border border-[var(--surface-default)]"
+                          title={`${member.fullName} (${member.relationship || ""})`}
+                        >
+                          {getInitials(member.fullName)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <p className="type-caption text-[var(--content-muted)] mt-0.5 truncate">
+                {copy.familyBanner.formula
+                  .replace("{waterTarget}", String(recommendedTargets.waterTargetLitres))
+                  .replace("{people}", formatPeopleCount(members.length, locale))}
+              </p>
+            </div>
+          </div>
+
+          <div className="shrink-0 flex items-center gap-2">
+            {isTargetsAdjusted ? (
+              <Tag
+                label={copy.familyBanner.alreadyAdjusted.replace("{people}", formatPeopleCount(members.length, locale))}
+                variant="success"
+              />
+            ) : (
+              <Button
+                onClick={handleAutoAdjustForFamily}
+                variant="secondary"
+                leadingIcon={UsersThree}
+              >
+                {copy.familyBanner.autoAdjustAction.replace("{people}", formatPeopleCount(members.length, locale))}
+              </Button>
+            )}
+          </div>
+        </section>
+
+        {/* Unassigned Prescription Alert */}
+        {medicalNeeds.some((need) => !need.hasAssignedSupply) && (
+          <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl bg-[var(--surface-sunken)] border border-[var(--border-subtle)] type-caption">
+            <div className="flex items-center gap-2 min-w-0">
+              <FirstAidKit size={20} weight="bold" className="text-[var(--feedback-warning-strong)] shrink-0" />
+              <span>
+                <strong className="font-semibold">{copy.familyBanner.prescriptionsAlert}</strong>{" "}
+                {medicalNeeds
+                  .filter((n) => !n.hasAssignedSupply)
+                  .map((n) => `${n.fullName} (${n.medications})`)
+                  .join(", ")}
+              </span>
+            </div>
+            <div className="flex gap-2">
+              {medicalNeeds
+                .filter((n) => !n.hasAssignedSupply)
+                .map((need) => (
+                  <Button
+                    key={need.memberId}
+                    variant="tertiary"
+                    onClick={() => handleAddMedicationSupply(need)}
+                  >
+                    + {copy.familyBanner.addMedicationFor.replace("{name}", need.fullName.split(" ")[0])}
+                  </Button>
+                ))}
+            </div>
+          </div>
+        )}
 
         {total > 0 ? (
           <section aria-labelledby="supplies-readiness-heading" className={`supplies-summary supplies-summary--${progressVariant}`}>
@@ -208,7 +387,19 @@ export function SuppliesScreen() {
             ]} value={filter} />
           </div>
           {displayedItems.length ? <ul className="supplies-list">
-            {displayedItems.map((item) => <SupplyRow categoryLabel={copy.categories[item.category]} copy={copy} formatter={formatter} item={item} key={item.id} name={localizedSupplyName(item, copy)} onDelete={() => { setEditingItem(item); setDeleteOpen(true); }} onEdit={() => openEdit(item)} />)}
+            {displayedItems.map((item) => (
+              <SupplyRow
+                assignedMemberName={item.memberId ? memberNameMap.get(item.memberId) : undefined}
+                categoryLabel={copy.categories[item.category]}
+                copy={copy}
+                formatter={formatter}
+                item={item}
+                key={item.id}
+                name={localizedSupplyName(item, copy)}
+                onDelete={() => { setEditingItem(item); setDeleteOpen(true); }}
+                onEdit={() => openEdit(item)}
+              />
+            ))}
           </ul> : <p className="supplies-list__empty" role="status">{copy.noMatches}</p>}
         </section>}
       </div>
@@ -218,6 +409,22 @@ export function SuppliesScreen() {
         <form className="supplies-form" onSubmit={submitEditor}>
           <TextField autoFocus error={errors.name} label={copy.form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} required value={form.name} />
           <SelectField label={copy.form.category} onChange={(event) => setForm((current) => ({ ...current, category: event.target.value as SupplyItem["category"] }))} options={SUPPLY_CATEGORIES.map((category) => ({ value: category, label: copy.categories[category] }))} value={form.category} />
+
+          {members.length > 0 && (
+            <SelectField
+              label={copy.form.assignedTo}
+              onChange={(event) => setForm((current) => ({ ...current, memberId: event.target.value }))}
+              options={[
+                { value: "", label: copy.form.wholeHousehold },
+                ...members.map((member) => ({
+                  value: member.id,
+                  label: `${member.fullName} (${member.relationship || "—"})`,
+                })),
+              ]}
+              value={form.memberId}
+            />
+          )}
+
           <div className="supplies-form__quantities">
             <TextField error={errors.onHand} inputMode="decimal" label={copy.form.onHand} min="0" onChange={(event) => setForm((current) => ({ ...current, onHand: event.target.value }))} required step="0.01" type="number" value={form.onHand} />
             <TextField error={errors.target} inputMode="decimal" label={copy.form.target} min="0" onChange={(event) => setForm((current) => ({ ...current, target: event.target.value }))} required step="0.01" type="number" value={form.target} />
@@ -241,7 +448,17 @@ export function SuppliesScreen() {
   );
 }
 
-function SupplyRow({ categoryLabel, copy, formatter, item, name, onDelete, onEdit }: {
+function SupplyRow({
+  assignedMemberName,
+  categoryLabel,
+  copy,
+  formatter,
+  item,
+  name,
+  onDelete,
+  onEdit,
+}: {
+  assignedMemberName?: string;
   categoryLabel: string;
   copy: ReturnType<typeof useLocalization>["messages"]["supplies"];
   formatter: Intl.NumberFormat;
@@ -257,7 +474,14 @@ function SupplyRow({ categoryLabel, copy, formatter, item, name, onDelete, onEdi
       <div className="supply-row__main">
         <div>
           <h3 className="type-h3">{name}</h3>
-          <p className="type-caption">{categoryLabel}</p>
+          <p className="type-caption">
+            {categoryLabel}
+            {assignedMemberName && (
+              <span className="ml-1.5 font-medium text-[var(--accent-default)]">
+                · {copy.assignedToTag.replace("{name}", assignedMemberName)}
+              </span>
+            )}
+          </p>
         </div>
         <p className="supply-row__quantity">{copy.quantity.replace("{onHand}", formatter.format(item.onHand)).replace("{target}", formatter.format(item.target)).replace("{unit}", copy.units[item.unit])}</p>
         {item.expiresOn && <p className="type-caption">{copy.expiresOn.replace("{date}", new Intl.DateTimeFormat(formatter.resolvedOptions().locale, { dateStyle: "medium" }).format(new Date(`${item.expiresOn}T00:00:00`)))}</p>}

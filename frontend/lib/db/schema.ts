@@ -22,6 +22,7 @@ export interface DbSupplyItem extends BaseEntity {
   target: number;
   unit: DbSupplyUnit;
   expiresOn: string | null;
+  memberId?: string | null;
 }
 
 export interface DbMedicalProfile extends BaseEntity {

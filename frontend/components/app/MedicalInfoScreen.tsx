@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
+import Link from "next/link";
 import {
   Drop,
   FlowerTulip,
@@ -11,6 +12,7 @@ import {
   NotePencil,
   Trash,
   Notebook,
+  Package,
 } from "@phosphor-icons/react/ssr";
 import { Button, IconButton } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
@@ -33,6 +35,12 @@ import {
   type MedicalNote,
   type MedicalProfile,
 } from "@/components/app/medical";
+import {
+  getSuppliesServerSnapshot,
+  getSuppliesSnapshot,
+  subscribeToSupplies,
+  supplyIssues,
+} from "@/components/app/supplies";
 
 export type MedicalInfoScreenProps = {
   memberId?: string;
@@ -66,6 +74,22 @@ export function MedicalInfoScreen({
   const memberNotes = useMemo(() => {
     return allNotes.filter((note) => note.memberId === profile.id);
   }, [allNotes, profile.id]);
+
+  const suppliesData = useSyncExternalStore(
+    subscribeToSupplies,
+    getSuppliesSnapshot,
+    getSuppliesServerSnapshot,
+  );
+
+  const memberSupplies = useMemo(() => {
+    if (!suppliesData?.items) return [];
+    return suppliesData.items.filter(
+      (item) =>
+        item.memberId === profile.id ||
+        (item.memberId === undefined &&
+          item.name.toLowerCase().includes(profile.fullName.toLowerCase())),
+    );
+  }, [suppliesData, profile.id, profile.fullName]);
 
   // Profile Edit Modal
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -303,6 +327,76 @@ export function MedicalInfoScreen({
                       </div>
                     </div>
                     <p className="medical-note-card__content">{note.content}</p>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+
+        {/* Assigned Supplies and Medications */}
+        <section aria-labelledby="member-supplies-heading" className="family-page__section mt-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="type-h2" id="member-supplies-heading">
+                {copy.assignedSuppliesHeading}
+              </h2>
+              <p className="type-caption text-[var(--content-muted)]">
+                {copy.assignedSuppliesDescription}
+              </p>
+            </div>
+            <Link href="/supplies" className="button button--secondary">
+              <Package aria-hidden="true" className="button__icon" size={18} weight="bold" />
+              <span>{copy.addSupplyForMember}</span>
+            </Link>
+          </div>
+
+          {memberSupplies.length === 0 ? (
+            <div className="medical-empty-notes">
+              <Package aria-hidden="true" size={32} weight="duotone" />
+              <div className="medical-empty-notes__content">
+                <h3 className="type-h3">{copy.noAssignedSupplies}</h3>
+                <p className="type-caption text-secondary">{copy.assignedSuppliesDescription}</p>
+              </div>
+              <Link href="/supplies" className="button button--secondary">
+                <span>{copy.addSupplyForMember}</span>
+              </Link>
+            </div>
+          ) : (
+            <ul className="grid grid-cols-1 gap-3 mt-4" role="list">
+              {memberSupplies.map((item) => {
+                const issues = supplyIssues(item);
+                const isReady = issues.length === 0;
+                const tagLabel = isReady
+                  ? messages.supplies.status.ready
+                  : messages.supplies.status[issues[0]];
+                const tagVariant = isReady
+                  ? "success"
+                  : issues[0] === "expired"
+                  ? "danger"
+                  : "warning";
+
+                return (
+                  <li
+                    key={item.id}
+                    className="p-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-default)] shadow-xs flex items-center justify-between gap-4"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="type-h3 font-semibold">{item.name}</h3>
+                        <Tag label={tagLabel} variant={tagVariant} />
+                      </div>
+                      <p className="type-caption text-[var(--content-muted)] mt-0.5">
+                        {item.onHand} / {item.target}{" "}
+                        {messages.supplies.units[item.unit]}
+                        {item.expiresOn
+                          ? ` · ${messages.supplies.expiresOn.replace("{date}", item.expiresOn)}`
+                          : ""}
+                      </p>
+                    </div>
+                    <Link href="/supplies" className="button button--secondary text-sm shrink-0">
+                      <span>{messages.supplies.title}</span>
+                    </Link>
                   </li>
                 );
               })}
