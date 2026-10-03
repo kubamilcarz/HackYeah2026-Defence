@@ -19,7 +19,7 @@ import { Button, IconButton } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
   title: "Design system",
-  description: "The 72H interface design system.",
+  description: "The Plan: 0 interface design system.",
 };
 
 const sections = [
@@ -136,7 +136,7 @@ export default function DesignSystemPage() {
         <header className="mb-12 grid gap-8 border-b border-[var(--border-strong)] pb-10 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
             <p className="mb-4 font-mono text-sm font-semibold uppercase tracking-[0.18em] text-[var(--content-link)]">
-              72H / Foundations
+              Plan: 0 / Foundations
             </p>
             <h1 className="type-h1 max-w-3xl">
               Design system
@@ -319,21 +319,21 @@ export default function DesignSystemPage() {
                 <div className="grid gap-4 sm:grid-cols-3">
                   <section className="rounded-lg border border-[var(--border-subtle)] p-4" aria-labelledby="logo-color-heading">
                     <div className="flex min-h-36 items-center justify-center rounded-md bg-[var(--surface-canvas)] p-5">
-                      <Image src="/brand/logo-color.svg" alt="72H color logo" width={112} height={112} />
+                      <Image src="/brand/logo-color.svg" alt="Plan: 0 color logo" width={112} height={112} />
                     </div>
                     <h3 className="type-h3 mt-4" id="logo-color-heading">Color logo</h3>
                     <code className="mt-1 block font-mono text-xs text-[var(--content-muted)]">/brand/logo-color.svg</code>
                   </section>
                   <section className="rounded-lg border border-[var(--border-subtle)] p-4" aria-labelledby="logo-white-heading">
                     <div className="flex min-h-36 items-center justify-center rounded-md bg-[var(--surface-inverse)] p-5">
-                      <Image src="/brand/logo-white.svg" alt="72H white logo" width={112} height={112} />
+                      <Image src="/brand/logo-white.svg" alt="Plan: 0 white logo" width={112} height={112} />
                     </div>
                     <h3 className="type-h3 mt-4" id="logo-white-heading">White logo</h3>
                     <code className="mt-1 block font-mono text-xs text-[var(--content-muted)]">/brand/logo-white.svg</code>
                   </section>
                   <section className="rounded-lg border border-[var(--border-subtle)] p-4" aria-labelledby="logo-icon-heading">
                     <div className="flex min-h-36 items-center justify-center rounded-md bg-[var(--surface-canvas)] p-5">
-                      <Image src="/brand/logo-icon.svg" alt="72H icon" width={112} height={112} />
+                      <Image src="/brand/logo-icon.svg" alt="Plan: 0 icon" width={112} height={112} />
                     </div>
                     <h3 className="type-h3 mt-4" id="logo-icon-heading">App icon</h3>
                     <code className="mt-1 block font-mono text-xs text-[var(--content-muted)]">app/favicon.ico</code>
@@ -348,7 +348,7 @@ export default function DesignSystemPage() {
                     {appearanceVariants.map(({ name, asset, background, filter }) => (
                       <div className="rounded-lg border border-[var(--border-subtle)] p-3" key={name}>
                         <div className="flex h-28 items-center justify-center rounded-md p-4" style={{ backgroundColor: background }}>
-                          <Image src={asset} alt={`${name} 72H logo`} width={72} height={72} style={{ filter }} />
+                          <Image src={asset} alt={`${name} Plan: 0 logo`} width={72} height={72} style={{ filter }} />
                         </div>
                         <p className="type-caption mt-3 font-semibold">{name}</p>
                       </div>

@@ -18,11 +18,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "72H",
-    template: "%s | 72H",
+    default: "Plan: 0",
+    template: "%s | Plan: 0",
   },
-  description: "72H emergency readiness.",
-  applicationName: "72H",
+  description: "Plan: 0 emergency readiness.",
+  applicationName: "Plan: 0",
 };
 
 const preferenceScript = `
@@ -32,7 +32,7 @@ const preferenceScript = `
     const defaultPreferences = { appearance: "system", textScale: 100, underlineLinks: false };
 
     try {
-      const stored = window.localStorage.getItem("72h-accessibility-preferences");
+      const stored = window.localStorage.getItem("plan-0-accessibility-preferences");
       const parsed = stored ? JSON.parse(stored) : defaultPreferences;
       const appearance = themes.includes(parsed.appearance)
         ? parsed.appearance

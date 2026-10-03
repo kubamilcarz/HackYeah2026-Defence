@@ -852,9 +852,22 @@ a[href] {
   }
 }
 
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .brand-logo {
   height: 5rem;
   width: 5rem;
+}
+
+.brand-wordmark {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.035em;
+  line-height: 1;
 }
 
 .brand-logo__asset {

@@ -2,7 +2,7 @@
 
 ## Purpose and scope
 
-Spacing gives 72H a consistent rhythm across layouts and components. It is a
+Spacing gives Plan: 0 a consistent rhythm across layouts and components. It is a
 4px-based scale used for padding, gaps, margins, component dimensions, and
 layout separation. New UI uses these tokens instead of raw pixel values or
 one-off Tailwind spacing utilities.
