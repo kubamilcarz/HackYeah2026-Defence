@@ -25,6 +25,14 @@ const en = {
       map: { title: "Map nearby places", description: "Find saved and essential locations" },
     },
   },
+  installReminder: { title: "Add PLAN:0 to your home screen", description: "Keep your household plan within easy reach by adding PLAN:0 as an app.", action: "View steps", dismiss: "Dismiss home screen reminder" },
+  installGuide: {
+    title: "Add PLAN:0 to your home screen",
+    description: "Add PLAN:0 to your home screen to open your household plan like an app.",
+    ios: { title: "iPhone or iPad", steps: ["Open PLAN:0 in Safari.", "Tap the Share button.", "Choose Add to Home Screen.", "Turn on Open as Web App, then tap Add."] },
+    android: { title: "Android", steps: ["Open PLAN:0 in Chrome.", "Open the three-dot menu next to the address bar.", "Choose Install app or Add to Home screen.", "Follow the on-screen instructions."] },
+    other: { title: "Other browsers", description: "Look for Install, Add to Home screen, or Create shortcut in your browser menu. The exact wording can differ by browser and device." },
+  },
   languageSettings: { backLabel: "Back to Settings", heading: "Language", legend: "Choose your language" },
   placeholders: {
     home: { title: "Home", description: "Your household readiness overview will appear here." },
@@ -80,6 +88,14 @@ const pl: Messages = {
       numbers: { title: "Ważne numery", description: "Zadzwoń do służb lub otwórz oficjalne źródła" },
       map: { title: "Mapa pobliskich miejsc", description: "Znajdź zapisane i ważne lokalizacje" },
     },
+  },
+  installReminder: { title: "Dodaj PLAN:0 do ekranu początkowego", description: "Miej plan swojego gospodarstwa zawsze pod ręką — dodaj PLAN:0 jako aplikację.", action: "Zobacz instrukcję", dismiss: "Ukryj przypomnienie o ekranie początkowym" },
+  installGuide: {
+    title: "Dodaj PLAN:0 do ekranu początkowego",
+    description: "Dodaj PLAN:0 do ekranu początkowego, aby otwierać plan gospodarstwa tak jak aplikację.",
+    ios: { title: "iPhone lub iPad", steps: ["Otwórz PLAN:0 w Safari.", "Dotknij przycisku Udostępnij.", "Wybierz opcję Do ekranu początkowego.", "Włącz opcję Otwórz jako aplikację internetową, a następnie dotknij Dodaj."] },
+    android: { title: "Android", steps: ["Otwórz PLAN:0 w Chrome.", "Otwórz menu z trzema kropkami obok paska adresu.", "Wybierz Zainstaluj aplikację lub Dodaj do ekranu głównego.", "Postępuj zgodnie z instrukcjami na ekranie."] },
+    other: { title: "Inne przeglądarki", description: "W menu przeglądarki znajdź opcję Zainstaluj, Dodaj do ekranu głównego lub Utwórz skrót. Dokładne nazwy mogą różnić się zależnie od przeglądarki i urządzenia." },
   },
   languageSettings: { backLabel: "Wróć do ustawień", heading: "Język", legend: "Wybierz język" },
   placeholders: {

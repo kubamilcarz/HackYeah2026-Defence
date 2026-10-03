@@ -28,7 +28,7 @@ documents for every entry below. The live visual reference is `/design-system`.
 
 | Component | Source | Use and accessibility contract |
 | --- | --- | --- |
-| `Alert`, `Banner` | `ui/Alert.tsx` | Persistent feedback with icon, text, and appropriate live announcement. |
+| `Alert`, `Banner` | `ui/Alert.tsx` | Persistent feedback with icon, text, and appropriate live announcement. Dismissible feedback can notify its caller after dismissal. |
 | `Toast`, `ToastViewport` | `ui/Toast.tsx` | Brief non-blocking status; feature code owns dismissal and duration. |
 | `Tag`, `Badge` | `ui/Tag.tsx` | Compact categorization; never use color as the only meaning. |
 | `LinearProgress`, `CircularProgress` | `ui/Progress.tsx` | Progress with a text value and semantic status. |

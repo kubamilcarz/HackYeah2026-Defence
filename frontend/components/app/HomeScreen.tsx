@@ -11,6 +11,7 @@ import {
   UsersThree,
 } from "@phosphor-icons/react/ssr";
 import { Alert } from "@/components/ui/Alert";
+import { InstallReminder } from "@/components/app/InstallReminder";
 import { FamilyMembersCard, HouseholdResourcesCard, ReadinessCard } from "@/components/ui/Cards";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 
@@ -38,6 +39,8 @@ export function HomeScreen() {
           title={copy.emergency.title}
           variant="warning"
         />
+
+        <InstallReminder />
 
         <section aria-labelledby="setup-heading" className="home-screen__section">
           <div className="home-screen__section-heading">

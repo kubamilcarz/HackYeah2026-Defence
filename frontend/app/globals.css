@@ -997,6 +997,27 @@ a.app-navigation__link--active {
   padding-top: var(--space-4);
 }
 
+.install-guide {
+  max-width: 42rem;
+}
+
+.install-guide__intro {
+  color: var(--content-secondary);
+}
+
+.install-guide__section {
+  border-top: 1px solid var(--border-subtle);
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-6);
+}
+
+.install-guide__steps {
+  display: grid;
+  gap: var(--space-2);
+  padding-inline-start: var(--space-6);
+}
+
 .important-numbers-page {
   gap: var(--space-6);
   max-width: 34rem;

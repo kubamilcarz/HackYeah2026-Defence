@@ -18,6 +18,7 @@ type FeedbackProps = {
   description: string;
   dismissLabel?: string;
   dismissible?: boolean;
+  onDismiss?: () => void;
   title: string;
   variant?: FeedbackVariant;
 };
@@ -44,6 +45,7 @@ export function Alert({
   description,
   dismissLabel = "Dismiss notification",
   dismissible = false,
+  onDismiss,
   title,
   variant = "info",
 }: FeedbackProps) {
@@ -64,7 +66,10 @@ export function Alert({
         <p className="feedback__description">{description}</p>
         {actionHref && actionLabel && <a className="feedback__action" href={actionHref}>{actionLabel}</a>}
       </div>
-      {dismissible && <DismissButton label={dismissLabel} onDismiss={() => setIsVisible(false)} />}
+      {dismissible && <DismissButton label={dismissLabel} onDismiss={() => {
+        setIsVisible(false);
+        onDismiss?.();
+      }} />}
     </div>
   );
 }
@@ -76,6 +81,7 @@ export function Banner({
   description,
   dismissLabel = "Dismiss banner",
   dismissible = false,
+  onDismiss,
   title,
   variant = "info",
 }: FeedbackProps) {
@@ -92,7 +98,10 @@ export function Banner({
         <p className="feedback__description">{description}</p>
         {actionHref && actionLabel && <a className="feedback__action" href={actionHref}>{actionLabel}</a>}
       </div>
-      {dismissible && <DismissButton label={dismissLabel} onDismiss={() => setIsVisible(false)} />}
+      {dismissible && <DismissButton label={dismissLabel} onDismiss={() => {
+        setIsVisible(false);
+        onDismiss?.();
+      }} />}
     </section>
   );
 }
