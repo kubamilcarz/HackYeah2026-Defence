@@ -11,6 +11,12 @@ export type PageNavigationAction = {
   onClick: MouseEventHandler<HTMLButtonElement>;
 };
 
+export type PageNavigationTextAction = {
+  disabled?: boolean;
+  label: string;
+  onClick: MouseEventHandler<HTMLButtonElement>;
+};
+
 export type PageNavigationBarProps = {
   action?: PageNavigationAction;
   backDisabled?: boolean;
@@ -18,6 +24,7 @@ export type PageNavigationBarProps = {
   backLabel?: string;
   className?: string;
   onBack?: MouseEventHandler<HTMLButtonElement>;
+  textAction?: PageNavigationTextAction;
   title: string;
 };
 
@@ -28,6 +35,7 @@ export function PageNavigationBar({
   backLabel = "Go back",
   className,
   onBack,
+  textAction,
   title,
 }: PageNavigationBarProps) {
   return (
@@ -54,6 +62,16 @@ export function PageNavigationBar({
       </div>
       <p className="page-navigation-bar__title">{title}</p>
       <div className="page-navigation-bar__slot page-navigation-bar__slot--trailing">
+        {textAction && (
+          <button
+            className="page-navigation-bar__text-action"
+            disabled={textAction.disabled}
+            onClick={textAction.onClick}
+            type="button"
+          >
+            {textAction.label}
+          </button>
+        )}
         {action && (
           <IconButton
             className="page-navigation-bar__button"
@@ -68,3 +86,4 @@ export function PageNavigationBar({
     </header>
   );
 }
+

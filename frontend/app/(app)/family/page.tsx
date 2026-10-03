@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FirstAidKit, Phone, Plus } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/Button";
 import { PageNavigationBar } from "@/components/ui/PageNavigationBar";
@@ -45,8 +46,13 @@ export default function FamilyPage() {
             <div className="family-empty-state__content">
               <h3 className="type-h3">{copy.noMedicalInformation}</h3>
               <p className="type-body">{copy.medicalInformationDescription}</p>
-              <Button disabled leadingIcon={Plus} variant="secondary">{copy.addMedicalInformation}</Button>
-              <Button disabled leadingIcon={Plus} variant="secondary">{copy.addNotes}</Button>
+              <div className="family-empty-state__actions">
+                <Link className="button button--secondary" href="/family/medical">
+                  <Plus aria-hidden="true" className="button__icon" size={20} weight="bold" />
+                  <span>{copy.addMedicalInformation}</span>
+                </Link>
+                <Button disabled leadingIcon={Plus} variant="secondary">{copy.addNotes}</Button>
+              </div>
             </div>
           </div>
         </section>
