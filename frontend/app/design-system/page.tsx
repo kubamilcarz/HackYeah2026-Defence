@@ -16,6 +16,7 @@ import {
 } from "@phosphor-icons/react/ssr";
 import type { Icon } from "@phosphor-icons/react/lib";
 import { Button, IconButton } from "@/components/ui/Button";
+import { Alert, Banner } from "@/components/ui/Alert";
 
 export const metadata: Metadata = {
   title: "Design system",
@@ -291,6 +292,53 @@ export default function DesignSystemPage() {
                     </div>
                   </section>
                 </div>
+              </div>
+            )}
+            {id === "feedback" && (
+              <div className="mt-8 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-raised)] p-5 sm:p-6">
+                <div className="max-w-2xl">
+                  <p className="type-caption text-[var(--content-muted)]">
+                    Alerts confirm a local action or surface a concise status. Banners carry broader, persistent context. Pair every state with an icon and clear copy, and reserve interruptive alerts for errors that need immediate attention.
+                  </p>
+                </div>
+
+                <section className="mt-8" aria-labelledby="alerts-heading">
+                  <div className="mb-4">
+                    <h3 className="type-h3" id="alerts-heading">Alerts</h3>
+                    <p className="type-caption mt-1 text-[var(--content-muted)]">Compact, dismissible feedback for a page-level status or completed operation.</p>
+                  </div>
+                  <div className="grid gap-3 lg:grid-cols-2">
+                    <Alert variant="success" title="Plan saved" description="Your emergency plan is available offline." dismissible />
+                    <Alert variant="info" title="Information" description="A new area update is ready to review." dismissible />
+                    <Alert variant="warning" title="Check your location settings" description="Location sharing is currently turned off." dismissible />
+                    <Alert variant="danger" title="Could not save changes" description="Check your connection and try again." dismissible />
+                  </div>
+                </section>
+
+                <section className="mt-10" aria-labelledby="banners-heading">
+                  <div className="mb-4">
+                    <h3 className="type-h3" id="banners-heading">Banners</h3>
+                    <p className="type-caption mt-1 text-[var(--content-muted)]">Use for important information that remains relevant until the person takes action or dismisses it.</p>
+                  </div>
+                  <div className="grid gap-4 lg:grid-cols-2">
+                    <Banner
+                      actionHref="#components"
+                      actionLabel="Review settings"
+                      description="Turn on location sharing so your family can see that you are safe during an emergency."
+                      dismissible
+                      title="Location sharing is off"
+                      variant="warning"
+                    />
+                    <Banner
+                      actionHref="#foundations"
+                      actionLabel="View your plan"
+                      description="Your emergency plan is ready. Keep a copy available on every device you use."
+                      dismissible
+                      title="Your plan is ready"
+                      variant="success"
+                    />
+                  </div>
+                </section>
               </div>
             )}
             {id === "icons" && (

@@ -497,6 +497,113 @@ a[href] {
   cursor: not-allowed;
 }
 
+.feedback {
+  align-items: flex-start;
+  background: var(--feedback-background);
+  border: 1px solid var(--feedback-foreground);
+  border-radius: var(--space-3);
+  color: var(--feedback-foreground);
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  position: relative;
+}
+
+.feedback--success {
+  --feedback-background: var(--feedback-success-background);
+  --feedback-foreground: var(--feedback-success-foreground);
+}
+
+.feedback--info {
+  --feedback-background: var(--feedback-info-background);
+  --feedback-foreground: var(--feedback-info-foreground);
+}
+
+.feedback--warning {
+  --feedback-background: var(--feedback-warning-background);
+  --feedback-foreground: var(--feedback-warning-foreground);
+}
+
+.feedback--danger {
+  --feedback-background: var(--feedback-danger-background);
+  --feedback-foreground: var(--feedback-danger-foreground);
+}
+
+.feedback__icon {
+  flex: 0 0 auto;
+  margin-top: 0.0625rem;
+}
+
+.feedback__content {
+  min-width: 0;
+}
+
+.feedback:has(.feedback__dismiss) .feedback__content {
+  padding-right: var(--space-10);
+}
+
+.feedback__title,
+.feedback__description {
+  margin: 0;
+}
+
+.feedback__title {
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-caption);
+}
+
+.feedback--banner .feedback__title {
+  font-size: var(--font-size-h3);
+  line-height: var(--line-height-h3);
+}
+
+.feedback__description {
+  color: var(--content-secondary);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  margin-top: var(--space-1);
+}
+
+.feedback__action {
+  color: inherit;
+  display: inline-block;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-bold);
+  margin-top: var(--space-3);
+}
+
+.feedback__action::after {
+  content: "→";
+  display: inline-block;
+  margin-left: var(--space-2);
+  text-decoration: none;
+}
+
+.feedback__dismiss {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--space-2);
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  min-height: var(--space-10);
+  min-width: var(--space-10);
+  padding: var(--space-2);
+  position: absolute;
+  right: var(--space-3);
+  top: var(--space-3);
+}
+
+@media (hover: hover) {
+  .feedback__dismiss:hover {
+    background: color-mix(in srgb, currentColor 12%, transparent);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .button,
   .icon-button {
