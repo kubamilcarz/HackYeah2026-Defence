@@ -1,4 +1,17 @@
 import type { Metadata } from "next";
+import {
+  Ambulance,
+  FireExtinguisher,
+  FirstAidKit,
+  Lifebuoy,
+  MapPin,
+  Phone,
+  Radio,
+  ShieldWarning,
+  Siren,
+  Warning,
+} from "@phosphor-icons/react/ssr";
+import type { Icon } from "@phosphor-icons/react/lib";
 
 export const metadata: Metadata = {
   title: "Design system | 72H",
@@ -10,6 +23,7 @@ const sections = [
   ["02 / Typography", "Readable by default", "type"],
   ["03 / Actions & inputs", "Components", "components"],
   ["04 / Status", "Feedback", "feedback"],
+  ["05 / Iconography", "Emergency reference", "icons"],
 ] as const;
 
 const typeStyles = [
@@ -19,6 +33,19 @@ const typeStyles = [
   ["Body", "Body text", "Regular", "16 / 24", "type-body"],
   ["Caption", "Supporting text", "Regular", "14 / 20", "type-caption"],
 ] as const;
+
+const emergencyIcons: { name: string; use: string; Icon: Icon }[] = [
+  { name: "Siren", use: "Active emergency or urgent alert", Icon: Siren },
+  { name: "Warning", use: "Hazard or important caution", Icon: Warning },
+  { name: "FirstAidKit", use: "First aid and medical supplies", Icon: FirstAidKit },
+  { name: "Ambulance", use: "Medical response or transport", Icon: Ambulance },
+  { name: "FireExtinguisher", use: "Fire safety equipment", Icon: FireExtinguisher },
+  { name: "ShieldWarning", use: "Safety issue or protective action", Icon: ShieldWarning },
+  { name: "Phone", use: "Call emergency services", Icon: Phone },
+  { name: "MapPin", use: "Incident location or meeting point", Icon: MapPin },
+  { name: "Radio", use: "Emergency communications", Icon: Radio },
+  { name: "Lifebuoy", use: "Rescue or support", Icon: Lifebuoy },
+];
 
 export default function DesignSystemPage() {
   return (
@@ -62,6 +89,24 @@ export default function DesignSystemPage() {
                     <span className="type-caption text-[var(--content-muted)]">{metrics}</span>
                   </div>
                 ))}
+              </div>
+            )}
+            {id === "icons" && (
+              <div className="mt-8 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-raised)] p-5 sm:p-6">
+                <p className="type-caption mb-6 max-w-2xl text-[var(--content-muted)]">
+                  Phosphor icons for emergency-related actions and status. Pair every production icon with an explicit text label or accessible name; do not use color alone to convey urgency.
+                </p>
+                <div className="grid gap-px overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--border-subtle)] sm:grid-cols-2 lg:grid-cols-3">
+                  {emergencyIcons.map(({ name, use, Icon }) => (
+                    <div className="flex items-center gap-4 bg-[var(--surface-raised)] p-4" key={name}>
+                      <Icon aria-hidden="true" size={28} weight="duotone" />
+                      <div>
+                        <p className="type-h3">{name}</p>
+                        <p className="type-caption text-[var(--content-muted)]">{use}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </section>
