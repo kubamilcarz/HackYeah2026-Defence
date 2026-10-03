@@ -223,7 +223,15 @@ export function RadioGroup({ className, defaultValue, error, helperText, label, 
       <div className="choice-group__options">
         {options.map((option) => (
           <label className="choice-option" key={option.value}>
-            <input checked={isControlled ? value === option.value : undefined} defaultChecked={!isControlled && defaultValue === option.value} disabled={option.disabled} name={name} onChange={() => onValueChange?.(option.value)} required={required} type="radio" value={option.value} />
+            <input
+              {...(isControlled ? { checked: value === option.value } : { defaultChecked: defaultValue === option.value })}
+              disabled={option.disabled}
+              name={name}
+              onChange={() => onValueChange?.(option.value)}
+              required={required}
+              type="radio"
+              value={option.value}
+            />
             <span><strong>{option.label}</strong>{option.description && <small>{option.description}</small>}</span>
           </label>
         ))}
@@ -275,7 +283,15 @@ export function SegmentedControl({ className, defaultValue, error, helperText, l
       <div className="segmented-control__options">
         {options.map((option) => (
           <label className="segmented-control__option" key={option.value}>
-            <input checked={isControlled ? value === option.value : undefined} defaultChecked={!isControlled && defaultValue === option.value} disabled={option.disabled} name={name} onChange={() => onValueChange?.(option.value)} required={required} type="radio" value={option.value} />
+            <input
+              {...(isControlled ? { checked: value === option.value } : { defaultChecked: defaultValue === option.value })}
+              disabled={option.disabled}
+              name={name}
+              onChange={() => onValueChange?.(option.value)}
+              required={required}
+              type="radio"
+              value={option.value}
+            />
             <span>{option.label}</span>
           </label>
         ))}
