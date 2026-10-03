@@ -3,8 +3,10 @@ import Image from "next/image";
 import {
   Ambulance,
   ArrowRight,
+  Drop,
   FireExtinguisher,
   FirstAidKit,
+  ForkKnife,
   Lifebuoy,
   MapPin,
   Phone,
@@ -16,6 +18,13 @@ import {
 } from "@phosphor-icons/react/ssr";
 import type { Icon } from "@phosphor-icons/react/lib";
 import { Button, IconButton } from "@/components/ui/Button";
+import {
+  FamilyMembersCard,
+  FamilyProfileCard,
+  HouseholdResourcesCard,
+  ReadinessCard,
+  ShelterCard,
+} from "@/components/ui/Cards";
 import { Alert, Banner } from "@/components/ui/Alert";
 import { ControlsShowcase } from "@/components/ui/ControlsShowcase";
 import { DataTable } from "@/components/ui/DataTable";
@@ -36,9 +45,10 @@ const sections = [
   ["03 / Actions & inputs", "Components", "components"],
   ["04 / Status", "Feedback", "feedback"],
   ["05 / Navigation", "Navigation", "navigation"],
-  ["06 / Mapping", "Operational map", "mapping"],
-  ["07 / Iconography", "Emergency reference", "icons"],
-  ["08 / Brand", "Logo assets", "brand"],
+  ["06 / Cards", "Emergency readiness", "cards"],
+  ["07 / Mapping", "Operational map", "mapping"],
+  ["08 / Iconography", "Emergency reference", "icons"],
+  ["09 / Brand", "Logo assets", "brand"],
 ] as const;
 
 const appearanceVariants = [
@@ -440,6 +450,68 @@ export default function DesignSystemPage() {
                   </p>
                 </div>
                 <NavigationShowcase />
+              </div>
+            )}
+            {id === "cards" && (
+              <div className="mt-8 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-raised)] p-5 sm:p-6">
+                <div className="max-w-2xl">
+                  <p className="type-caption text-[var(--content-muted)]">
+                    Use these cards to summarize a person&apos;s readiness, household, and nearby safety information. Keep card actions explicit links; do not make an entire card interactive when it contains more than one destination.
+                  </p>
+                </div>
+                <div className="cards-showcase mt-8">
+                  <ReadinessCard action={{ href: "#feedback", label: "View details" }} completed={5} total={8} />
+                  <FamilyMembersCard
+                    addMemberAction={{ href: "#cards", label: "Add a family member" }}
+                    manageAction={{ href: "#cards", label: "Manage members" }}
+                    members={[
+                      { id: "alex", initials: "AM", name: "Alex Morgan" },
+                      { id: "marta", initials: "MC", name: "Marta Chen" },
+                      { id: "lee", initials: "LR", name: "Lee Rivera" },
+                    ]}
+                  />
+                  <ShelterCard
+                    action={{ href: "#mapping", label: "Show on map" }}
+                    address="12 Nowogrodzka Street"
+                    distance="450 m"
+                    duration="6 min"
+                    title="Nearest shelter"
+                  />
+                  <HouseholdResourcesCard
+                    action={{ href: "#components", label: "Manage resources" }}
+                    resources={[
+                      { id: "water", Icon: Drop, label: "Water", value: "7 days" },
+                      { id: "food", Icon: ForkKnife, label: "Food", value: "7 days" },
+                      { id: "medical", Icon: FirstAidKit, label: "Medicine", value: "14 days" },
+                    ]}
+                  />
+                  <ShelterCard
+                    action={{ href: "#mapping", label: "Show route" }}
+                    address="12 Nowogrodzka Street"
+                    availability="1.2 km"
+                    distance="450 m"
+                    duration="6 min"
+                    tags={[
+                      { label: "Shelter" },
+                      { label: "Assembly point" },
+                      { label: "Available", variant: "success" },
+                    ]}
+                    title="Public shelter"
+                    variant="detailed"
+                  />
+                  <FamilyProfileCard
+                    details={[
+                      { label: "Role", value: "Me" },
+                      { label: "Contact", value: "+48 600 123 456" },
+                      { label: "Blood type", value: "O Rh-" },
+                      { label: "Allergies", value: "Tree nuts, penicillin" },
+                    ]}
+                    initials="AM"
+                    name="Alex Morgan"
+                    relationship="Family member"
+                    status="Active"
+                  />
+                </div>
               </div>
             )}
             {id === "mapping" && (

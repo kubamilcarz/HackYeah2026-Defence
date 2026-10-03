@@ -1393,6 +1393,273 @@ a.app-navigation__link {
   position: absolute;
 }
 
+.cards-showcase {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-3);
+  box-sizing: border-box;
+  color: var(--content-primary);
+  min-width: 0;
+  padding: var(--space-5);
+}
+
+.card__title,
+.card__address,
+.card__relationship,
+.card__summary,
+.card__travel {
+  margin: 0;
+}
+
+.card__title {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-h3);
+}
+
+.card__action {
+  align-items: center;
+  color: var(--content-link);
+  display: inline-flex;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-bold);
+  gap: var(--space-2);
+  line-height: var(--line-height-caption);
+  margin-top: var(--space-5);
+  min-height: var(--space-10);
+}
+
+.card__action--primary {
+  background: var(--action-primary);
+  border-radius: var(--space-2);
+  color: var(--action-primary-content);
+  justify-content: center;
+  padding: 0 var(--space-4);
+  text-decoration: none;
+  width: 100%;
+}
+
+.card__readiness-content {
+  align-items: center;
+  display: flex;
+  gap: var(--space-5);
+  margin-top: var(--space-4);
+}
+
+.card--readiness .progress--circular {
+  gap: 0;
+}
+
+.card--readiness .progress__circle {
+  height: 7rem;
+  width: 7rem;
+}
+
+.card--readiness .progress__label { display: none; }
+
+.card__readiness-percent {
+  color: var(--content-primary);
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-h2);
+  margin: 0;
+}
+
+.card__avatar-list {
+  display: flex;
+  gap: var(--space-2);
+  list-style: none;
+  margin: var(--space-5) 0 0;
+  padding: 0;
+}
+
+.card__avatar {
+  align-items: center;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  color: var(--content-primary);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-bold);
+  height: var(--space-12);
+  justify-content: center;
+  line-height: var(--line-height-caption);
+  width: var(--space-12);
+}
+
+.card__avatar--accent {
+  background: var(--action-primary);
+  border-color: var(--action-primary);
+  color: var(--action-primary-content);
+}
+
+.card__avatar--add {
+  text-decoration: none;
+}
+
+.card__summary {
+  color: var(--content-muted);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  margin-top: var(--space-4);
+}
+
+.card--shelter {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.card__shelter-media {
+  align-items: center;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-2);
+  color: var(--content-secondary);
+  display: flex;
+  justify-content: center;
+  min-height: 7rem;
+}
+
+.card__shelter-content { min-width: 0; }
+
+.card__availability,
+.card__status {
+  align-items: center;
+  background: var(--feedback-success-background);
+  border-radius: 999px;
+  color: var(--feedback-success-foreground);
+  display: inline-flex;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-1);
+  line-height: var(--line-height-caption);
+  padding: var(--space-1) var(--space-2);
+}
+
+.card__availability { margin-bottom: var(--space-3); }
+
+.card__address,
+.card__relationship {
+  color: var(--content-muted);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  margin-top: var(--space-1);
+}
+
+.card__travel {
+  align-items: center;
+  color: var(--content-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: var(--font-size-caption);
+  gap: var(--space-1);
+  line-height: var(--line-height-caption);
+  margin-top: var(--space-3);
+}
+
+.card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.card--shelter .card__action { margin-top: 0; }
+
+.card__resource-list {
+  display: grid;
+  gap: var(--space-3);
+  list-style: none;
+  margin: var(--space-5) 0 0;
+  padding: 0;
+}
+
+.card__resource {
+  align-items: center;
+  display: grid;
+  font-size: var(--font-size-caption);
+  gap: var(--space-3);
+  grid-template-columns: var(--space-6) minmax(0, 1fr) auto;
+  line-height: var(--line-height-caption);
+}
+
+.card__resource strong {
+  color: var(--content-muted);
+  font-weight: var(--font-weight-regular);
+  text-align: end;
+}
+
+.card__profile-heading {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--space-4);
+}
+
+.card__profile-heading .card__avatar {
+  height: 3.5rem;
+  width: 3.5rem;
+}
+
+.card__status { margin-top: var(--space-2); }
+
+.card__details {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-6) 0 0;
+}
+
+.card__details div {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+}
+
+.card__details dt,
+.card__details dd {
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  margin: 0;
+}
+
+.card__details dt { color: var(--content-muted); }
+.card__details dd { color: var(--content-secondary); }
+
+@media (min-width: 40rem) {
+  .cards-showcase { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .card--shelter-compact {
+    align-items: center;
+    grid-template-columns: 7rem minmax(0, 1fr);
+  }
+
+  .card--shelter-compact .card__shelter-media { grid-row: span 2; }
+
+  .card--shelter-detailed .card__action { grid-column: 1 / -1; }
+}
+
+@media (hover: hover) {
+  .card__action:not(.card__action--primary):hover { color: var(--content-primary); }
+
+  .card__action--primary:hover {
+    background: var(--action-primary-hover);
+    color: var(--action-primary-hover-content);
+  }
+
+  .card__avatar--add:hover { background: var(--action-secondary-hover); }
+}
+
+.card__action--primary:active {
+  background: var(--action-primary-pressed);
+  color: var(--action-primary-pressed-content);
+}
+
 @media (hover: hover) {
   .feedback__dismiss:hover {
     background: color-mix(in srgb, currentColor 12%, transparent);
