@@ -5,7 +5,6 @@ const placeholderPages = {
   about: "about",
   "announcements-alerts": "announcementsAlerts",
   guides: "guides",
-  "important-numbers": "importantNumbers",
   notifications: "notifications",
   preferences: "preferences",
   profile: "profile",
