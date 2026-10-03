@@ -237,6 +237,7 @@ export async function clearAllOfflineData(): Promise<void> {
       window.localStorage.removeItem("plan-0-medical-profiles-v1");
       window.localStorage.removeItem("plan-0-medical-notes-v1");
       window.localStorage.removeItem("plan-0-emergency-contacts-v1");
+      window.localStorage.removeItem("plan-0-plan-tasks-v1");
       window.localStorage.removeItem("plan-0-emergency-mode-active");
     } catch {
       // Storage unavailable
@@ -246,6 +247,7 @@ export async function clearAllOfflineData(): Promise<void> {
     window.dispatchEvent(new Event("plan-0-medical-notes-change"));
     window.dispatchEvent(new Event("plan-0-supplies-change"));
     window.dispatchEvent(new Event("plan-0-emergency-contacts-change"));
+    window.dispatchEvent(new Event("plan-0-plan-tasks-change"));
   }
 
   // Broadcast global DB change

@@ -1089,6 +1089,19 @@ a.app-navigation__link--active {
   padding: var(--space-3) var(--space-5);
 }
 
+.plan-next-step {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--space-3);
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+}
+
+.plan-next-step > * { margin: 0; }
+.plan-next-step__eyebrow { color: var(--content-secondary); font-weight: var(--font-weight-semibold); }
+.plan-next-step .button { justify-self: start; }
+
 .plan-screen__checklist-section,
 .plan-screen__supplies-section,
 .plan-screen__section-heading { display: grid; }
@@ -1110,7 +1123,6 @@ a.app-navigation__link--active {
 .plan-checklist__item {
   align-items: flex-start;
   color: var(--content-primary);
-  cursor: pointer;
   display: grid;
   gap: var(--space-2);
   grid-template-columns: var(--space-6) var(--space-6) minmax(0, 1fr);
@@ -1119,16 +1131,6 @@ a.app-navigation__link--active {
 }
 
 .plan-checklist__item--completed { background: var(--surface-subtle); }
-
-.plan-checklist__checkbox {
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-}
 
 .plan-checklist__status {
   align-items: center;
@@ -1153,11 +1155,6 @@ a.app-navigation__link--active {
   width: calc(var(--space-3) + var(--space-1));
 }
 
-.plan-checklist__item:has(.plan-checklist__checkbox:focus-visible) {
-  outline: 3px solid var(--focus-ring);
-  outline-offset: -3px;
-}
-
 .plan-checklist__icon {
   color: var(--content-secondary);
   height: var(--space-6);
@@ -1173,6 +1170,9 @@ a.app-navigation__link--active {
 }
 
 .plan-checklist__description { color: var(--content-muted); }
+.plan-checklist__source { color: var(--content-link); font-size: var(--font-size-caption); line-height: var(--line-height-caption); width: fit-content; }
+.plan-checklist__status-label { color: var(--content-secondary); font-size: var(--font-size-caption); font-weight: var(--font-weight-semibold); line-height: var(--line-height-caption); }
+.plan-checklist__action { justify-self: start; margin-top: var(--space-1); }
 
 @media (hover: hover) {
   .plan-checklist__item:not(.plan-checklist__item--completed):hover { background: var(--action-secondary-hover); }
@@ -4483,5 +4483,3 @@ a.app-navigation__link--active {
     padding: var(--space-10) var(--space-6);
   }
 }
-
-

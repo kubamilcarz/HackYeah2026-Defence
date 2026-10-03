@@ -230,10 +230,13 @@ const en = {
   },
   plan: {
     title: "Plan",
-    heading: "Your preparedness plan",
-    checklist: "Your checklist",
-    checklistDescription: "Mark each sample task when you have completed it.",
-    sampleNote: "This sample shows how a future plan can be tailored using household details you choose to add.",
+    heading: "Your plan at a glance",
+    checklist: "Plan steps",
+    checklistDescription: "We check saved household information and supplies for you. A few shared decisions still need your confirmation.",
+    sampleNote: "This plan helps you prepare. In an emergency, follow official local instructions and contact emergency services when needed.",
+    nextStep: { eyebrow: "Start here" },
+    status: { ready: "Ready from saved information", needsInformation: "Needs information", agreed: "Agreed together", toAgree: "Needs your agreement" },
+    actions: { markAgreed: "Mark as agreed", markNotAgreed: "Mark as not agreed" },
     progress: {
       label: "Plan checklist progress",
       percentage: "{value}% complete",
@@ -248,6 +251,12 @@ const en = {
       waterAndFood: { title: "Water and shelf-stable food", description: "Set aside essentials your household can use for 72 hours." },
       kitAndPower: { title: "Emergency kit and backup power", description: "Gather key items and a reliable way to keep essential devices powered." },
       rolesAndDocuments: { title: "Family roles and important documents", description: "Agree simple roles and keep important documents protected and accessible." },
+    },
+    sources: {
+      contacts: { label: "Manage emergency contacts", href: "/family" },
+      supportInformation: { label: "Manage household information", href: "/family" },
+      waterAndFood: { label: "Review water and food supplies", href: "/supplies" },
+      kitAndPower: { label: "Review kit and power supplies", href: "/supplies" },
     },
     suppliesBanner: {
       heading: "Supplies inventory",
@@ -543,10 +552,13 @@ const pl: Messages = {
   },
   plan: {
     title: "Plan",
-    heading: "Twój plan przygotowania",
-    checklist: "Twoja lista zadań",
-    checklistDescription: "Zaznacz przykładowe zadanie, gdy je wykonasz.",
-    sampleNote: "Ten przykład pokazuje, jak przyszły plan może być dopasowany do informacji o gospodarstwie domowym, które zechcesz dodać.",
+    heading: "Twój plan w skrócie",
+    checklist: "Kroki planu",
+    checklistDescription: "Sprawdzamy za Ciebie zapisane informacje o gospodarstwie i zapasy. Kilka wspólnych ustaleń nadal wymaga Twojego potwierdzenia.",
+    sampleNote: "Ten plan pomaga się przygotować. W sytuacji zagrożenia stosuj się do oficjalnych lokalnych instrukcji i w razie potrzeby kontaktuj się ze służbami ratunkowymi.",
+    nextStep: { eyebrow: "Zacznij tutaj" },
+    status: { ready: "Gotowe na podstawie zapisanych informacji", needsInformation: "Brakuje informacji", agreed: "Uzgodnione wspólnie", toAgree: "Wymaga wspólnego ustalenia" },
+    actions: { markAgreed: "Oznacz jako uzgodnione", markNotAgreed: "Oznacz jako nieuzgodnione" },
     progress: {
       label: "Postęp listy zadań planu",
       percentage: "Ukończono: {value}%",
@@ -561,6 +573,12 @@ const pl: Messages = {
       waterAndFood: { title: "Woda i żywność o długim terminie", description: "Odłóż podstawowe zapasy, z których gospodarstwo może korzystać przez 72 godziny." },
       kitAndPower: { title: "Zestaw awaryjny i zasilanie zapasowe", description: "Zbierz kluczowe rzeczy i niezawodny sposób zasilania ważnych urządzeń." },
       rolesAndDocuments: { title: "Role w rodzinie i ważne dokumenty", description: "Ustal proste role i przechowuj ważne dokumenty tak, by były chronione i dostępne." },
+    },
+    sources: {
+      contacts: { label: "Zarządzaj kontaktami awaryjnymi", href: "/family" },
+      supportInformation: { label: "Zarządzaj informacjami o domownikach", href: "/family" },
+      waterAndFood: { label: "Sprawdź zapasy wody i żywności", href: "/supplies" },
+      kitAndPower: { label: "Sprawdź zestaw i zasilanie", href: "/supplies" },
     },
     suppliesBanner: {
       heading: "Zapasy gospodarstwa",

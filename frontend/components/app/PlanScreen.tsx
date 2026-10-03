@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
 import type { Icon } from "@phosphor-icons/react/lib";
 import {
   ArrowRight,
@@ -17,16 +17,42 @@ import {
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 import { CircularProgress } from "@/components/ui/Progress";
 import { PageNavigationBar } from "@/components/ui/PageNavigationBar";
+import { Button } from "@/components/ui/Button";
+import {
+  getEmergencyContactsServerSnapshot,
+  getEmergencyContactsSnapshot,
+  subscribeToEmergencyContacts,
+} from "@/components/app/contacts";
+import {
+  getMedicalProfilesServerSnapshot,
+  getMedicalProfilesSnapshot,
+  subscribeToMedicalProfiles,
+  type MedicalProfile,
+} from "@/components/app/medical";
+import {
+  getSupplyItemsServerSnapshot,
+  getSupplyItemsSnapshot,
+  isSupplyReady,
+  subscribeToSupplies,
+  type SupplyItem,
+} from "@/components/app/supplies";
+import {
+  getPlanTasksServerSnapshot,
+  getPlanTasksSnapshot,
+  savePlanTask,
+  subscribeToPlanTasks,
+  type PlanTaskId,
+} from "@/components/app/plan";
 
-type PlanTaskId = "contacts" | "meetingPlace" | "supportInformation" | "waterAndFood" | "kitAndPower" | "rolesAndDocuments";
+type CompletionSource = "data" | "manual";
 
-const planTasks: { icon: Icon; id: PlanTaskId; initiallyComplete: boolean }[] = [
-  { id: "contacts", icon: Phone, initiallyComplete: true },
-  { id: "meetingPlace", icon: MapPin, initiallyComplete: true },
-  { id: "supportInformation", icon: FirstAidKit, initiallyComplete: false },
-  { id: "waterAndFood", icon: Drop, initiallyComplete: false },
-  { id: "kitAndPower", icon: Flashlight, initiallyComplete: false },
-  { id: "rolesAndDocuments", icon: FileText, initiallyComplete: false },
+const planTasks: { icon: Icon; id: PlanTaskId; source: CompletionSource }[] = [
+  { id: "contacts", icon: Phone, source: "data" },
+  { id: "meetingPlace", icon: MapPin, source: "manual" },
+  { id: "supportInformation", icon: FirstAidKit, source: "data" },
+  { id: "waterAndFood", icon: Drop, source: "data" },
+  { id: "kitAndPower", icon: Flashlight, source: "data" },
+  { id: "rolesAndDocuments", icon: FileText, source: "manual" },
 ];
 
 function replaceValues(message: string, values: Record<string, number>) {
@@ -36,30 +62,42 @@ function replaceValues(message: string, values: Record<string, number>) {
   );
 }
 
+function hasHealthDetails(profile: MedicalProfile) {
+  const noValue = new Set(["", "-", "—", "none", "brak"]);
+  return [profile.allergies, profile.chronicDiseases, profile.medications, profile.additionalInfo]
+    .some((value) => !noValue.has(value.trim().toLowerCase()));
+}
+
+function categoryIsReady(items: SupplyItem[], categories: SupplyItem["category"][]) {
+  const matching = items.filter((item) => categories.includes(item.category));
+  return matching.length > 0 && matching.every((item) => isSupplyReady(item));
+}
+
 export function PlanScreen() {
   const { messages } = useLocalization();
   const copy = messages.plan;
-  const [completedTaskIds, setCompletedTaskIds] = useState<Set<PlanTaskId>>(
-    () => new Set(planTasks.filter(({ initiallyComplete }) => initiallyComplete).map(({ id }) => id)),
-  );
-  const completedCount = completedTaskIds.size;
+  const planTaskState = useSyncExternalStore(subscribeToPlanTasks, getPlanTasksSnapshot, getPlanTasksServerSnapshot);
+  const contacts = useSyncExternalStore(subscribeToEmergencyContacts, getEmergencyContactsSnapshot, getEmergencyContactsServerSnapshot);
+  const members = useSyncExternalStore(subscribeToMedicalProfiles, getMedicalProfilesSnapshot, getMedicalProfilesServerSnapshot);
+  const supplies = useSyncExternalStore(subscribeToSupplies, getSupplyItemsSnapshot, getSupplyItemsServerSnapshot);
+  const manuallyCompleted = new Set(planTaskState.filter((task) => task.completed).map((task) => task.id));
+  const dataCompletion: Record<Exclude<PlanTaskId, "meetingPlace" | "rolesAndDocuments">, boolean> = {
+    contacts: contacts.length > 0,
+    supportInformation: members.some(hasHealthDetails),
+    waterAndFood: categoryIsReady(supplies, ["water-food"]),
+    kitAndPower: categoryIsReady(supplies, ["health", "power-light"]),
+  };
+  const isComplete = (task: (typeof planTasks)[number]) => task.source === "data" ? dataCompletion[task.id as keyof typeof dataCompletion] : manuallyCompleted.has(task.id);
+  const completedCount = planTasks.filter(isComplete).length;
   const total = planTasks.length;
   const percentage = Math.round((completedCount / total) * 100);
+  const nextTask = planTasks.find((task) => !isComplete(task));
 
   const progressMessage = completedCount === 0
     ? copy.progress.notStarted
     : completedCount === total
       ? copy.progress.complete
       : replaceValues(copy.progress.inProgress, { completed: completedCount, total });
-
-  function toggleTask(taskId: PlanTaskId, checked: boolean) {
-    setCompletedTaskIds((current) => {
-      const next = new Set(current);
-      if (checked) next.add(taskId);
-      else next.delete(taskId);
-      return next;
-    });
-  }
 
   return (
     <main className="plan-screen">
@@ -85,34 +123,62 @@ export function PlanScreen() {
           <p className="type-caption plan-screen__sample-note">{copy.sampleNote}</p>
         </section>
 
+        {nextTask && (() => {
+          const task = copy.tasks[nextTask.id];
+          const source = nextTask.source === "data" ? copy.sources[nextTask.id as keyof typeof copy.sources] : undefined;
+          return (
+            <section aria-labelledby="plan-next-step-heading" className="plan-next-step">
+              <p className="type-caption plan-next-step__eyebrow">{copy.nextStep.eyebrow}</p>
+              <h2 className="type-h2" id="plan-next-step-heading">{task.title}</h2>
+              <p className="type-body">{task.description}</p>
+              {source ? (
+                <Link className="button button--primary" href={source.href}>{source.label}</Link>
+              ) : (
+                <Button onClick={() => savePlanTask(nextTask.id, true)}>{copy.actions.markAgreed}</Button>
+              )}
+            </section>
+          );
+        })()}
+
         <section aria-labelledby="plan-checklist-heading" className="plan-screen__checklist-section">
           <div className="plan-screen__section-heading">
             <h2 className="type-h2" id="plan-checklist-heading">{copy.checklist}</h2>
             <p className="type-caption">{copy.checklistDescription}</p>
           </div>
           <ul className="plan-checklist">
-            {planTasks.map(({ icon: Icon, id }) => {
+            {planTasks.map((taskDefinition) => {
+              const { icon: Icon, id } = taskDefinition;
               const task = copy.tasks[id];
-              const isComplete = completedTaskIds.has(id);
+              const completed = isComplete(taskDefinition);
+              const source = taskDefinition.source === "data" ? copy.sources[id as keyof typeof copy.sources] : undefined;
+              const status = completed
+                ? taskDefinition.source === "data" ? copy.status.ready : copy.status.agreed
+                : taskDefinition.source === "data" ? copy.status.needsInformation : copy.status.toAgree;
 
               return (
                 <li key={id}>
-                  <label className={`plan-checklist__item${isComplete ? " plan-checklist__item--completed" : ""}`}>
-                    <input
-                      checked={isComplete}
-                      className="plan-checklist__checkbox"
-                      onChange={(event) => toggleTask(id, event.target.checked)}
-                      type="checkbox"
-                    />
+                  <article className={`plan-checklist__item${completed ? " plan-checklist__item--completed" : ""}`}>
                     <span aria-hidden="true" className="plan-checklist__status">
-                      {isComplete && <Check size={16} weight="bold" />}
+                      {completed && <Check size={16} weight="bold" />}
                     </span>
                     <Icon aria-hidden="true" className="plan-checklist__icon" size={24} weight="regular" />
                     <span className="plan-checklist__copy">
                       <span className="plan-checklist__title">{task.title}</span>
                       <span className="type-caption plan-checklist__description">{task.description}</span>
+                      <span className="plan-checklist__status-label">{status}</span>
+                      {source ? (
+                        <Link className="plan-checklist__source" href={source.href}>{source.label}</Link>
+                      ) : (
+                        <Button
+                          className="plan-checklist__action"
+                          onClick={() => savePlanTask(id, !completed)}
+                          variant="secondary"
+                        >
+                          {completed ? copy.actions.markNotAgreed : copy.actions.markAgreed}
+                        </Button>
+                      )}
                     </span>
-                  </label>
+                  </article>
                 </li>
               );
             })}
