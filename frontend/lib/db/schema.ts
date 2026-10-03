@@ -33,6 +33,8 @@ export interface DbMedicalProfile extends BaseEntity {
   chronicDiseases: string;
   medications: string;
   additionalInfo: string;
+  relationship?: string;
+  phone?: string;
 }
 
 export interface DbMedicalNote extends BaseEntity {

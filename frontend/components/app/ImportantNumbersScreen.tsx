@@ -2,10 +2,15 @@
 
 import { ArrowSquareOut, Fire, Lightning, Phone, ShieldWarning } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react/lib";
-import { useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 import { SegmentedControl } from "@/components/ui/FormControls";
 import { PageNavigationBar } from "@/components/ui/PageNavigationBar";
+import {
+  getEmergencyContactsServerSnapshot,
+  getEmergencyContactsSnapshot,
+  subscribeToEmergencyContacts,
+} from "@/components/app/contacts";
 
 const categories = ["all", "services", "family", "medical"] as const;
 
@@ -38,18 +43,64 @@ export function ImportantNumbersScreen() {
   const copy = messages.importantNumbers;
   const [category, setCategory] = useState<NumberCategory>("all");
 
-  const callNumbers: CallNumber[] = [
-    { number: "112", title: copy.numbers.emergency, categories: ["services", "medical"] },
-    { number: "998", title: copy.numbers.fire, categories: ["services"] },
-    { number: "997", title: copy.numbers.police, categories: ["services"] },
-    { number: "999", title: copy.numbers.ambulance, categories: ["services", "medical"] },
-  ];
-  const resources: Resource[] = [
-    { title: copy.resources.rcb, href: "https://www.gov.pl/web/rcb/", icon: ShieldWarning, categories: ["services"] },
-    { title: copy.resources.energy, href: "https://www.gov.pl/web/numer-alarmowy-112/inne-numery-alarmowe", icon: Lightning, number: "991", categories: ["services"] },
-    { title: copy.resources.gas, href: "https://www.psgaz.pl/", icon: Fire, number: "992", categories: ["services"] },
-  ];
-  const filteredCalls = callNumbers.filter((item) => matchesCategory(item, category));
+  const emergencyContacts = useSyncExternalStore(
+    subscribeToEmergencyContacts,
+    getEmergencyContactsSnapshot,
+    getEmergencyContactsServerSnapshot,
+  );
+
+  const baseCallNumbers: CallNumber[] = useMemo(
+    () => [
+      { number: "112", title: copy.numbers.emergency, categories: ["services", "medical"] },
+      { number: "998", title: copy.numbers.fire, categories: ["services"] },
+      { number: "997", title: copy.numbers.police, categories: ["services"] },
+      { number: "999", title: copy.numbers.ambulance, categories: ["services", "medical"] },
+    ],
+    [copy.numbers],
+  );
+
+  const contactCallNumbers: CallNumber[] = useMemo(() => {
+    const list: CallNumber[] = [];
+    for (const c of emergencyContacts) {
+      const rel = c.relationship?.trim().toLowerCase();
+      if (
+        rel === "me" ||
+        rel === "ja" ||
+        rel === messages.family.relationshipOptions.me.toLowerCase()
+      ) {
+        continue;
+      }
+      list.push({
+        number: c.phone,
+        title: `${c.name} (${c.relationship})`,
+        categories: ["family"],
+      });
+      if (c.altPhone) {
+        list.push({
+          number: c.altPhone,
+          title: `${c.name} — ${messages.family.contactAltPhoneLabel}`,
+          categories: ["family"],
+        });
+      }
+    }
+    return list;
+  }, [emergencyContacts, messages.family.contactAltPhoneLabel, messages.family.relationshipOptions.me]);
+
+  const allCallNumbers = useMemo(
+    () => [...baseCallNumbers, ...contactCallNumbers],
+    [baseCallNumbers, contactCallNumbers],
+  );
+
+  const resources: Resource[] = useMemo(
+    () => [
+      { title: copy.resources.rcb, href: "https://www.gov.pl/web/rcb/", icon: ShieldWarning, categories: ["services"] },
+      { title: copy.resources.energy, href: "https://www.gov.pl/web/numer-alarmowy-112/inne-numery-alarmowe", icon: Lightning, number: "991", categories: ["services"] },
+      { title: copy.resources.gas, href: "https://www.psgaz.pl/", icon: Fire, number: "992", categories: ["services"] },
+    ],
+    [copy.resources],
+  );
+
+  const filteredCalls = allCallNumbers.filter((item) => matchesCategory(item, category));
   const filteredResources = resources.filter((item) => matchesCategory(item, category));
 
   return (

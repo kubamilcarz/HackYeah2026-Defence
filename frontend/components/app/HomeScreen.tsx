@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -13,10 +14,128 @@ import {
 } from "@phosphor-icons/react/ssr";
 import { EmergencyModeCard, FamilyMembersCard, HouseholdResourcesCard, ReadinessCard } from "@/components/ui/Cards";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
+import {
+  getInitials,
+  getMedicalProfilesServerSnapshot,
+  getMedicalProfilesSnapshot,
+  subscribeToMedicalProfiles,
+} from "@/components/app/medical";
+import {
+  getEmergencyContactsServerSnapshot,
+  getEmergencyContactsSnapshot,
+  subscribeToEmergencyContacts,
+} from "@/components/app/contacts";
 
 export function HomeScreen() {
-  const { messages } = useLocalization();
+  const { locale, messages } = useLocalization();
   const copy = messages.home;
+
+  const profiles = useSyncExternalStore(
+    subscribeToMedicalProfiles,
+    getMedicalProfilesSnapshot,
+    getMedicalProfilesServerSnapshot,
+  );
+
+  const emergencyContacts = useSyncExternalStore(
+    subscribeToEmergencyContacts,
+    getEmergencyContactsSnapshot,
+    getEmergencyContactsServerSnapshot,
+  );
+
+  const meMember = useMemo(() => {
+    return profiles.find(
+      (m) =>
+        m.relationship?.toLowerCase() === "me" ||
+        m.relationship?.toLowerCase() === "ja" ||
+        m.relationship === messages.family.relationshipOptions.me,
+    );
+  }, [profiles, messages.family.relationshipOptions.me]);
+
+  const eligibleEmergencyContacts = useMemo(() => {
+    return emergencyContacts.filter((c) => {
+      const rel = c.relationship?.trim().toLowerCase();
+      if (
+        rel === "me" ||
+        rel === "ja" ||
+        rel === messages.family.relationshipOptions.me.toLowerCase()
+      ) {
+        return false;
+      }
+      if (
+        meMember &&
+        c.name.trim().toLowerCase() === meMember.fullName.trim().toLowerCase()
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [emergencyContacts, meMember, messages.family.relationshipOptions.me]);
+
+  const primaryContact = useMemo(() => {
+    return (
+      eligibleEmergencyContacts.find((c) => c.isPrimary) ??
+      eligibleEmergencyContacts[0]
+    );
+  }, [eligibleEmergencyContacts]);
+
+  const contactMembers = useMemo(() => {
+    const list: { id: string; name: string; initials: string }[] = [];
+    const seenNames = new Set<string>();
+
+    for (const p of profiles) {
+      const rel = p.relationship?.trim().toLowerCase();
+      if (
+        rel === "me" ||
+        rel === "ja" ||
+        rel === messages.family.relationshipOptions.me.toLowerCase()
+      ) {
+        continue;
+      }
+      seenNames.add(p.fullName.trim().toLowerCase());
+      list.push({
+        id: p.id,
+        name: p.fullName,
+        initials: getInitials(p.fullName),
+      });
+    }
+
+    for (const c of emergencyContacts) {
+      const rel = c.relationship?.trim().toLowerCase();
+      if (
+        rel === "me" ||
+        rel === "ja" ||
+        rel === messages.family.relationshipOptions.me.toLowerCase()
+      ) {
+        continue;
+      }
+      if (
+        meMember &&
+        c.name.trim().toLowerCase() === meMember.fullName.trim().toLowerCase()
+      ) {
+        continue;
+      }
+      if (!seenNames.has(c.name.trim().toLowerCase())) {
+        seenNames.add(c.name.trim().toLowerCase());
+        list.push({
+          id: c.id,
+          name: c.name,
+          initials: getInitials(c.name),
+        });
+      }
+    }
+
+    return list;
+  }, [profiles, emergencyContacts, meMember, messages.family.relationshipOptions.me]);
+
+  function formatContactsSummary(count: number): string {
+    if (count === 0) return copy.setup.family.summary;
+    if (locale === "pl") {
+      if (count === 1) return "1 zapisana osoba";
+      if (count >= 2 && count <= 4) return `${count} zapisane osoby`;
+      return `${count} zapisanych osób`;
+    }
+    return count === 1 ? "1 saved person" : `${count} saved people`;
+  }
 
   return (
     <main className="home-screen">
@@ -50,17 +169,17 @@ export function HomeScreen() {
             <FamilyMembersCard
               addMemberAction={{ href: "/family", label: copy.setup.family.addAction }}
               manageAction={{ href: "/family", label: copy.setup.family.manageAction }}
-              members={[]}
+              members={contactMembers}
               membersLabel={copy.setup.family.membersLabel}
-              summary={copy.setup.family.summary}
+              summary={formatContactsSummary(contactMembers.length)}
               title={copy.setup.family.title}
             />
             <HouseholdResourcesCard
               action={{ href: "/family", label: copy.setup.essentials.action }}
               resources={[
                 { Icon: MapPin, id: "meeting-place", label: copy.setup.essentials.meetingPlace, value: copy.setup.essentials.notSet },
-                { Icon: Phone, id: "contact-plan", label: copy.setup.essentials.contactPlan, value: copy.setup.essentials.notSet },
-                { Icon: FirstAidKit, id: "health-information", label: copy.setup.essentials.healthInformation, value: copy.setup.essentials.notSet },
+                { Icon: Phone, id: "contact-plan", label: copy.setup.essentials.contactPlan, value: primaryContact ? `${primaryContact.name} (${primaryContact.relationship})` : copy.setup.essentials.notSet },
+                { Icon: FirstAidKit, id: "health-information", label: copy.setup.essentials.healthInformation, value: profiles.length > 0 ? `${profiles.length}` : copy.setup.essentials.notSet },
               ]}
               title={copy.setup.essentials.title}
             />

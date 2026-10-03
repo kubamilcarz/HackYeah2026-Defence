@@ -821,7 +821,9 @@ a.app-navigation__link--active {
   align-items: center;
   background: transparent;
   border: 0;
-  color: var(--content-disabled);
+  border-radius: var(--space-2);
+  color: var(--content-secondary);
+  cursor: pointer;
   display: grid;
   font: inherit;
   font-size: var(--font-size-caption);
@@ -830,19 +832,110 @@ a.app-navigation__link--active {
   justify-items: center;
   line-height: var(--line-height-caption);
   min-width: 5rem;
-  padding: 0;
+  padding: var(--space-1);
+  transition: color 150ms ease;
+}
+
+.family-member-add:disabled {
+  color: var(--content-disabled);
+  cursor: not-allowed;
+}
+
+.family-member-add:not(:disabled):hover {
+  color: var(--content-primary);
+}
+
+.family-member-add:not(:disabled):hover .family-member-add__avatar {
+  background: var(--action-secondary-hover);
+  border-color: var(--border-strong);
+}
+
+.family-member-add:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .family-member-add__avatar {
   align-items: center;
   background: var(--surface-disabled);
-  border: 1px solid var(--border-subtle);
+  border: 1px dashed var(--border-strong);
   border-radius: 50%;
+  box-sizing: border-box;
   display: inline-flex;
   height: var(--space-16);
   justify-content: center;
+  transition: background 150ms ease, border-color 150ms ease;
   width: var(--space-16);
 }
+
+.family-member-item {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--space-2);
+  color: var(--content-primary);
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-2);
+  justify-items: center;
+  line-height: var(--line-height-caption);
+  min-width: 5.5rem;
+  padding: var(--space-1);
+  text-align: center;
+  transition: color 150ms ease;
+}
+
+.family-member-item:hover .family-member-item__avatar {
+  background: var(--surface-subtle);
+  border-color: var(--border-strong);
+}
+
+.family-member-item:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.family-member-item__avatar {
+  align-items: center;
+  background: var(--surface-raised);
+  border: 2px solid var(--border-subtle);
+  border-radius: 50%;
+  box-sizing: border-box;
+  color: var(--content-primary);
+  display: inline-flex;
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-bold);
+  height: var(--space-16);
+  justify-content: center;
+  letter-spacing: -0.02em;
+  transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+  width: var(--space-16);
+}
+
+.family-member-item--selected .family-member-item__avatar {
+  border-color: var(--action-primary);
+  box-shadow: 0 0 0 2px var(--action-primary);
+}
+
+.family-member-item__name {
+  color: var(--content-primary);
+  display: block;
+  max-width: 5.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.family-member-item__role {
+  color: var(--content-muted);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-regular);
+  line-height: 1rem;
+}
+
 
 .family-empty-state {
   align-items: flex-start;
@@ -863,6 +956,91 @@ a.app-navigation__link--active {
 .family-empty-state__content { gap: var(--space-3); }
 .family-empty-state__content .type-body { color: var(--content-secondary); }
 .family-empty-state__content .button { justify-self: start; }
+
+.emergency-contacts-list {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 1fr;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.emergency-contact-card {
+  align-items: center;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.emergency-contact-card--primary {
+  border-color: var(--action-primary);
+}
+
+.emergency-contact-card__main {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.emergency-contact-card__avatar {
+  align-items: center;
+  background: var(--surface-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  color: var(--content-primary);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-bold);
+  height: 2.5rem;
+  justify-content: center;
+  letter-spacing: -0.02em;
+  width: 2.5rem;
+}
+
+.emergency-contact-card__info {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.emergency-contact-card__name {
+  color: var(--content-primary);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-body);
+  margin: 0;
+}
+
+.emergency-contact-card__meta {
+  color: var(--content-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: var(--font-size-caption);
+  gap: var(--space-1) var(--space-2);
+  line-height: var(--line-height-caption);
+}
+
+.emergency-contact-card__meta-phone {
+  color: var(--content-secondary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.emergency-contact-card__actions {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-2);
+  margin-left: auto;
+}
 
 @media (min-width: 64rem) {
   .family-page__content { padding: var(--space-12) var(--space-10); }
@@ -3182,6 +3360,24 @@ a.app-navigation__link--active {
 @media (min-width: 32rem) {
   .dialog__actions {
     flex-direction: row;
+  }
+}
+
+.family-sheet-form {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.family-sheet-form__row {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 30rem) {
+  .family-sheet-form__row--two-col {
+    grid-template-columns: 1fr 1fr;
   }
 }
 

@@ -236,10 +236,16 @@ export async function clearAllOfflineData(): Promise<void> {
       window.localStorage.removeItem("plan-0-supplies-v1");
       window.localStorage.removeItem("plan-0-medical-profiles-v1");
       window.localStorage.removeItem("plan-0-medical-notes-v1");
+      window.localStorage.removeItem("plan-0-emergency-contacts-v1");
       window.localStorage.removeItem("plan-0-emergency-mode-active");
     } catch {
       // Storage unavailable
     }
+
+    window.dispatchEvent(new Event("plan-0-medical-profiles-change"));
+    window.dispatchEvent(new Event("plan-0-medical-notes-change"));
+    window.dispatchEvent(new Event("plan-0-supplies-change"));
+    window.dispatchEvent(new Event("plan-0-emergency-contacts-change"));
   }
 
   // Broadcast global DB change

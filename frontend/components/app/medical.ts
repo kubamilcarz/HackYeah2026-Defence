@@ -22,6 +22,8 @@ export type MedicalNote = {
 export type MedicalProfile = {
   id: string;
   fullName: string;
+  relationship?: string;
+  phone?: string;
   birthDate: string; // e.g. "14.05.2012"
   age: number; // e.g. 12
   bloodType: string; // e.g. "0 Rh-"
@@ -41,6 +43,7 @@ const NOTES_CHANGE_EVENT = "plan-0-medical-notes-change";
 export const DEFAULT_MEDICAL_PROFILE: MedicalProfile = {
   id: "lenka-kowalska",
   fullName: "Lenka Kowalska",
+  relationship: "Dziecko",
   birthDate: "14.05.2012",
   age: 12,
   bloodType: "0 Rh-",
@@ -73,24 +76,46 @@ export const DEFAULT_MEDICAL_NOTES: MedicalNote[] = [
 ];
 
 /* Medical Profiles Storage */
+const EMPTY_PROFILES: MedicalProfile[] = [];
+
 function getStoredProfiles(): MedicalProfile[] {
   if (typeof window === "undefined") {
-    return [DEFAULT_MEDICAL_PROFILE];
+    return EMPTY_PROFILES;
   }
   try {
     const raw = window.localStorage.getItem(PROFILES_STORAGE_KEY);
-    if (!raw) return [DEFAULT_MEDICAL_PROFILE];
+    if (!raw) return EMPTY_PROFILES;
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
+    if (Array.isArray(parsed)) {
+      return parsed.length === 0 ? EMPTY_PROFILES : parsed;
     }
-    return [DEFAULT_MEDICAL_PROFILE];
+    return EMPTY_PROFILES;
   } catch {
-    return [DEFAULT_MEDICAL_PROFILE];
+    return EMPTY_PROFILES;
   }
 }
 
 let cachedProfiles: MedicalProfile[] | null = null;
+
+export function resetMedicalCache(): void {
+  cachedProfiles = null;
+  cachedNotes = null;
+}
+
+if (typeof window !== "undefined") {
+  const reset = () => {
+    cachedProfiles = null;
+    cachedNotes = null;
+  };
+  window.addEventListener("storage", reset);
+  window.addEventListener("plan-0-db-change", reset);
+  window.addEventListener(PROFILES_CHANGE_EVENT, () => {
+    cachedProfiles = null;
+  });
+  window.addEventListener(NOTES_CHANGE_EVENT, () => {
+    cachedNotes = null;
+  });
+}
 
 export function getMedicalProfilesSnapshot(): MedicalProfile[] {
   if (!cachedProfiles) {
@@ -100,7 +125,7 @@ export function getMedicalProfilesSnapshot(): MedicalProfile[] {
 }
 
 export function getMedicalProfilesServerSnapshot(): MedicalProfile[] {
-  return [DEFAULT_MEDICAL_PROFILE];
+  return EMPTY_PROFILES;
 }
 
 export function subscribeToMedicalProfiles(onStoreChange: () => void): () => void {
@@ -141,6 +166,45 @@ export function saveMedicalProfile(updated: MedicalProfile): void {
   }
   putManyInStore(DB_STORES.MEDICAL_PROFILES, next as DbMedicalProfile[]).catch(() => {});
   window.dispatchEvent(new Event(PROFILES_CHANGE_EVENT));
+}
+
+export function deleteMedicalProfile(profileId: string): void {
+  const current = getStoredProfiles();
+  const next = current.filter((p) => p.id !== profileId);
+  cachedProfiles = next;
+  try {
+    window.localStorage.setItem(PROFILES_STORAGE_KEY, JSON.stringify(next));
+  } catch {
+    // Graceful fallback
+  }
+  deleteFromStore(DB_STORES.MEDICAL_PROFILES, profileId).catch(() => {});
+  window.dispatchEvent(new Event(PROFILES_CHANGE_EVENT));
+}
+
+export function calculateAgeFromBirthDate(birthDateStr: string): number {
+  if (!birthDateStr) return 0;
+  let birthDate: Date;
+  if (birthDateStr.includes("-")) {
+    birthDate = new Date(birthDateStr);
+  } else if (birthDateStr.includes(".")) {
+    const parts = birthDateStr.split(".").map(Number);
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      birthDate = new Date(year, month - 1, day);
+    } else {
+      return 0;
+    }
+  } else {
+    birthDate = new Date(birthDateStr);
+  }
+  if (isNaN(birthDate.getTime())) return 0;
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return Math.max(0, age);
 }
 
 /* Medical Notes Storage */
