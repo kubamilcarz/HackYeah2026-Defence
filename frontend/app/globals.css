@@ -497,6 +497,91 @@ a[href] {
   cursor: not-allowed;
 }
 
+.tag,
+.badge {
+  align-items: center;
+  border: 1px solid var(--tag-border);
+  border-radius: 999px;
+  color: var(--tag-foreground);
+  display: inline-flex;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-caption);
+  white-space: nowrap;
+}
+
+.tag {
+  background: var(--tag-background);
+  gap: var(--space-1);
+  min-height: var(--space-8);
+  padding: var(--space-1) var(--space-3);
+}
+
+.badge {
+  background: var(--tag-foreground);
+  color: var(--surface-raised);
+  margin-left: var(--space-1);
+  min-height: var(--space-6);
+  padding: 0 var(--space-2);
+  vertical-align: middle;
+}
+
+.tag--neutral,
+.badge--neutral {
+  --tag-background: var(--surface-subtle);
+  --tag-border: var(--border-strong);
+  --tag-foreground: var(--content-primary);
+}
+
+.tag--success,
+.badge--success {
+  --tag-background: var(--feedback-success-background);
+  --tag-border: var(--feedback-success-foreground);
+  --tag-foreground: var(--feedback-success-foreground);
+}
+
+.tag--info,
+.badge--info {
+  --tag-background: var(--feedback-info-background);
+  --tag-border: var(--feedback-info-foreground);
+  --tag-foreground: var(--feedback-info-foreground);
+}
+
+.tag--warning,
+.badge--warning {
+  --tag-background: var(--feedback-warning-background);
+  --tag-border: var(--feedback-warning-foreground);
+  --tag-foreground: var(--feedback-warning-foreground);
+}
+
+.tag--danger,
+.badge--danger {
+  --tag-background: var(--feedback-danger-background);
+  --tag-border: var(--feedback-danger-foreground);
+  --tag-foreground: var(--feedback-danger-foreground);
+}
+
+.tag__remove {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  margin-right: calc(var(--space-2) * -1);
+  min-height: var(--space-6);
+  min-width: var(--space-6);
+  padding: var(--space-1);
+}
+
+@media (hover: hover) {
+  .tag__remove:hover {
+    background: color-mix(in srgb, currentColor 12%, transparent);
+  }
+}
+
 .feedback {
   align-items: flex-start;
   background: var(--feedback-background);

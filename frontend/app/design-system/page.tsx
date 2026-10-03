@@ -17,6 +17,7 @@ import {
 import type { Icon } from "@phosphor-icons/react/lib";
 import { Button, IconButton } from "@/components/ui/Button";
 import { Alert, Banner } from "@/components/ui/Alert";
+import { Badge, Tag } from "@/components/ui/Tag";
 
 export const metadata: Metadata = {
   title: "Design system",
@@ -260,6 +261,39 @@ export default function DesignSystemPage() {
                           <IconButton icon={Icon} label={label} variant={variant} />
                         </div>
                       ))}
+                    </div>
+                  </section>
+
+                  <section aria-labelledby="tags-badges-heading">
+                    <div className="mb-4">
+                      <h3 className="type-h3" id="tags-badges-heading">Tags &amp; badges</h3>
+                      <p className="type-caption mt-1 text-[var(--content-muted)]">Tags classify or filter content and may be removable. Badges add compact status, category, or count context beside a label.</p>
+                    </div>
+                    <div className="grid gap-6 xl:grid-cols-2">
+                      <div className="rounded-lg border border-[var(--border-subtle)] p-4">
+                        <div className="flex items-center justify-between gap-4">
+                          <h4 className="type-h3">Tags</h4>
+                          <code className="font-mono text-xs text-[var(--content-muted)]">removable</code>
+                        </div>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <Tag label="Family plan" />
+                          <Tag label="Medical" variant="info" />
+                          <Tag label="Prepared" variant="success" />
+                          <Tag label="Needs review" variant="warning" removable />
+                        </div>
+                      </div>
+                      <div className="rounded-lg border border-[var(--border-subtle)] p-4">
+                        <div className="flex items-center justify-between gap-4">
+                          <h4 className="type-h3">Badges</h4>
+                          <code className="font-mono text-xs text-[var(--content-muted)]">status / count</code>
+                        </div>
+                        <div className="mt-4 flex flex-wrap items-center gap-3">
+                          <span className="type-caption">Saved plans <Badge label="3" variant="info" /></span>
+                          <span className="type-caption">Ready <Badge label="Complete" variant="success" /></span>
+                          <span className="type-caption">Supply list <Badge label="2" variant="warning" /></span>
+                          <span className="type-caption">Reports <Badge label="New" variant="danger" /></span>
+                        </div>
+                      </div>
                     </div>
                   </section>
 
