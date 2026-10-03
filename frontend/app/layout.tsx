@@ -3,6 +3,7 @@ import { Geist_Mono, Inter } from "next/font/google";
 import Script from "next/script";
 import { AccessibilityMenu } from "@/components/accessibility/AccessibilityMenu";
 import { AccessibilityProvider } from "@/components/accessibility/AccessibilityProvider";
+import { EmergencyModeProvider } from "@/components/emergency/EmergencyModeProvider";
 import { LocalizationProvider } from "@/components/localization/LocalizationProvider";
 import { DocumentLanguage } from "@/components/localization/DocumentLanguage";
 import "./globals.css";
@@ -80,8 +81,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <LocalizationProvider>
           <DocumentLanguage />
           <AccessibilityProvider>
-            {children}
-            <AccessibilityMenu />
+            <EmergencyModeProvider>
+              {children}
+              <AccessibilityMenu />
+            </EmergencyModeProvider>
           </AccessibilityProvider>
         </LocalizationProvider>
       </body>

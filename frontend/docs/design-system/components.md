@@ -43,6 +43,7 @@ documents for every entry below. The live visual reference is `/design-system`.
 | `FamilyMembersCard`, `FamilyProfileCard` | `ui/Cards.tsx` | Household members and their key profile information. |
 | `ShelterCard` | `ui/Cards.tsx` | Nearby shelter or critical location summary; do not imply availability without sourced current data. |
 | `HouseholdResourcesCard` | `ui/Cards.tsx` | Household resources and related management action. |
+| `EmergencyModeCard` | `ui/EmergencyModeCard.tsx` | Rapid crisis mode card providing quick access to essential emergency functions. |
 | `AppNavigation` | `ui/AppNavigation.tsx` | Responsive primary navigation with current-page state. |
 
 ## Accessibility infrastructure

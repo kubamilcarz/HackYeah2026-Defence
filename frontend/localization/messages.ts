@@ -6,6 +6,27 @@ type DeepStrings<T> = { [K in keyof T]: T[K] extends string ? string : DeepStrin
 
 const en = {
   common: { backToSettings: "Back to Settings", comingSoon: "Coming soon" },
+  crisisMode: {
+    title: "Crisis mode",
+    description: "Quick access to essential functions in an emergency.",
+    action: "Activate crisis mode",
+    exitAction: "Exit crisis mode",
+    backLabel: "Back from crisis mode",
+    links: {
+      shelters: "Nearest shelters",
+      numbers: "Important numbers",
+      familyLocation: "Family location",
+      alerts: "Announcements & alerts",
+      guides: "Emergency instructions",
+    },
+    activeBanner: {
+      title: "Active crisis mode",
+      openMenu: "Crisis menu",
+      exit: "Exit",
+      ariaLabel: "Active crisis mode banner",
+    },
+    activeCardAction: "Open crisis menu",
+  },
   navigation: { brandLabel: "PLAN:0 home", primary: "Primary navigation", home: "Home", map: "Map", family: "Family", plan: "Plan", supplies: "Supplies", alerts: "Alerts", settings: "Settings" },
   home: {
     title: "Prepare together, act with clarity",
@@ -129,6 +150,27 @@ export type Messages = DeepStrings<typeof en>;
 
 const pl: Messages = {
   common: { backToSettings: "Wróć do ustawień", comingSoon: "Wkrótce" },
+  crisisMode: {
+    title: "Tryb kryzysowy",
+    description: "Szybki dostęp do najważniejszych funkcji w sytuacji zagrożenia.",
+    action: "Aktywuj tryb kryzysowy",
+    exitAction: "Zakończ tryb kryzysowy",
+    backLabel: "Wróć z trybu kryzysowego",
+    links: {
+      shelters: "Najbliższe schrony",
+      numbers: "Ważne numery",
+      familyLocation: "Lokalizacja rodziny",
+      alerts: "Komunikaty i alerty",
+      guides: "Instrukcje postępowania",
+    },
+    activeBanner: {
+      title: "Aktywny tryb kryzysowy",
+      openMenu: "Menu kryzysowe",
+      exit: "Zakończ",
+      ariaLabel: "Pasek aktywnego trybu kryzysowego",
+    },
+    activeCardAction: "Otwórz menu kryzysowe",
+  },
   navigation: { brandLabel: "Start PLAN:0", primary: "Główna nawigacja", home: "Start", map: "Mapa", family: "Rodzina", plan: "Plan", supplies: "Zapasy", alerts: "Alerty", settings: "Ustawienia" },
   home: {
     title: "Przygotuj się razem, działaj spokojnie",

@@ -11,8 +11,7 @@ import {
   Phone,
   UsersThree,
 } from "@phosphor-icons/react/ssr";
-import { Alert } from "@/components/ui/Alert";
-import { FamilyMembersCard, HouseholdResourcesCard, ReadinessCard } from "@/components/ui/Cards";
+import { EmergencyModeCard, FamilyMembersCard, HouseholdResourcesCard, ReadinessCard } from "@/components/ui/Cards";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 
 export function HomeScreen() {
@@ -31,14 +30,7 @@ export function HomeScreen() {
           <p className="type-body home-screen__intro">{copy.intro}</p>
         </header>
 
-        <Alert
-          actionHref="/settings/important-numbers"
-          actionLabel={copy.emergency.action}
-          className="home-screen__emergency-note"
-          description={copy.emergency.description}
-          title={copy.emergency.title}
-          variant="warning"
-        />
+        <EmergencyModeCard />
 
         <section aria-labelledby="setup-heading" className="home-screen__section">
           <div className="home-screen__section-heading">

@@ -224,3 +224,6 @@ export function FamilyProfileCard({ className, details, initials, name, relation
     </article>
   );
 }
+
+export { EmergencyModeCard, CrisisModeCard, type EmergencyModeCardProps } from "@/components/ui/EmergencyModeCard";
+

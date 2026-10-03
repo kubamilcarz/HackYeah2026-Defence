@@ -19,6 +19,7 @@ import {
 import type { Icon } from "@phosphor-icons/react/lib";
 import { Button, IconButton } from "@/components/ui/Button";
 import {
+  EmergencyModeCard,
   FamilyMembersCard,
   FamilyProfileCard,
   HouseholdResourcesCard,
@@ -460,6 +461,7 @@ export default function DesignSystemPage() {
                   </p>
                 </div>
                 <div className="cards-showcase mt-8">
+                  <EmergencyModeCard />
                   <ReadinessCard action={{ href: "#feedback", label: "View details" }} completed={5} total={8} />
                   <FamilyMembersCard
                     addMemberAction={{ href: "#cards", label: "Add a family member" }}

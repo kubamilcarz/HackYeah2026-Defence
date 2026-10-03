@@ -20,6 +20,11 @@ function itemMatchesPath(item: NavigationItem, pathname: string) {
 export function AppShellNavigation() {
   const pathname = usePathname();
   const { messages } = useLocalization();
+
+  if (pathname === "/crisis" || pathname === "/emergency") {
+    return null;
+  }
+
   const { navigation } = messages;
   const desktopItems: NavigationItem[] = [
     { id: "home", label: navigation.home, href: "/", icon: House },
