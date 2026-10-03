@@ -1,13 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import type { Icon } from "@phosphor-icons/react/lib";
 import {
+  ArrowRight,
   Check,
   Drop,
   FileText,
   FirstAidKit,
   MapPin,
+  Package,
   Phone,
   Flashlight,
 } from "@phosphor-icons/react/ssr";
@@ -114,6 +117,21 @@ export function PlanScreen() {
               );
             })}
           </ul>
+        </section>
+
+        <section aria-labelledby="plan-supplies-heading" className="plan-screen__supplies-section">
+          <div className="plan-screen__section-heading">
+            <h2 className="type-h2" id="plan-supplies-heading">{copy.suppliesBanner.heading}</h2>
+            <p className="type-caption">{copy.suppliesBanner.description}</p>
+          </div>
+          <Link className="home-quick-link" href="/supplies">
+            <Package aria-hidden="true" className="home-quick-link__icon" size={28} weight="bold" />
+            <span className="home-quick-link__content">
+              <span className="type-h3">{copy.suppliesBanner.actionTitle}</span>
+              <span className="type-caption">{copy.suppliesBanner.actionDescription}</span>
+            </span>
+            <ArrowRight aria-hidden="true" className="home-quick-link__arrow" size={20} weight="bold" />
+          </Link>
         </section>
       </div>
     </main>

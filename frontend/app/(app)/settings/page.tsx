@@ -6,6 +6,7 @@ import {
   Gear,
   Globe,
   Info,
+  Package,
   Phone,
   ShieldWarning,
   User,
@@ -28,7 +29,7 @@ export default function SettingsPage() {
   const copy = messages.settings;
   const settingsSections: Array<{ id: string; items: SettingsLink[]; title: string }> = [
     { id: "account-and-app", title: copy.accountAndApp, items: [{ href: "/settings/profile", icon: User, label: copy.profile }, { href: "/settings/notifications", icon: Bell, label: copy.notifications }, { href: "/settings/preferences", icon: Gear, label: copy.preferences }, { href: "/settings/language", icon: Globe, label: copy.language }, { href: "/settings/about", icon: Info, label: copy.about }] },
-    { id: "resources", title: copy.resources, items: [{ href: "/settings/guides", icon: BookOpenText, label: copy.guides }, { href: "/settings/important-numbers", icon: Phone, label: copy.importantNumbers }, { href: "/settings/announcements-alerts", icon: ShieldWarning, label: copy.announcementsAlerts }] },
+    { id: "resources", title: copy.resources, items: [{ href: "/supplies", icon: Package, label: messages.navigation.supplies }, { href: "/settings/guides", icon: BookOpenText, label: copy.guides }, { href: "/settings/important-numbers", icon: Phone, label: copy.importantNumbers }, { href: "/settings/announcements-alerts", icon: ShieldWarning, label: copy.announcementsAlerts }] },
   ];
   return (
     <main className="settings-page">

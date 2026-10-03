@@ -780,6 +780,7 @@ a.app-navigation__link--active {
   .home-screen__brand { display: none; }
   .home-screen__dashboard-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .home-screen__dashboard-grid > :last-child { grid-column: auto; }
+  .home-screen__quick-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 .family-page {
@@ -911,9 +912,11 @@ a.app-navigation__link--active {
 }
 
 .plan-screen__checklist-section,
+.plan-screen__supplies-section,
 .plan-screen__section-heading { display: grid; }
 
-.plan-screen__checklist-section { gap: var(--space-4); }
+.plan-screen__checklist-section,
+.plan-screen__supplies-section { gap: var(--space-4); }
 .plan-screen__section-heading { gap: var(--space-1); }
 .plan-screen__section-heading p { color: var(--content-muted); margin: 0; }
 
