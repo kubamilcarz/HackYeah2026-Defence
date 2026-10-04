@@ -53,8 +53,8 @@ import {
   type SupplyItem,
 } from "@/components/app/supplies";
 import type { PlanTaskId } from "@/components/app/plan";
-import { generatePersonalizedPlan, type PersonalizedPlan, type PlanActionTarget } from "@/lib/api";
-import { getSavedPersonalizedPlan, householdFingerprint, savePersonalizedPlan } from "@/components/app/personalized-plan";
+import { generatePersonalizedPlan, type PlanActionTarget } from "@/lib/api";
+import { getPersonalizedPlanServerSnapshot, getSavedPersonalizedPlan, householdFingerprint, savePersonalizedPlan, subscribeToPersonalizedPlan } from "@/components/app/personalized-plan";
 import { Alert } from "@/components/ui/Alert";
 import {
   getEmergencyPlanServerSnapshot,
@@ -113,8 +113,6 @@ export function PlanScreen() {
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [exportSections, setExportSections] = useState<PlanExportSection[]>(DEFAULT_PLAN_EXPORT_SECTIONS);
   const [exportStatus, setExportStatus] = useState("");
-  const [personalizedPlan, setPersonalizedPlan] = useState<PersonalizedPlan | null>(() => getSavedPersonalizedPlan()?.plan ?? null);
-  const [planFingerprint, setPlanFingerprint] = useState(() => getSavedPersonalizedPlan()?.fingerprint ?? "");
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
   const [planError, setPlanError] = useState("");
   const contacts = useSyncExternalStore(subscribeToEmergencyContacts, getEmergencyContactsSnapshot, getEmergencyContactsServerSnapshot);
@@ -123,6 +121,9 @@ export function PlanScreen() {
   const supplies = useSyncExternalStore(subscribeToSupplies, getSupplyItemsSnapshot, getSupplyItemsServerSnapshot);
   const emergencyPlan = useSyncExternalStore(subscribeToEmergencyPlan, getEmergencyPlanSnapshot, getEmergencyPlanServerSnapshot);
   const backpackState = useSyncExternalStore(subscribeToBackpack, getBackpackSnapshot, getBackpackServerSnapshot);
+  const savedPersonalizedPlan = useSyncExternalStore(subscribeToPersonalizedPlan, getSavedPersonalizedPlan, getPersonalizedPlanServerSnapshot);
+  const personalizedPlan = savedPersonalizedPlan?.plan ?? null;
+  const planFingerprint = savedPersonalizedPlan?.fingerprint ?? "";
   const familyComposition = deriveFamilyComposition(members, backpackState.compositionOverride);
   const compiledBackpackItems = getCompiledFamilyItems(familyComposition, backpackState.packedItemIds, backpackState.customItems);
   const backpackProgress = calculateBackpackProgress(compiledBackpackItems);
@@ -175,8 +176,6 @@ export function PlanScreen() {
     try {
       const result = await generatePersonalizedPlan({ locale, consent: true, household: householdSnapshot });
       savePersonalizedPlan({ plan: result, fingerprint: currentFingerprint });
-      setPersonalizedPlan(result);
-      setPlanFingerprint(currentFingerprint);
     } catch {
       setPlanError(copy.personalized.unavailable);
     } finally {
@@ -249,6 +248,7 @@ export function PlanScreen() {
           </div>
           <Alert description={copy.personalized.official} title={copy.personalized.heading} variant="info" />
           {!personalizedPlan ? (
+<<<<<<< HEAD
             <div className="personalized-plan__empty">
               <div>
                 <p className="type-h3">{copy.personalized.heading}</p>
@@ -300,6 +300,29 @@ export function PlanScreen() {
                 <ul>{personalizedPlan.questions_to_resolve.map((question) => <li key={question} className="type-body">{question}</li>)}</ul>
               </section>
               <div className="personalized-plan__footer"><Button disabled={isGeneratingPlan} onClick={createPersonalizedPlan} variant="secondary">{isGeneratingPlan ? copy.personalized.generating : copy.personalized.refresh}</Button></div>
+=======
+            <div className="plan-next-step">
+              <p className="type-body">{copy.personalized.consent}</p>
+              <Button disabled={isGeneratingPlan} onClick={createPersonalizedPlan}>{isGeneratingPlan ? copy.personalized.generating : copy.personalized.generate}</Button>
+            </div>
+          ) : (
+            <div className="plan-next-step">
+              <div className="plan-screen__section-heading">
+                <p className="type-caption">{copy.personalized.generated}: {new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(personalizedPlan.generated_at))}</p>
+                {isPlanOutdated && <Alert description={copy.personalized.outdated} title={copy.personalized.heading} variant="warning" />}
+                {planError && <Alert description={planError} title={copy.personalized.heading} variant="warning" />}
+              </div>
+              <h3 className="type-h3">{personalizedPlan.title}</h3>
+              <p className="type-body">{personalizedPlan.summary}</p>
+              <h3 className="type-h3">{copy.personalized.priorities}</h3>
+              <ol className="plan-checklist">
+                {personalizedPlan.priorities.map((action) => <li key={action.id}><article className="plan-checklist__item"><span className="plan-checklist__copy"><span className="plan-checklist__title">{action.title}</span><span className="type-caption plan-checklist__description">{action.detail}</span><Link className="plan-checklist__source" href={TARGET_HREFS[action.target]}>{copy.personalized.open}</Link></span></article></li>)}
+              </ol>
+              {personalizedPlan.sections.map((section) => <section key={section.id}><h3 className="type-h3">{section.title}</h3><ul className="plan-checklist">{section.actions.map((action) => <li key={action.id}><Link className="plan-checklist__source" href={TARGET_HREFS[action.target]}>{action.title}: {action.detail}</Link></li>)}</ul></section>)}
+              <h3 className="type-h3">{copy.personalized.questions}</h3>
+              <ul>{personalizedPlan.questions_to_resolve.map((question) => <li key={question} className="type-body">{question}</li>)}</ul>
+              <Button disabled={isGeneratingPlan} onClick={createPersonalizedPlan} variant="secondary">{isGeneratingPlan ? copy.personalized.generating : copy.personalized.refresh}</Button>
+>>>>>>> origin/main
             </div>
           )}
           {!personalizedPlan && planError && <Alert description={planError} title={copy.personalized.heading} variant="warning" />}
