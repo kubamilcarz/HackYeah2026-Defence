@@ -50,9 +50,12 @@ import {
   getSupplyItemsSnapshot,
   isSupplyReady,
   subscribeToSupplies,
-  type SupplyItem,
 } from "@/components/app/supplies";
-import type { PlanTaskId } from "@/components/app/plan";
+import {
+  getPlanReadiness,
+  hasHealthDetails,
+  type PlanReadinessStepId,
+} from "@/components/app/plan-readiness";
 import { generatePersonalizedPlan, type PlanActionTarget } from "@/lib/api";
 import { getPersonalizedPlanServerSnapshot, getSavedPersonalizedPlan, householdFingerprint, savePersonalizedPlan, subscribeToPersonalizedPlan } from "@/components/app/personalized-plan";
 import { Alert } from "@/components/ui/Alert";
@@ -74,7 +77,7 @@ import {
 
 type CompletionSource = "data";
 
-const planTasks: { icon: Icon; id: PlanTaskId; source: CompletionSource }[] = [
+const planTasks: { icon: Icon; id: PlanReadinessStepId; source: CompletionSource }[] = [
   { id: "contacts", icon: Phone, source: "data" },
   { id: "meetingPlace", icon: MapPin, source: "data" },
   { id: "supportInformation", icon: FirstAidKit, source: "data" },
@@ -88,17 +91,6 @@ function replaceValues(message: string, values: Record<string, number>) {
     (result, [key, value]) => result.replace(`{${key}}`, String(value)),
     message,
   );
-}
-
-function hasHealthDetails(profile: MedicalProfile) {
-  const noValue = new Set(["", "-", "—", "none", "brak"]);
-  return [profile.allergies, profile.chronicDiseases, profile.medications, profile.additionalInfo]
-    .some((value) => !noValue.has(value.trim().toLowerCase()));
-}
-
-function categoryIsReady(items: SupplyItem[], categories: SupplyItem["category"][]) {
-  const matching = items.filter((item) => categories.includes(item.category));
-  return matching.length > 0 && matching.every((item) => isSupplyReady(item));
 }
 
 const TARGET_HREFS: Record<PlanActionTarget, string> = {
@@ -128,20 +120,14 @@ export function PlanScreen() {
   const compiledBackpackItems = getCompiledFamilyItems(familyComposition, backpackState.packedItemIds, backpackState.customItems);
   const backpackProgress = calculateBackpackProgress(compiledBackpackItems);
   const totalPeople = familyComposition.adults + familyComposition.children + familyComposition.seniors;
-  const dataCompletion: Record<PlanTaskId, boolean> = {
-    contacts: contacts.length > 0 && hasCommunicationPlan(emergencyPlan),
-    meetingPlace: hasMeetingPlaces(emergencyPlan),
-    supportInformation: members.some(hasHealthDetails),
-    waterAndFood: categoryIsReady(supplies, ["water-food"]),
-    kitAndPower: categoryIsReady(supplies, ["health", "power-light"]),
-    rolesAndDocuments: hasRolesAndDocuments(emergencyPlan),
-  };
+  const readiness = getPlanReadiness({ contacts, emergencyPlan, members, supplies });
+  const dataCompletion = readiness.completion;
   const isComplete = (task: (typeof planTasks)[number]) => dataCompletion[task.id];
-  const completedCount = planTasks.filter(isComplete).length;
-  const total = planTasks.length;
+  const completedCount = readiness.completed;
+  const total = readiness.total;
   const percentage = Math.round((completedCount / total) * 100);
   const nextTask = planTasks.find((task) => !isComplete(task));
-  const sourceForTask = (id: PlanTaskId) => id === "contacts" && contacts.length > 0
+  const sourceForTask = (id: PlanReadinessStepId) => id === "contacts" && contacts.length > 0
     ? copy.sources.communication
     : copy.sources[id];
 
@@ -162,7 +148,7 @@ export function PlanScreen() {
       has_backup_meeting_place: Boolean(emergencyPlan.backupMeetingPlace.trim()),
       has_communication_plan: hasCommunicationPlan(emergencyPlan), has_roles_and_documents: hasRolesAndDocuments(emergencyPlan),
       health_support_counts: supportCounts,
-      readiness: { completed: completedCount, total, missing: planTasks.filter((task) => !isComplete(task)).map((task) => task.id) },
+      readiness: { completed: completedCount, total, missing: readiness.missing },
       supply_gaps: gaps,
       backpack: { packed: backpackProgress.packed, total: backpackProgress.total },
     };

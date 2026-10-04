@@ -27,6 +27,17 @@ import {
   getEmergencyContactsSnapshot,
   subscribeToEmergencyContacts,
 } from "@/components/app/contacts";
+import {
+  getEmergencyPlanServerSnapshot,
+  getEmergencyPlanSnapshot,
+  subscribeToEmergencyPlan,
+} from "@/components/app/emergency-plan";
+import {
+  getSupplyItemsServerSnapshot,
+  getSupplyItemsSnapshot,
+  subscribeToSupplies,
+} from "@/components/app/supplies";
+import { getPlanReadiness } from "@/components/app/plan-readiness";
 
 export function HomeScreen() {
   const { locale, messages } = useLocalization();
@@ -42,6 +53,18 @@ export function HomeScreen() {
     subscribeToEmergencyContacts,
     getEmergencyContactsSnapshot,
     getEmergencyContactsServerSnapshot,
+  );
+
+  const emergencyPlan = useSyncExternalStore(
+    subscribeToEmergencyPlan,
+    getEmergencyPlanSnapshot,
+    getEmergencyPlanServerSnapshot,
+  );
+
+  const supplies = useSyncExternalStore(
+    subscribeToSupplies,
+    getSupplyItemsSnapshot,
+    getSupplyItemsServerSnapshot,
   );
 
   const meMember = useMemo(() => {
@@ -79,6 +102,13 @@ export function HomeScreen() {
       eligibleEmergencyContacts[0]
     );
   }, [eligibleEmergencyContacts]);
+
+  const readiness = getPlanReadiness({
+    contacts: emergencyContacts,
+    emergencyPlan,
+    members: profiles,
+    supplies,
+  });
 
   const contactMembers = useMemo(() => {
     const list: { id: string; name: string; initials: string }[] = [];
@@ -161,12 +191,14 @@ export function HomeScreen() {
           <div className="home-screen__dashboard-grid">
             <ReadinessCard
               action={{ href: "/plan", label: copy.setup.readiness.action }}
-              completed={0}
+              completed={readiness.completed}
               description={copy.setup.readiness.description}
               label={copy.setup.readiness.label}
               primaryAction
-              progressSummary={copy.setup.readiness.progressSummary}
-              total={4}
+              progressSummary={copy.setup.readiness.progressSummary
+                .replace("{completed}", String(readiness.completed))
+                .replace("{total}", String(readiness.total))}
+              total={readiness.total}
             />
             <FamilyMembersCard
               addMemberAction={{ href: "/family", label: copy.setup.family.addAction }}
@@ -179,7 +211,7 @@ export function HomeScreen() {
             <HouseholdResourcesCard
               action={{ href: "/family", label: copy.setup.essentials.action }}
               resources={[
-                { Icon: MapPin, id: "meeting-place", label: copy.setup.essentials.meetingPlace, value: copy.setup.essentials.notSet },
+                { Icon: MapPin, id: "meeting-place", label: copy.setup.essentials.meetingPlace, value: emergencyPlan.primaryMeetingPlace || copy.setup.essentials.notSet },
                 { Icon: Phone, id: "contact-plan", label: copy.setup.essentials.contactPlan, value: primaryContact ? `${primaryContact.name} (${primaryContact.relationship})` : copy.setup.essentials.notSet },
                 { Icon: FirstAidKit, id: "health-information", label: copy.setup.essentials.healthInformation, value: profiles.length > 0 ? `${profiles.length}` : copy.setup.essentials.notSet },
               ]}

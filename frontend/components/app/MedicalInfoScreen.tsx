@@ -21,7 +21,6 @@ import { Tag } from "@/components/ui/Tag";
 import { PageNavigationBar } from "@/components/ui/PageNavigationBar";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 import {
-  DEFAULT_MEDICAL_PROFILE,
   deleteMedicalNote,
   getInitials,
   getMedicalNotesServerSnapshot,
@@ -67,13 +66,27 @@ export function MedicalInfoScreen({
   );
 
   const profile = useMemo(() => {
-    if (!memberId) return profiles[0] ?? DEFAULT_MEDICAL_PROFILE;
-    return profiles.find((p) => p.id === memberId) ?? profiles[0] ?? DEFAULT_MEDICAL_PROFILE;
+    if (!memberId) return profiles[0];
+    return profiles.find((p) => p.id === memberId) ?? profiles[0];
   }, [profiles, memberId]);
 
+  const emptyProfile: MedicalProfile = {
+    id: "",
+    fullName: "",
+    birthDate: "",
+    age: 0,
+    bloodType: "",
+    allergies: "",
+    chronicDiseases: "",
+    medications: "",
+    additionalInfo: "",
+    updatedAt: "",
+  };
+  const selectedProfile = profile ?? emptyProfile;
+
   const memberNotes = useMemo(() => {
-    return allNotes.filter((note) => note.memberId === profile.id);
-  }, [allNotes, profile.id]);
+    return allNotes.filter((note) => note.memberId === selectedProfile.id);
+  }, [allNotes, selectedProfile.id]);
 
   const suppliesData = useSyncExternalStore(
     subscribeToSupplies,
@@ -85,15 +98,15 @@ export function MedicalInfoScreen({
     if (!suppliesData?.items) return [];
     return suppliesData.items.filter(
       (item) =>
-        item.memberId === profile.id ||
+        item.memberId === selectedProfile.id ||
         (item.memberId === undefined &&
-          item.name.toLowerCase().includes(profile.fullName.toLowerCase())),
+          selectedProfile.fullName && item.name.toLowerCase().includes(selectedProfile.fullName.toLowerCase())),
     );
-  }, [suppliesData, profile.id, profile.fullName]);
+  }, [suppliesData, selectedProfile.id, selectedProfile.fullName]);
 
   // Profile Edit Modal
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [profileForm, setProfileForm] = useState<MedicalProfile>(profile);
+  const [profileForm, setProfileForm] = useState<MedicalProfile>(selectedProfile);
 
   // Note Modal
   const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(initialAddNoteOpen);
@@ -103,7 +116,7 @@ export function MedicalInfoScreen({
   const [noteCategory, setNoteCategory] = useState<MedicalNote["category"]>("general");
 
   const handleOpenEditProfile = () => {
-    setProfileForm(profile);
+    setProfileForm(selectedProfile);
     setIsEditingProfile(true);
   };
 
@@ -135,7 +148,7 @@ export function MedicalInfoScreen({
 
     saveMedicalNote({
       id: editingNote?.id,
-      memberId: profile.id,
+      memberId: selectedProfile.id,
       title: noteTitle.trim(),
       content: noteContent.trim(),
       category: noteCategory,
@@ -148,8 +161,28 @@ export function MedicalInfoScreen({
     deleteMedicalNote(id);
   };
 
-  const initials = getInitials(profile.fullName);
-  const ageLabel = copy.age.replace("{age}", String(profile.age));
+  const initials = getInitials(selectedProfile.fullName);
+  const ageLabel = copy.age.replace("{age}", String(selectedProfile.age));
+
+  if (!profile) {
+    return (
+      <main className="medical-page">
+        <PageNavigationBar backHref="/family" backLabel={copy.backLabel} title={copy.title} />
+        <div className="medical-page__content">
+          <section aria-labelledby="medical-empty-profile-heading" className="medical-empty-notes">
+            <Notebook aria-hidden="true" size={32} weight="duotone" />
+            <div className="medical-empty-notes__content">
+              <h1 className="type-h2" id="medical-empty-profile-heading">{copy.noProfile}</h1>
+              <p className="type-body text-secondary">{copy.noProfileDescription}</p>
+              <Link className="button button--secondary" href="/family">
+                <span>{copy.addProfile}</span>
+              </Link>
+            </div>
+          </section>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="medical-page">
@@ -165,20 +198,20 @@ export function MedicalInfoScreen({
 
       <div className="medical-page__content">
         <h1 className="sr-only">
-          {copy.title} - {profile.fullName}
+          {copy.title} - {selectedProfile.fullName}
         </h1>
 
         {/* Main Medical Card */}
-        <section aria-label={profile.fullName} className="medical-card">
+        <section aria-label={selectedProfile.fullName} className="medical-card">
           {/* Person Header */}
           <div className="medical-profile-header">
             <div aria-hidden="true" className="medical-avatar">
               <span className="medical-avatar__text">{initials}</span>
             </div>
             <div className="medical-profile-info">
-              <h2 className="medical-profile-name">{profile.fullName}</h2>
+              <h2 className="medical-profile-name">{selectedProfile.fullName}</h2>
               <p className="medical-profile-subtitle">
-                {ageLabel} &middot; {profile.birthDate}
+                {ageLabel} &middot; {selectedProfile.birthDate}
               </p>
             </div>
           </div>
@@ -195,7 +228,7 @@ export function MedicalInfoScreen({
               <div className="medical-info-row__content">
                 <span className="medical-info-row__label">{copy.bloodType}</span>
                 <span className="medical-info-row__value font-semibold">
-                  {profile.bloodType || copy.none}
+                  {selectedProfile.bloodType || copy.none}
                 </span>
               </div>
             </li>
@@ -208,7 +241,7 @@ export function MedicalInfoScreen({
               <div className="medical-info-row__content">
                 <span className="medical-info-row__label">{copy.allergies}</span>
                 <span className="medical-info-row__value font-semibold">
-                  {profile.allergies || copy.none}
+                  {selectedProfile.allergies || copy.none}
                 </span>
               </div>
             </li>
@@ -221,7 +254,7 @@ export function MedicalInfoScreen({
               <div className="medical-info-row__content">
                 <span className="medical-info-row__label">{copy.chronicDiseases}</span>
                 <span className="medical-info-row__value">
-                  {profile.chronicDiseases || copy.none}
+                  {selectedProfile.chronicDiseases || copy.none}
                 </span>
               </div>
             </li>
@@ -234,7 +267,7 @@ export function MedicalInfoScreen({
               <div className="medical-info-row__content">
                 <span className="medical-info-row__label">{copy.medications}</span>
                 <span className="medical-info-row__value">
-                  {profile.medications || copy.none}
+                  {selectedProfile.medications || copy.none}
                 </span>
               </div>
             </li>
@@ -247,7 +280,7 @@ export function MedicalInfoScreen({
               <div className="medical-info-row__content">
                 <span className="medical-info-row__label">{copy.additionalInfo}</span>
                 <div className="medical-info-row__value whitespace-pre-line">
-                  {profile.additionalInfo || copy.none}
+                  {selectedProfile.additionalInfo || copy.none}
                 </div>
               </div>
             </li>
