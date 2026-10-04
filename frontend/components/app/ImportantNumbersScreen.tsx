@@ -18,6 +18,7 @@ type NumberCategory = (typeof categories)[number];
 
 type CallNumber = {
   categories: NumberCategory[];
+  id: string;
   number: string;
   title: string;
 };
@@ -51,10 +52,10 @@ export function ImportantNumbersScreen() {
 
   const baseCallNumbers: CallNumber[] = useMemo(
     () => [
-      { number: "112", title: copy.numbers.emergency, categories: ["services", "medical"] },
-      { number: "998", title: copy.numbers.fire, categories: ["services"] },
-      { number: "997", title: copy.numbers.police, categories: ["services"] },
-      { number: "999", title: copy.numbers.ambulance, categories: ["services", "medical"] },
+      { id: "emergency", number: "112", title: copy.numbers.emergency, categories: ["services", "medical"] },
+      { id: "fire", number: "998", title: copy.numbers.fire, categories: ["services"] },
+      { id: "police", number: "997", title: copy.numbers.police, categories: ["services"] },
+      { id: "ambulance", number: "999", title: copy.numbers.ambulance, categories: ["services", "medical"] },
     ],
     [copy.numbers],
   );
@@ -71,12 +72,14 @@ export function ImportantNumbersScreen() {
         continue;
       }
       list.push({
+        id: `contact-${c.id}-primary`,
         number: c.phone,
         title: `${c.name} (${c.relationship})`,
         categories: ["family"],
       });
       if (c.altPhone) {
         list.push({
+          id: `contact-${c.id}-alternate`,
           number: c.altPhone,
           title: `${c.name} — ${messages.family.contactAltPhoneLabel}`,
           categories: ["family"],
@@ -125,8 +128,8 @@ export function ImportantNumbersScreen() {
               <section aria-labelledby="emergency-numbers-heading" className="important-numbers-page__section">
                 <h2 className="type-h2" id="emergency-numbers-heading">{copy.emergencyHeading}</h2>
                 <ul className="important-numbers-page__calls">
-                  {filteredCalls.map(({ number, title }) => (
-                    <li key={number}>
+                  {filteredCalls.map(({ id, number, title }) => (
+                    <li key={id}>
                       <a aria-label={`${copy.call} ${number}: ${title}`} className="important-numbers-page__call" href={`tel:${number}`}>
                         <span aria-hidden="true" className="important-numbers-page__number">{number}</span>
                         <span className="important-numbers-page__call-copy">

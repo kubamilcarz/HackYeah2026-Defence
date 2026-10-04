@@ -5,13 +5,10 @@ import {
   BookOpenText,
   CaretRight,
   Database,
-  Gear,
   Globe,
-  Info,
   Phone,
   ShieldWarning,
   Trash,
-  User,
 } from "@phosphor-icons/react/ssr";
 import type { Icon } from "@phosphor-icons/react/lib";
 import Image from "next/image";
@@ -40,11 +37,8 @@ export default function SettingsPage() {
   const accountSection = {
     id: "account-and-app",
     items: [
-      { href: "/settings/profile", icon: User, label: copy.profile },
       { href: "/settings/notifications", icon: Bell, label: copy.notifications },
-      { href: "/settings/preferences", icon: Gear, label: copy.preferences },
       { href: "/settings/language", icon: Globe, label: copy.language },
-      { href: "/settings/about", icon: Info, label: copy.about },
     ],
     title: copy.accountAndApp,
   };
@@ -199,4 +193,3 @@ export default function SettingsPage() {
     </main>
   );
 }
-
