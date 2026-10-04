@@ -4,15 +4,12 @@ import { useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AccessibilityIcon } from "./AccessibilityIcon";
 import { AccessibilityPreferencesControls } from "./AccessibilityPreferencesControls";
-import { useEmergencyMode } from "@/components/emergency/EmergencyModeProvider";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 
 export function AccessibilityMenu() {
-  const { isEmergencyActive } = useEmergencyMode();
   const { messages } = useLocalization();
   const copy = messages.accessibility;
   const pathname = usePathname();
-  const isOffset = isEmergencyActive && pathname !== "/crisis" && pathname !== "/emergency";
   const [isOpen, setIsOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const launcherRef = useRef<HTMLButtonElement>(null);
@@ -69,7 +66,7 @@ export function AccessibilityMenu() {
 
   return (
     <div
-      className={`accessibility-control${isOffset ? " accessibility-control--emergency-offset" : ""}`}
+      className="accessibility-control"
       ref={rootRef}
     >
       <button

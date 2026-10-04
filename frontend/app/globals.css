@@ -4105,25 +4105,20 @@ a.app-navigation__link--active {
 .accessibility-control {
   align-items: flex-end;
   display: flex;
-  flex-direction: column;
-  inset: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) auto auto;
+  flex-direction: column-reverse;
+  bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 4.5rem);
+  right: max(1rem, env(safe-area-inset-right));
   position: fixed;
-  transition: inset 150ms ease;
+  transition: bottom 150ms ease;
   z-index: 50;
-}
-
-.accessibility-control--emergency-offset,
-[data-emergency-mode="active"]:not(:has(.crisis-screen)) .accessibility-control {
-  inset: calc(max(0.5rem, env(safe-area-inset-top)) + 2.75rem) max(1rem, env(safe-area-inset-right)) auto auto;
-}
-
-.accessibility-control--emergency-offset .accessibility-panel,
-[data-emergency-mode="active"]:not(:has(.crisis-screen)) .accessibility-panel {
-  max-height: calc(100vh - 7.5rem - env(safe-area-inset-top));
 }
 
 @media (max-width: 63.999rem) {
   .accessibility-control { display: none; }
+}
+
+@media (min-width: 64rem) {
+  .accessibility-control { bottom: max(1rem, env(safe-area-inset-bottom)); }
 }
 
 .accessibility-launcher,
@@ -4160,8 +4155,8 @@ a.app-navigation__link--active {
   border-radius: 1rem;
   box-shadow: 0 12px 32px rgb(0 0 0 / 30%);
   color: var(--content-primary);
-  margin-top: 0.75rem;
-  max-height: calc(100vh - 6rem - env(safe-area-inset-top));
+  margin-bottom: 0.75rem;
+  max-height: calc(100dvh - 8rem - env(safe-area-inset-bottom));
   overflow: auto;
   padding: 1rem;
   width: min(22rem, calc(100vw - 2rem - env(safe-area-inset-right)));
