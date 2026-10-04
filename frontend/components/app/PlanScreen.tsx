@@ -53,6 +53,9 @@ import {
   type SupplyItem,
 } from "@/components/app/supplies";
 import type { PlanTaskId } from "@/components/app/plan";
+import { generatePersonalizedPlan, type PersonalizedPlan, type PlanActionTarget } from "@/lib/api";
+import { getSavedPersonalizedPlan, householdFingerprint, savePersonalizedPlan } from "@/components/app/personalized-plan";
+import { Alert } from "@/components/ui/Alert";
 import {
   getEmergencyPlanServerSnapshot,
   getEmergencyPlanSnapshot,
@@ -98,12 +101,22 @@ function categoryIsReady(items: SupplyItem[], categories: SupplyItem["category"]
   return matching.length > 0 && matching.every((item) => isSupplyReady(item));
 }
 
+const TARGET_HREFS: Record<PlanActionTarget, string> = {
+  contacts: "/family", meetingPlace: "/plan/details", supportInformation: "/family/medical",
+  waterAndFood: "/supplies", kitAndPower: "/supplies", rolesAndDocuments: "/plan/details",
+  supplies: "/supplies", backpack: "/plan/backpack",
+};
+
 export function PlanScreen() {
   const { locale, messages } = useLocalization();
   const copy = messages.plan;
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [exportSections, setExportSections] = useState<PlanExportSection[]>(DEFAULT_PLAN_EXPORT_SECTIONS);
   const [exportStatus, setExportStatus] = useState("");
+  const [personalizedPlan, setPersonalizedPlan] = useState<PersonalizedPlan | null>(() => getSavedPersonalizedPlan()?.plan ?? null);
+  const [planFingerprint, setPlanFingerprint] = useState(() => getSavedPersonalizedPlan()?.fingerprint ?? "");
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+  const [planError, setPlanError] = useState("");
   const contacts = useSyncExternalStore(subscribeToEmergencyContacts, getEmergencyContactsSnapshot, getEmergencyContactsServerSnapshot);
   const members = useSyncExternalStore(subscribeToMedicalProfiles, getMedicalProfilesSnapshot, getMedicalProfilesServerSnapshot);
   const medicalNotes = useSyncExternalStore(subscribeToMedicalNotes, getMedicalNotesSnapshot, getMedicalNotesServerSnapshot);
@@ -130,6 +143,46 @@ export function PlanScreen() {
   const sourceForTask = (id: PlanTaskId) => id === "contacts" && contacts.length > 0
     ? copy.sources.communication
     : copy.sources[id];
+
+  const householdSnapshot = (() => {
+    const supportCounts = { allergies: 0, chronic_conditions: 0, medications: 0 };
+    members.forEach((member) => {
+      if (hasHealthDetails(member)) {
+        if (!["", "-", "—", "none", "brak"].includes(member.allergies.trim().toLowerCase())) supportCounts.allergies += 1;
+        if (!["", "-", "—", "none", "brak"].includes(member.chronicDiseases.trim().toLowerCase())) supportCounts.chronic_conditions += 1;
+        if (!["", "-", "—", "none", "brak"].includes(member.medications.trim().toLowerCase())) supportCounts.medications += 1;
+      }
+    });
+    const gaps = [...new Set(supplies.filter((item) => !isSupplyReady(item)).map((item) => item.category))];
+    return {
+      adults: familyComposition.adults, children: familyComposition.children, seniors: familyComposition.seniors,
+      contacts_count: contacts.length, has_primary_contact: contacts.some((contact) => contact.isPrimary),
+      has_primary_meeting_place: Boolean(emergencyPlan.primaryMeetingPlace.trim()),
+      has_backup_meeting_place: Boolean(emergencyPlan.backupMeetingPlace.trim()),
+      has_communication_plan: hasCommunicationPlan(emergencyPlan), has_roles_and_documents: hasRolesAndDocuments(emergencyPlan),
+      health_support_counts: supportCounts,
+      readiness: { completed: completedCount, total, missing: planTasks.filter((task) => !isComplete(task)).map((task) => task.id) },
+      supply_gaps: gaps,
+      backpack: { packed: backpackProgress.packed, total: backpackProgress.total },
+    };
+  })();
+  const currentFingerprint = householdFingerprint(householdSnapshot);
+  const isPlanOutdated = Boolean(personalizedPlan && planFingerprint !== currentFingerprint);
+
+  async function createPersonalizedPlan() {
+    setIsGeneratingPlan(true);
+    setPlanError("");
+    try {
+      const result = await generatePersonalizedPlan({ locale, consent: true, household: householdSnapshot });
+      savePersonalizedPlan({ plan: result, fingerprint: currentFingerprint });
+      setPersonalizedPlan(result);
+      setPlanFingerprint(currentFingerprint);
+    } catch {
+      setPlanError(copy.personalized.unavailable);
+    } finally {
+      setIsGeneratingPlan(false);
+    }
+  }
 
   const progressMessage = completedCount === 0
     ? copy.progress.notStarted
@@ -187,6 +240,39 @@ export function PlanScreen() {
             </div>
           </div>
           <p className="type-caption plan-screen__sample-note">{copy.sampleNote}</p>
+        </section>
+
+        <section aria-labelledby="personalized-plan-heading" className="plan-screen__checklist-section">
+          <div className="plan-screen__section-heading">
+            <h2 className="type-h2" id="personalized-plan-heading">{copy.personalized.heading}</h2>
+            <p className="type-caption">{copy.personalized.description}</p>
+          </div>
+          <Alert description={copy.personalized.official} title={copy.personalized.heading} variant="info" />
+          {!personalizedPlan ? (
+            <div className="plan-next-step">
+              <p className="type-body">{copy.personalized.consent}</p>
+              <Button disabled={isGeneratingPlan} onClick={createPersonalizedPlan}>{isGeneratingPlan ? copy.personalized.generating : copy.personalized.generate}</Button>
+            </div>
+          ) : (
+            <div className="plan-next-step">
+              <div className="plan-screen__section-heading">
+                <p className="type-caption">{copy.personalized.generated}: {new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(personalizedPlan.generated_at))}</p>
+                {isPlanOutdated && <Alert description={copy.personalized.outdated} title={copy.personalized.heading} variant="warning" />}
+                {planError && <Alert description={planError} title={copy.personalized.heading} variant="warning" />}
+              </div>
+              <h3 className="type-h3">{personalizedPlan.title}</h3>
+              <p className="type-body">{personalizedPlan.summary}</p>
+              <h3 className="type-h3">{copy.personalized.priorities}</h3>
+              <ol className="plan-checklist">
+                {personalizedPlan.priorities.map((action) => <li key={action.id}><article className="plan-checklist__item"><span className="plan-checklist__copy"><span className="plan-checklist__title">{action.title}</span><span className="type-caption plan-checklist__description">{action.detail}</span><Link className="plan-checklist__source" href={TARGET_HREFS[action.target]}>{copy.personalized.open}</Link></span></article></li>)}
+              </ol>
+              {personalizedPlan.sections.map((section) => <section key={section.id}><h3 className="type-h3">{section.title}</h3><ul className="plan-checklist">{section.actions.map((action) => <li key={action.id}><Link className="plan-checklist__source" href={TARGET_HREFS[action.target]}>{action.title}: {action.detail}</Link></li>)}</ul></section>)}
+              <h3 className="type-h3">{copy.personalized.questions}</h3>
+              <ul>{personalizedPlan.questions_to_resolve.map((question) => <li key={question} className="type-body">{question}</li>)}</ul>
+              <Button disabled={isGeneratingPlan} onClick={createPersonalizedPlan} variant="secondary">{isGeneratingPlan ? copy.personalized.generating : copy.personalized.refresh}</Button>
+            </div>
+          )}
+          {!personalizedPlan && planError && <Alert description={planError} title={copy.personalized.heading} variant="warning" />}
         </section>
 
         {nextTask && (() => {

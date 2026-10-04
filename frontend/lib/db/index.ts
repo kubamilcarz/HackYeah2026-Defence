@@ -240,6 +240,7 @@ export async function clearAllOfflineData(): Promise<void> {
       window.localStorage.removeItem("plan-0-emergency-contacts-v1");
       window.localStorage.removeItem("plan-0-plan-tasks-v1");
       window.localStorage.removeItem("plan-0-emergency-plan-v1");
+      window.localStorage.removeItem("plan-0-personalized-plan-v1");
       window.localStorage.removeItem("plan-0-emergency-mode-active");
       window.localStorage.removeItem("plan-0-notification-settings-v1");
     } catch {

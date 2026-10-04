@@ -2,8 +2,8 @@
 
 import { ArrowRight, Compass, Crosshair, MapPin } from "@phosphor-icons/react";
 import Link from "next/link";
-import { useRef, useState, useSyncExternalStore } from "react";
-import { Map, type MapPosition } from "@/components/ui/Map";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { Map, type MapMarker, type MapPosition } from "@/components/ui/Map";
 import { IconButton } from "@/components/ui/Button";
 import { SearchField } from "@/components/ui/FormControls";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
@@ -12,27 +12,66 @@ import {
   getEmergencyPlanSnapshot,
   subscribeToEmergencyPlan,
 } from "@/components/app/emergency-plan";
+import { getNearbyPlaces, type NearbyPlace } from "@/lib/api";
+import { Alert } from "@/components/ui/Alert";
 
 type SheetSize = "compact" | "browse" | "expanded";
-type MapFilter = "plan" | "all" | "shelters" | "hospitals" | "pharmacies" | "meeting-places";
+type MapFilter = "plan" | "all" | "shelters" | "hospitals" | "pharmacies";
 
 const SHEET_SIZES: SheetSize[] = ["compact", "browse", "expanded"];
 const DEFAULT_CENTER: MapPosition = { lat: 50.0674, lng: 19.9915 };
 
 export function MapScreen() {
-  const { messages } = useLocalization();
+  const { locale, messages } = useLocalization();
   const copy = messages.map;
   const emergencyPlan = useSyncExternalStore(subscribeToEmergencyPlan, getEmergencyPlanSnapshot, getEmergencyPlanServerSnapshot);
   const sheetLabels: Record<SheetSize, string> = copy.sizes;
   const mapFilters: { id: MapFilter; label: string }[] = [
-    { id: "plan", label: copy.yourPlan }, { id: "all", label: copy.all }, { id: "shelters", label: copy.shelters }, { id: "hospitals", label: copy.hospitals }, { id: "pharmacies", label: copy.pharmacies }, { id: "meeting-places", label: copy.meetingPlaces },
+    { id: "plan", label: copy.yourPlan }, { id: "all", label: copy.all }, { id: "shelters", label: copy.shelters }, { id: "hospitals", label: copy.hospitals }, { id: "pharmacies", label: copy.pharmacies },
   ];
   const [center, setCenter] = useState(DEFAULT_CENTER);
   const [locationStatus, setLocationStatus] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState<MapFilter>("plan");
+  const [selectedFilter, setSelectedFilter] = useState<MapFilter>("all");
   const [sheetSize, setSheetSize] = useState<SheetSize>("browse");
+  const [places, setPlaces] = useState<NearbyPlace[]>([]);
+  const [placesError, setPlacesError] = useState("");
+  const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
+  const [unavailableTypes, setUnavailableTypes] = useState<string[]>([]);
   const dragStartY = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (selectedFilter === "plan") return;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(async () => {
+      setIsLoadingPlaces(true);
+      setPlacesError("");
+      try {
+        const types = selectedFilter === "all"
+          ? "shelter,hospital,pharmacy"
+          : ({ shelters: "shelter", hospitals: "hospital", pharmacies: "pharmacy" } as const)[selectedFilter];
+        const response = await getNearbyPlaces({ lat: center.lat, lon: center.lng, locale, query: searchQuery.trim(), types });
+        if (!controller.signal.aborted) {
+          setPlaces(response.results);
+          setUnavailableTypes(response.unavailable_types);
+        }
+      } catch {
+        if (!controller.signal.aborted) {
+          setPlaces([]);
+          setPlacesError(copy.nearbyUnavailable);
+        }
+      } finally {
+        if (!controller.signal.aborted) setIsLoadingPlaces(false);
+      }
+    }, searchQuery ? 350 : 0);
+    return () => { controller.abort(); window.clearTimeout(timeout); };
+  }, [center, copy.nearbyUnavailable, locale, searchQuery, selectedFilter]);
+
+  const markers = useMemo<MapMarker[]>(() => (selectedFilter === "plan" ? [] : places.map((place) => ({
+    id: place.id, title: place.title, position: { lat: place.latitude, lng: place.longitude },
+    description: `${place.address} · ${place.distance_km} km · ${place.source}`,
+    tone: place.type === "shelter" ? "success" : "info",
+  }))), [places, selectedFilter]);
 
   function resizeSheet(next: SheetSize) {
     setSheetSize(next);
@@ -75,7 +114,7 @@ export function MapScreen() {
 
   return (
     <main className={`map-screen map-screen--${sheetSize}`}>
-      <Map ariaLabel={copy.ariaLabel} center={center} className="map-screen__map" zoom={14} />
+      <Map ariaLabel={copy.ariaLabel} center={center} className="map-screen__map" markers={markers} onMoveEnd={setCenter} zoom={14} />
       <p className="sr-only" role="status">{locationStatus}</p>
 
       <div className="map-screen__map-actions">
@@ -126,7 +165,7 @@ export function MapScreen() {
 
           {sheetSize !== "compact" && (
             <>
-              <section aria-labelledby="plan-places-heading" className="map-sheet__section">
+              {selectedFilter === "plan" && <section aria-labelledby="plan-places-heading" className="map-sheet__section">
                 <div className="map-sheet__section-heading">
                   <h2 className="type-h3" id="plan-places-heading">{copy.planPlaces}</h2>
                   <Link className="map-sheet__text-link" href="/plan">{copy.managePlan}</Link>
@@ -142,7 +181,7 @@ export function MapScreen() {
                     <span>{emergencyPlan.primaryMeetingPlace ? copy.managePlan : copy.add}</span><ArrowRight aria-hidden="true" size={20} weight="bold" />
                   </Link>
                 </div>
-              </section>
+              </section>}
 
               <section aria-labelledby="nearby-places-heading" className="map-sheet__section">
                 <div className="map-sheet__section-heading">
@@ -162,10 +201,12 @@ export function MapScreen() {
                     </button>
                   ))}
                 </div>
-                <div className="map-sheet__nearby-empty">
-                  <Compass aria-hidden="true" size={24} weight="bold" />
-                  <p className="type-caption">{copy.nearbyUnavailable}</p>
-                </div>
+                {selectedFilter === "plan" ? <div className="map-sheet__nearby-empty"><Compass aria-hidden="true" size={24} weight="bold" /><p className="type-caption">{copy.meetingPlaceDescription}</p></div> : isLoadingPlaces ? <p className="type-caption" role="status">{copy.mapLoading}</p> : placesError ? <Alert description={placesError} title={copy.nearbyPlaces} variant="warning" /> : (
+                  <>
+                    {unavailableTypes.length > 0 && <Alert description={`${copy.nearbyUnavailable} (${unavailableTypes.join(", ")})`} title={copy.nearbyPlaces} variant="warning" />}
+                    {places.length === 0 ? <div className="map-sheet__nearby-empty"><Compass aria-hidden="true" size={24} weight="bold" /><p className="type-caption">{copy.nearbyUnavailable}</p></div> : <ul className="map__marker-list">{places.map((place) => <li key={place.id}><article className="map-sheet__setup-card"><div><h3 className="type-h3">{place.title}</h3><p className="type-caption">{place.address}</p><p className="type-caption">{place.type} · {place.distance_km} km · {place.source}</p><p className="type-caption">{copy.updatedAt}: {new Intl.DateTimeFormat(locale, { dateStyle: "short", timeStyle: "short" }).format(new Date(place.retrieved_at))}</p>{place.accessibility && <p className="type-caption">{place.accessibility}</p>}</div></article></li>)}</ul>}
+                  </>
+                )}
               </section>
             </>
           )}

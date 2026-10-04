@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from api.services.llm_service import StructuredOutputSchema
+from api.services.llm_service import StructuredOutputSchema, PersonalizedPlanSchema
 
 
 class HealthCheckTests(TestCase):
@@ -93,6 +93,49 @@ class LLMProcessTests(TestCase):
         response = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_502_BAD_GATEWAY)
         self.assertIn("error", response.data)
+
+
+class PersonalizedPlanTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse("personalized-plan")
+        self.payload = {
+            "locale": "en", "consent": True,
+            "household": {
+                "adults": 2, "children": 1, "seniors": 0, "contacts_count": 1,
+                "has_primary_contact": True, "has_primary_meeting_place": False,
+                "has_backup_meeting_place": False, "has_communication_plan": False,
+                "has_roles_and_documents": False,
+                "health_support_counts": {"allergies": 0, "chronic_conditions": 0, "medications": 0},
+                "readiness": {"completed": 1, "total": 6, "missing": ["meetingPlace"]},
+                "supply_gaps": ["water-food"], "backpack": {"packed": 2, "total": 8},
+            },
+        }
+
+    def test_consent_is_required(self):
+        payload = {**self.payload, "consent": False}
+        response = self.client.post(self.url, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @patch("api.services.llm_service.OpenAI")
+    @override_settings(OPENAI_API_KEY="test-api-key")
+    def test_returns_validated_preparedness_plan(self, mock_openai_cls):
+        parsed = PersonalizedPlanSchema(
+            title="Prepare together", summary="Start with the missing agreement.",
+            priorities=[{"id": "p1", "title": "Agree a meeting place", "detail": "Choose a backup too.", "target": "meetingPlace"}],
+            sections=[{"id": "communication", "title": "Communication", "actions": [{"id": "a1", "title": "Choose a contact", "detail": "Confirm one contact path.", "target": "contacts"}]}],
+            questions_to_resolve=["Where will you meet?"],
+        )
+        choice = MagicMock()
+        choice.message.refusal = None
+        choice.message.parsed = parsed
+        completion = MagicMock()
+        completion.choices = [choice]
+        mock_openai_cls.return_value.beta.chat.completions.parse.return_value = completion
+        response = self.client.post(self.url, self.payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["priorities"][0]["target"], "meetingPlace")
+        self.assertIn("generated_at", response.data)
 
 
 class ShelterPointTests(TestCase):
@@ -209,3 +252,10 @@ class ShelterPointTests(TestCase):
         self.assertIn("dolnośląskie", response.data["by_voivodeship"])
         self.assertEqual(response.data["by_voivodeship"]["dolnośląskie"], 2)
         self.assertIn("Całodobowa", response.data["by_accessibility"])
+
+    @override_settings(MAPBOX_SEARCH_TOKEN="")
+    def test_places_endpoint_returns_local_shelters_when_mapbox_is_unconfigured(self):
+        response = self.client.get(reverse("places"), {"lat": 51.1097, "lon": 17.0327, "types": "shelter,hospital"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["results"][0]["id"], "shelter:OZO-TEST1")
+        self.assertIn("hospital", response.data["unavailable_types"])
