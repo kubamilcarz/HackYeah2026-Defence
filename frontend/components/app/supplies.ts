@@ -301,6 +301,12 @@ export interface RecommendedHouseholdTargets {
   firstAidTargetSets: number; // 1 kit per 4 people (min 1)
 }
 
+export type SupplyRecommendation = {
+  itemId: string;
+  recommendedTarget: number;
+  unit: SupplyUnit;
+};
+
 export function calculateRecommendedTargets(members: MedicalProfile[]): RecommendedHouseholdTargets {
   const memberCount = Math.max(1, members.length);
   return {
@@ -312,6 +318,24 @@ export function calculateRecommendedTargets(members: MedicalProfile[]): Recommen
     powerTargetSets: Math.max(1, Math.ceil(memberCount / 2)),
     firstAidTargetSets: Math.max(1, Math.ceil(memberCount / 4)),
   };
+}
+
+/**
+ * Recommendations are deliberately limited to quantities that can be derived
+ * from the household members the person has recorded. It does not infer any
+ * additional health, dietary, or access needs.
+ */
+export function householdSupplyRecommendations(members: MedicalProfile[]): SupplyRecommendation[] {
+  if (members.length === 0) return [];
+  const targets = calculateRecommendedTargets(members);
+  return [
+    { itemId: "starter-water", recommendedTarget: targets.waterTargetLitres, unit: "litres" },
+    { itemId: "starter-food", recommendedTarget: targets.foodTargetDays, unit: "days" },
+    { itemId: "starter-hygiene", recommendedTarget: targets.hygieneTargetDays, unit: "days" },
+    { itemId: "starter-first-aid", recommendedTarget: targets.firstAidTargetSets, unit: "sets" },
+    { itemId: "starter-flashlight", recommendedTarget: targets.flashlightTargetItems, unit: "items" },
+    { itemId: "starter-power", recommendedTarget: targets.powerTargetSets, unit: "sets" },
+  ];
 }
 
 export interface FamilyMedicalNeed {
