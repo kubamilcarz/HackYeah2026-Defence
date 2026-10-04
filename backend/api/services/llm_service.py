@@ -28,6 +28,27 @@ class StructuredOutputSchema(BaseModel):
     )
 
 
+class PlanActionSchema(BaseModel):
+    id: str
+    title: str
+    detail: str
+    target: str
+
+
+class PlanSectionSchema(BaseModel):
+    id: str
+    title: str
+    actions: List[PlanActionSchema]
+
+
+class PersonalizedPlanSchema(BaseModel):
+    title: str
+    summary: str
+    priorities: List[PlanActionSchema]
+    sections: List[PlanSectionSchema]
+    questions_to_resolve: List[str]
+
+
 class OpenAIService:
     """
     Service responsible for interacting with OpenAI API using Structured Outputs.
@@ -104,4 +125,3 @@ class OpenAIService:
         except openai.OpenAIError as exc:
             logger.error("OpenAI general error: %s", exc)
             raise RuntimeError(f"OpenAI service error: {str(exc)}") from exc
-

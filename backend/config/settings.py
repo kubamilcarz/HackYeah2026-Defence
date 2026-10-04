@@ -181,3 +181,5 @@ CORS_ALLOW_CREDENTIALS = True
 # OpenAI Settings
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+MAPBOX_SEARCH_TOKEN = os.environ.get("MAPBOX_SEARCH_TOKEN", "")
+PERSONALIZED_PLAN_MOCK = DEBUG and os.environ.get("PERSONALIZED_PLAN_MOCK", "False").lower() in ("true", "1", "yes")

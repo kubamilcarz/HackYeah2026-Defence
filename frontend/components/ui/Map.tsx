@@ -24,6 +24,7 @@ export type MapProps = {
   center?: MapPosition;
   className?: string;
   markers?: MapMarker[];
+  onMoveEnd?: (position: MapPosition) => void;
   styleUrl?: string;
   zoom?: number;
 };
@@ -37,6 +38,7 @@ export function Map({
   center = TAURON_ARENA_KRAKOW,
   className,
   markers = EMPTY_MARKERS,
+  onMoveEnd,
   styleUrl = DEFAULT_STYLE_URL,
   zoom = 16,
 }: MapProps) {
@@ -106,13 +108,19 @@ export function Map({
 
     map.on("load", handleLoad);
     map.on("error", handleError);
+    const handleMoveEnd = () => {
+      const next = map.getCenter();
+      onMoveEnd?.({ lat: next.lat, lng: next.lng });
+    };
+    map.on("moveend", handleMoveEnd);
 
     return () => {
       mapMarkers.forEach((marker) => marker.remove());
+      map.off("moveend", handleMoveEnd);
       map.remove();
       mapRef.current = null;
     };
-  }, [accessToken, center, copy.mapUnavailable, copy.showLocation, markers, styleUrl, zoom]);
+  }, [accessToken, center, copy.mapUnavailable, copy.showLocation, markers, onMoveEnd, styleUrl, zoom]);
 
   return (
     <section className={`map${className ? ` ${className}` : ""}`} aria-label={resolvedAriaLabel}>

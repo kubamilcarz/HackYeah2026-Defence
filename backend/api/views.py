@@ -1,5 +1,7 @@
 import math
 import logging
+from datetime import datetime, timezone
+from django.conf import settings
 from django.db.models import Q, Count
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,9 +14,14 @@ from .models import ShelterPoint
 from .serializers import (
     LLMProcessRequestSerializer,
     LLMStructuredResponseSerializer,
+    PersonalizedPlanRequestSerializer,
+    PersonalizedPlanResponseSerializer,
+    PlaceQuerySerializer,
     ShelterPointSerializer,
 )
 from .services import OpenAIService
+from .services.llm_service import PersonalizedPlanSchema
+from .services.map_service import MapboxPlacesService
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +117,149 @@ class LLMProcessView(APIView):
                 {"error": "An unexpected error occurred while processing the LLM request."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+class PersonalizedPlanView(APIView):
+    """Generate bounded, preparedness-only guidance from a minimized household snapshot."""
+    authentication_classes = []
+    permission_classes = []
+
+    @extend_schema(
+        summary="Generate a personalized preparedness plan",
+        request=PersonalizedPlanRequestSerializer,
+        responses={200: PersonalizedPlanResponseSerializer},
+    )
+    def post(self, request):
+        serializer = PersonalizedPlanRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        language = "Polish" if data["locale"] == "pl" else "English"
+        if settings.PERSONALIZED_PLAN_MOCK:
+            result = self._mock_response(data["locale"])
+            return Response({"version": "1", "generated_at": datetime.now(timezone.utc), **result})
+        system_instruction = (
+            "You write concise household preparedness decision support for PLAN:0. "
+            "Return only the requested schema in the requested language. "
+            "Use only the supplied snapshot; do not infer conditions. "
+            "This is not active-emergency guidance: never tell people to ignore authorities, "
+            "claim a location is safe/open/available, or guarantee safety. "
+            "Priorities must be practical preparation actions. Use only these action targets: "
+            "contacts, meetingPlace, supportInformation, waterAndFood, kitAndPower, "
+            "rolesAndDocuments, supplies, backpack. Provide 3 priorities, 2-4 sections, "
+            "and 2-4 questions to resolve."
+        )
+        prompt = f"Create a preparedness plan in {language} for this minimized household snapshot: {data['household']}"
+        try:
+            result = OpenAIService().process(
+                prompt=prompt,
+                system_instruction=system_instruction,
+                response_model=PersonalizedPlanSchema,
+            )
+            response = {
+                "version": "1",
+                "generated_at": datetime.now(timezone.utc),
+                **result,
+            }
+            response_serializer = PersonalizedPlanResponseSerializer(data=response)
+            response_serializer.is_valid(raise_exception=True)
+            return Response(response_serializer.validated_data)
+        except ValueError as exc:
+            logger.warning("Personalized plan could not be generated: %s", exc)
+            return Response({"error": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+        except (ConnectionError, PermissionError, RuntimeError) as exc:
+            logger.error("Personalized plan upstream error: %s", exc)
+            return Response({"error": "The planning service is unavailable. Please try again later."}, status=status.HTTP_502_BAD_GATEWAY)
+
+    @staticmethod
+    def _mock_response(locale):
+        if locale == "pl":
+            return {
+                "title": "Plan przygotowania dla Twojego gospodarstwa",
+                "summary": "Zacznij od wspólnych ustaleń, a następnie uzupełnij najważniejsze zapasy.",
+                "priorities": [
+                    {"id": "meeting", "title": "Ustal dwa miejsca spotkania", "detail": "Wybierz główne i zapasowe miejsce, które wszyscy domownicy znają.", "target": "meetingPlace"},
+                    {"id": "contact", "title": "Potwierdź kontakt awaryjny", "detail": "Ustal, kto przekazuje informacje, gdy domownicy są w różnych miejscach.", "target": "contacts"},
+                    {"id": "supplies", "title": "Sprawdź najważniejsze zapasy", "detail": "Uzupełnij brakujące pozycje i przygotuj plecak na 72 godziny.", "target": "supplies"},
+                ],
+                "sections": [
+                    {"id": "communication", "title": "Łączność i ustalenia", "actions": [{"id": "roles", "title": "Przydziel proste role", "detail": "Zapisz, kto zbiera dokumenty, kontaktuje się z bliskimi i sprawdza zapasy.", "target": "rolesAndDocuments"}]},
+                    {"id": "readiness", "title": "Gotowość", "actions": [{"id": "backpack", "title": "Spakuj podstawowe rzeczy", "detail": "Sprawdź wodę, światło, leki i dokumenty dla każdej osoby.", "target": "backpack"}]},
+                ],
+                "questions_to_resolve": ["Czy wszyscy znają główne i zapasowe miejsce spotkania?", "Kto jest kontaktem spoza najbliższej okolicy?"],
+            }
+        return {
+            "title": "Preparedness plan for your household",
+            "summary": "Start with shared decisions, then close the most important supply gaps.",
+            "priorities": [
+                {"id": "meeting", "title": "Agree two meeting places", "detail": "Choose a primary and backup place every household member knows.", "target": "meetingPlace"},
+                {"id": "contact", "title": "Confirm an emergency contact", "detail": "Agree who shares information when household members are apart.", "target": "contacts"},
+                {"id": "supplies", "title": "Check essential supplies", "detail": "Close gaps and prepare a 72-hour backpack.", "target": "supplies"},
+            ],
+            "sections": [
+                {"id": "communication", "title": "Communication and agreements", "actions": [{"id": "roles", "title": "Assign simple roles", "detail": "Record who gathers documents, contacts relatives, and checks supplies.", "target": "rolesAndDocuments"}]},
+                {"id": "readiness", "title": "Readiness", "actions": [{"id": "backpack", "title": "Pack the essentials", "detail": "Check water, light, medicines, and documents for every person.", "target": "backpack"}]},
+            ],
+            "questions_to_resolve": ["Does everyone know the primary and backup meeting place?", "Who is your out-of-area contact?"],
+        }
+
+
+class PlacesView(APIView):
+    """Combine imported shelter records with transient third-party POI search results."""
+    authentication_classes = []
+    permission_classes = []
+
+    @extend_schema(
+        summary="Find nearby shelters, hospitals, and pharmacies",
+        parameters=[
+            OpenApiParameter("lat", OpenApiTypes.FLOAT, required=True),
+            OpenApiParameter("lon", OpenApiTypes.FLOAT, required=True),
+            OpenApiParameter("radius_km", OpenApiTypes.FLOAT),
+            OpenApiParameter("types", OpenApiTypes.STR),
+            OpenApiParameter("query", OpenApiTypes.STR),
+            OpenApiParameter("locale", OpenApiTypes.STR),
+        ],
+        responses={200: inline_serializer(
+            name="NearbyPlacesResponse",
+            fields={
+                "results": serializers.ListField(child=serializers.DictField()),
+                "unavailable_types": serializers.ListField(child=serializers.CharField()),
+                "retrieved_at": serializers.DateTimeField(),
+            },
+        )},
+    )
+    def get(self, request):
+        serializer = PlaceQuerySerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        params = serializer.validated_data
+        requested_types = {value.strip() for value in params.get("types", "shelter,hospital,pharmacy").split(",") if value.strip()}
+        valid_types = {"shelter", "hospital", "pharmacy"}
+        requested_types &= valid_types
+        if not requested_types:
+            return Response({"error": "Choose at least one supported place type."}, status=status.HTTP_400_BAD_REQUEST)
+
+        results, unavailable = [], []
+        if "shelter" in requested_types:
+            queryset = ShelterPoint.objects.all()
+            query = params.get("query", "")
+            if query:
+                queryset = queryset.filter(Q(address__icontains=query) | Q(commune__icontains=query) | Q(county__icontains=query))
+            for point in queryset:
+                distance = haversine_distance(params["lat"], params["lon"], point.latitude, point.longitude)
+                if distance <= params["radius_km"]:
+                    results.append({
+                        "id": f"shelter:{point.id}", "type": "shelter", "title": point.name,
+                        "address": point.address, "latitude": point.latitude, "longitude": point.longitude,
+                        "distance_km": round(distance, 2), "accessibility": point.accessibility,
+                        "source": "Imported shelter register", "retrieved_at": datetime.now(timezone.utc).isoformat(), "temporary": False,
+                    })
+        provider = MapboxPlacesService()
+        for place_type in requested_types & {"hospital", "pharmacy"}:
+            try:
+                results.extend(provider.search(lat=params["lat"], lon=params["lon"], radius_km=params.get("radius_km", 5.0), place_type=place_type, query=params.get("query", ""), locale=params.get("locale", "pl")))
+            except (ValueError, ConnectionError):
+                unavailable.append(place_type)
+        results.sort(key=lambda item: item["distance_km"])
+        return Response({"results": results, "unavailable_types": unavailable, "retrieved_at": datetime.now(timezone.utc).isoformat()})
 
 
 def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -334,4 +484,3 @@ class ShelterPointStatsView(APIView):
             },
             status=status.HTTP_200_OK,
         )
-
