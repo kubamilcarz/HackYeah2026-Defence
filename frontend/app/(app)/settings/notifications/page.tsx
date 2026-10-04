@@ -1,5 +1,6 @@
-import { NotificationsScreen } from "@/components/app/NotificationsScreen";
+import { NotificationSettingsScreen } from "@/components/app/NotificationSettingsScreen";
 
 export default function NotificationsPage() {
-  return <NotificationsScreen context="settings" />;
+  return <NotificationSettingsScreen />;
 }
+

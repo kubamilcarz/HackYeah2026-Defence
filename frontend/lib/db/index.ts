@@ -241,6 +241,7 @@ export async function clearAllOfflineData(): Promise<void> {
       window.localStorage.removeItem("plan-0-plan-tasks-v1");
       window.localStorage.removeItem("plan-0-emergency-plan-v1");
       window.localStorage.removeItem("plan-0-emergency-mode-active");
+      window.localStorage.removeItem("plan-0-notification-settings-v1");
     } catch {
       // Storage unavailable
     }
@@ -251,6 +252,7 @@ export async function clearAllOfflineData(): Promise<void> {
     window.dispatchEvent(new Event("plan-0-emergency-contacts-change"));
     window.dispatchEvent(new Event("plan-0-plan-tasks-change"));
     window.dispatchEvent(new Event("plan-0-emergency-plan-change"));
+    window.dispatchEvent(new Event("plan-0-notification-settings-change"));
   }
 
   // Broadcast global DB change

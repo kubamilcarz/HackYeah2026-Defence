@@ -57,6 +57,7 @@ import {
   type SupplyItemInput,
   type SupplyRecommendation,
 } from "@/components/app/supplies";
+import { getNotificationPreferencesSnapshot } from "@/components/app/notification-preferences";
 
 const REMINDER_STORAGE_KEY = "plan-0-supply-reminders-v1";
 const REMINDER_SENT_STORAGE_KEY = "plan-0-supply-reminder-last-sent-v1";
@@ -211,6 +212,9 @@ export function SuppliesScreen() {
 
   useEffect(() => {
     if (notificationPermission !== "granted" || reminders.length === 0) return;
+    const notificationPrefs = getNotificationPreferencesSnapshot();
+    if (!notificationPrefs.supplyReminders) return;
+
     const hasExpiryIssue = issueCounts.expired + issueCounts["expires-soon"] > 0;
     const hasRestockIssue = issueCounts.restock > 0;
     if ((!reminders.includes("expiry") || !hasExpiryIssue) && (!reminders.includes("restock") || !hasRestockIssue)) return;

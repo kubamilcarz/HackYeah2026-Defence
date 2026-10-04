@@ -4951,3 +4951,69 @@ a.app-navigation__link--active {
     padding: var(--space-10) var(--space-6);
   }
 }
+
+/* Notification Settings */
+.notification-settings-content {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.notification-permission-card {
+  align-items: center;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+}
+
+.notification-permission-card__info {
+  display: grid;
+  flex: 1 1 14rem;
+  gap: var(--space-1);
+}
+
+.notification-channels-section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.notification-channels-list {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notification-channel-item {
+  align-items: center;
+  display: flex;
+  gap: var(--space-4);
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+}
+
+.notification-channel-item + .notification-channel-item {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.notification-channel-item__label {
+  cursor: pointer;
+  display: grid;
+  flex: 1 1 auto;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.notification-channel-item .accessibility-switch {
+  border-top: 0;
+  flex-shrink: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+
