@@ -1102,6 +1102,95 @@ a.app-navigation__link--active {
 .plan-next-step__eyebrow { color: var(--content-secondary); font-weight: var(--font-weight-semibold); }
 .plan-next-step .button { justify-self: start; }
 
+.personalized-plan,
+.personalized-plan__empty,
+.personalized-plan__block,
+.personalized-plan__sections,
+.personalized-plan__section,
+.personalized-plan__questions { display: grid; gap: var(--space-4); }
+
+.personalized-plan__empty {
+  align-items: center;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: var(--space-5);
+}
+
+.personalized-plan__empty > div { display: grid; gap: var(--space-2); }
+.personalized-plan__empty p { margin: 0; }
+
+.personalized-plan__hero {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--space-3);
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+}
+
+.personalized-plan__hero h3,
+.personalized-plan__hero p { margin: 0; }
+.personalized-plan__hero > p { color: var(--content-secondary); max-width: 44rem; }
+
+.personalized-plan__meta { align-items: center; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.personalized-plan__meta p { color: var(--content-muted); }
+
+.personalized-plan__priorities {
+  display: grid;
+  gap: var(--space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.personalized-plan__action {
+  align-items: center;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-3);
+  color: var(--content-primary);
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: var(--space-8) minmax(0, 1fr) auto;
+  min-height: var(--space-16);
+  padding: var(--space-4);
+  text-decoration: none;
+}
+
+.personalized-plan__action:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+.personalized-plan__number { align-items: center; background: var(--action-selected); border-radius: 50%; color: var(--action-selected-content); display: inline-flex; font-weight: var(--font-weight-bold); height: var(--space-8); justify-content: center; width: var(--space-8); }
+.personalized-plan__action-copy { display: grid; gap: var(--space-1); }
+.personalized-plan__action-copy span:last-child { color: var(--content-secondary); }
+.personalized-plan__open { align-items: center; color: var(--content-link); display: inline-flex; font-size: var(--font-size-caption); font-weight: var(--font-weight-semibold); gap: var(--space-1); white-space: nowrap; }
+
+.personalized-plan__sections { grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
+.personalized-plan__section,
+.personalized-plan__questions { background: var(--surface-subtle); border: 1px solid var(--border-subtle); border-radius: var(--space-3); padding: var(--space-4); }
+.personalized-plan__section h3,
+.personalized-plan__questions h3 { margin: 0; }
+.personalized-plan__section ul,
+.personalized-plan__questions ul { display: grid; gap: var(--space-3); margin: 0; padding-left: var(--space-5); }
+.personalized-plan__section li::marker,
+.personalized-plan__questions li::marker { color: var(--content-link); }
+.personalized-plan__section a { color: var(--content-primary); display: grid; gap: var(--space-1); text-decoration: none; }
+.personalized-plan__section a:hover strong,
+.personalized-plan__section a:focus-visible strong { color: var(--content-link); text-decoration: underline; }
+.personalized-plan__section a span { color: var(--content-secondary); font-size: var(--font-size-caption); line-height: var(--line-height-caption); }
+.personalized-plan__footer { border-top: 1px solid var(--border-subtle); padding-top: var(--space-4); }
+
+@media (hover: hover) {
+  .personalized-plan__action:hover { background: var(--action-secondary-hover); }
+}
+
+@media (max-width: 36rem) {
+  .personalized-plan__empty { grid-template-columns: 1fr; }
+  .personalized-plan__empty .button { justify-self: start; }
+  .personalized-plan__action { align-items: start; grid-template-columns: var(--space-8) minmax(0, 1fr); }
+  .personalized-plan__open { grid-column: 2; }
+}
+
 .plan-screen__checklist-section,
 .plan-screen__backpack-section,
 .plan-screen__supplies-section,
@@ -5725,4 +5814,3 @@ a.app-navigation__link--active {
     padding-top: var(--space-8);
   }
 }
-

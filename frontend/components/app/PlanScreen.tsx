@@ -249,27 +249,57 @@ export function PlanScreen() {
           </div>
           <Alert description={copy.personalized.official} title={copy.personalized.heading} variant="info" />
           {!personalizedPlan ? (
-            <div className="plan-next-step">
-              <p className="type-body">{copy.personalized.consent}</p>
+            <div className="personalized-plan__empty">
+              <div>
+                <p className="type-h3">{copy.personalized.heading}</p>
+                <p className="type-body">{copy.personalized.consent}</p>
+              </div>
               <Button disabled={isGeneratingPlan} onClick={createPersonalizedPlan}>{isGeneratingPlan ? copy.personalized.generating : copy.personalized.generate}</Button>
             </div>
           ) : (
-            <div className="plan-next-step">
-              <div className="plan-screen__section-heading">
-                <p className="type-caption">{copy.personalized.generated}: {new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(personalizedPlan.generated_at))}</p>
-                {isPlanOutdated && <Alert description={copy.personalized.outdated} title={copy.personalized.heading} variant="warning" />}
-                {planError && <Alert description={planError} title={copy.personalized.heading} variant="warning" />}
+            <div className="personalized-plan">
+              <header className="personalized-plan__hero">
+                <div className="personalized-plan__meta">
+                  <span className="badge badge--info">{copy.personalized.generated}</span>
+                  <p className="type-caption">{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(personalizedPlan.generated_at))}</p>
+                </div>
+                <h3 className="type-h2">{personalizedPlan.title}</h3>
+                <p className="type-body">{personalizedPlan.summary}</p>
+              </header>
+              {isPlanOutdated && <Alert description={copy.personalized.outdated} title={copy.personalized.heading} variant="warning" />}
+              {planError && <Alert description={planError} title={copy.personalized.heading} variant="warning" />}
+
+              <section aria-labelledby="personalized-priorities-heading" className="personalized-plan__block">
+                <h3 className="type-h3" id="personalized-priorities-heading">{copy.personalized.priorities}</h3>
+                <ol className="personalized-plan__priorities">
+                  {personalizedPlan.priorities.map((action, index) => (
+                    <li key={action.id}>
+                      <Link className="personalized-plan__action" href={TARGET_HREFS[action.target]}>
+                        <span aria-hidden="true" className="personalized-plan__number">{index + 1}</span>
+                        <span className="personalized-plan__action-copy"><span className="type-h3">{action.title}</span><span className="type-caption">{action.detail}</span></span>
+                        <span className="personalized-plan__open">{copy.personalized.open} <ArrowRight aria-hidden="true" size={16} weight="bold" /></span>
+                      </Link>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+
+              <div className="personalized-plan__sections">
+                {personalizedPlan.sections.map((section) => (
+                  <section className="personalized-plan__section" key={section.id}>
+                    <h3 className="type-h3">{section.title}</h3>
+                    <ul>
+                      {section.actions.map((action) => <li key={action.id}><Link href={TARGET_HREFS[action.target]}><strong>{action.title}</strong><span>{action.detail}</span></Link></li>)}
+                    </ul>
+                  </section>
+                ))}
               </div>
-              <h3 className="type-h3">{personalizedPlan.title}</h3>
-              <p className="type-body">{personalizedPlan.summary}</p>
-              <h3 className="type-h3">{copy.personalized.priorities}</h3>
-              <ol className="plan-checklist">
-                {personalizedPlan.priorities.map((action) => <li key={action.id}><article className="plan-checklist__item"><span className="plan-checklist__copy"><span className="plan-checklist__title">{action.title}</span><span className="type-caption plan-checklist__description">{action.detail}</span><Link className="plan-checklist__source" href={TARGET_HREFS[action.target]}>{copy.personalized.open}</Link></span></article></li>)}
-              </ol>
-              {personalizedPlan.sections.map((section) => <section key={section.id}><h3 className="type-h3">{section.title}</h3><ul className="plan-checklist">{section.actions.map((action) => <li key={action.id}><Link className="plan-checklist__source" href={TARGET_HREFS[action.target]}>{action.title}: {action.detail}</Link></li>)}</ul></section>)}
-              <h3 className="type-h3">{copy.personalized.questions}</h3>
-              <ul>{personalizedPlan.questions_to_resolve.map((question) => <li key={question} className="type-body">{question}</li>)}</ul>
-              <Button disabled={isGeneratingPlan} onClick={createPersonalizedPlan} variant="secondary">{isGeneratingPlan ? copy.personalized.generating : copy.personalized.refresh}</Button>
+
+              <section aria-labelledby="personalized-questions-heading" className="personalized-plan__questions">
+                <h3 className="type-h3" id="personalized-questions-heading">{copy.personalized.questions}</h3>
+                <ul>{personalizedPlan.questions_to_resolve.map((question) => <li key={question} className="type-body">{question}</li>)}</ul>
+              </section>
+              <div className="personalized-plan__footer"><Button disabled={isGeneratingPlan} onClick={createPersonalizedPlan} variant="secondary">{isGeneratingPlan ? copy.personalized.generating : copy.personalized.refresh}</Button></div>
             </div>
           )}
           {!personalizedPlan && planError && <Alert description={planError} title={copy.personalized.heading} variant="warning" />}
