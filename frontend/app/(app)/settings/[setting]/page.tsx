@@ -4,7 +4,6 @@ import { SettingsPlaceholderScreen } from "@/components/app/SettingsPlaceholderS
 const placeholderPages = {
   about: "about",
   "announcements-alerts": "announcementsAlerts",
-  guides: "guides",
   preferences: "preferences",
   profile: "profile",
 } as const;

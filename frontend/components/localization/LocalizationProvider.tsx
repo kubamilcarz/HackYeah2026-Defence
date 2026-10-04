@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import {
+  DEFAULT_LOCALE,
   getDeviceLocale,
   isLocale,
   messages,
@@ -72,7 +73,7 @@ export function LocalizationProvider({ children }: { children: ReactNode }) {
   const locale = useSyncExternalStore(
     subscribeToLocale,
     getClientLocale,
-    () => "en" as Locale,
+    () => DEFAULT_LOCALE,
   );
 
   const setLocale = useCallback((nextLocale: Locale) => {

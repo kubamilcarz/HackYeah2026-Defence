@@ -1,5 +1,5 @@
-import { InstallGuideScreen } from "@/components/app/InstallGuideScreen";
+import { HazardGuidesScreen } from "@/components/app/HazardGuidesScreen";
 
 export default function GuidesPage() {
-  return <InstallGuideScreen />;
+  return <HazardGuidesScreen />;
 }

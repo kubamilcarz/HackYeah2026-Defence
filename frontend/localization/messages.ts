@@ -468,6 +468,91 @@ const en = {
     planReviewRemindersDescription: "Periodic reminders to keep your household plan up to date.",
     deliveryNote: "On iOS, notifications require adding PLAN:0 to your Home Screen. If push is unavailable or blocked, all alerts still appear in the app.",
   },
+  hazardGuides: {
+    title: "Hazard guides",
+    viewAll: "All",
+    deferNotice: "During an active incident, orders from 112 and local emergency services always take precedence.",
+    officialSource: "Official guidance: {source}",
+    callService: "Call {number}",
+    sections: {
+      active: "Active emergency",
+      preparedness: "Preparedness",
+    },
+    hazards: {
+      flooding: {
+        title: "Flood",
+        tag: "Inundation",
+        sourceName: "RCB & PSP",
+        sourceUrl: "https://www.gov.pl/web/rcb/poradnik-powodz",
+        emergencyContact: "112",
+        activeSteps: [
+          "Move to the highest floor or high ground. Stay out of basements.",
+          "Turn off electricity, gas, and main water valve before water enters.",
+          "Never drive or walk through floodwater — current easily sweeps vehicles away.",
+          "Evacuate immediately upon order.",
+        ],
+        preparednessSteps: [
+          "Pack an evacuation bag with documents sealed in waterproof pouches.",
+          "Store 3 liters of water per person per day (minimum 3-day supply).",
+          "Identify family meeting points on high ground.",
+        ],
+      },
+      blackout: {
+        title: "Blackout",
+        tag: "Grid failure",
+        sourceName: "RCB",
+        sourceUrl: "https://www.gov.pl/web/rcb/badz-gotowy--poradnik-na-czas-kryzysu-i-wojny",
+        emergencyContact: "991",
+        activeSteps: [
+          "Unplug sensitive electronics to guard against power surges.",
+          "Keep refrigerators and freezers closed (food stays frozen up to 48h).",
+          "Use flashlights or headlamps. Never leave candles unattended.",
+          "Never run combustion generators indoors (risk of lethal carbon monoxide).",
+        ],
+        preparednessSteps: [
+          "Keep powerbanks charged and reserve batteries ready.",
+          "Have a battery or crank radio for official civil broadcasts.",
+          "Stock shelf-stable food requiring no heating, plus a manual can opener.",
+        ],
+      },
+      fire: {
+        title: "Fire",
+        tag: "Building fire",
+        sourceName: "PSP",
+        sourceUrl: "https://www.gov.pl/web/kgpsp/bezpieczenstwo-pozarowe",
+        emergencyContact: "998",
+        activeSteps: [
+          "Alert others and evacuate immediately via the nearest exit.",
+          "Crawl low under smoke — breathable air stays near the floor.",
+          "Feel doors before opening. If hot, leave closed and pick another exit.",
+          "Close doors behind you to slow flame spread. Never return inside.",
+        ],
+        preparednessSteps: [
+          "Mount smoke detectors on every floor; test batteries monthly.",
+          "Keep an ABC powder extinguisher and kitchen fire blanket accessible.",
+          "Keep hallways, staircases, and exit routes clear of clutter.",
+        ],
+      },
+      evacuation: {
+        title: "Evacuation",
+        tag: "Displacement",
+        sourceName: "RCB",
+        sourceUrl: "https://www.gov.pl/web/rcb/ewakuacja",
+        emergencyContact: "112",
+        activeSteps: [
+          "Follow only routes designated by emergency personnel.",
+          "Take your 72h grab bag, personal IDs, and daily prescription medicines.",
+          "Shut off electricity, gas, and water before leaving.",
+          "Lock up. Once in a safe zone, inform your family contact.",
+        ],
+        preparednessSteps: [
+          "Keep a 72-hour emergency backpack ready for each household member.",
+          "Agree on primary and alternate family meeting spots away from home.",
+          "Keep vehicle fuel tank at least half full; keep small cash reserves.",
+        ],
+      },
+    },
+  },
   accessibility: { launcher: "Accessibility preferences", title: "Accessibility", close: "Close accessibility preferences", display: "Display", displayDescription: "Choose the appearance that is most comfortable for you.", displayMode: "Display mode", appearance: { system: "Use device setting", light: "Light", dark: "Dark", hcBlackWhite: "High contrast — black / white", hcBlackYellow: "High contrast — black / yellow", grayscale: "Grayscale" }, textSize: "Text size", textSizeDescription: "Adjust text across PLAN:0 without changing your browser zoom.", decreaseTextSize: "Decrease text size", increaseTextSize: "Increase text size", resetTextSize: "Reset text size", textSizeValue: "Text size: {value}%", links: "Links", linksDescription: "Make links easier to identify in every appearance mode.", underlineLinks: "Underline links", readAloud: "Read aloud", readAloudDescription: "Use your browser to read the current page aloud.", readThisPage: "Read this page", pause: "Pause", resume: "Resume", stop: "Stop", stopReading: "Stop reading", readyToRead: "Ready to read this page aloud.", reading: "Reading this page aloud.", readingPaused: "Reading paused.", noReadableContent: "No readable page content was found.", finishedReading: "Finished reading this page.", readUnavailable: "Read aloud is unavailable right now.", readUnsupported: "Read aloud is not supported by this browser.", reset: "Reset", resetDescription: "Restore the default appearance, text size, and link treatment.", resetSettings: "Reset settings" },
   map: { ariaLabel: "Map of nearby important locations", centerOnLocation: "Center map on my location", searchAndLocations: "Map search and locations", resizePanel: "Resize map panel. Current size: {size}. Use the up and down arrow keys to change its size.", sizes: { compact: "compact", browse: "browse", expanded: "expanded" }, yourPlaces: "Your places", noPlacesSummary: "No plan places saved yet", planPlaces: "Places in your plan", primaryMeetingPlace: "Primary meeting place", meetingPlaceDescription: "Choose a place your household can agree on before you need it.", addMeetingPlace: "Add a primary meeting place to your plan", add: "Add", managePlan: "Manage plan", nearbyPlaces: "Nearby places", mapArea: "This map area", yourPlan: "Your plan", search: "Search places and addresses", filterLocations: "Filter map locations", all: "All", shelters: "Shelters", hospitals: "Hospitals", pharmacies: "Pharmacies", meetingPlaces: "Meeting places", nearbyUnavailable: "Nearby places will appear here when a trusted local source is connected.", locationUnavailable: "Location is not available in this browser. Search for an address or place instead.", requestingLocation: "Requesting your location…", centeredOnLocation: "Map centered on your current location.", locationDenied: "We could not access your location. Search for an address or place instead.", mapLoading: "Loading map…", mapNotConfigured: "Mapbox is not configured. Add a public Mapbox access token to view the map.", mapUnavailable: "Mapbox could not be loaded. Please try again later.", selectLocation: "Select a location on the map or from the list.", locations: "Locations", showLocation: "Show {title}", clearSearch: "Clear search" },
 } as const;
@@ -938,9 +1023,96 @@ const pl: Messages = {
     planReviewRemindersDescription: "Okresowe przypomnienia o aktualizacji planu.",
     deliveryNote: "W systemie iOS powiadomienia wymagają dodania PLAN:0 do ekranu początkowego. Wszystkie alerty są zawsze widoczne w aplikacji po jej otwarciu.",
   },
+  hazardGuides: {
+    title: "Instrukcje zagrożeń",
+    viewAll: "Wszystkie",
+    deferNotice: "W trakcie bezpośredniego zagrożenia polecenia służb ratunkowych i 112 mają bezwzględne pierwszeństwo.",
+    officialSource: "Wytyczne: {source}",
+    callService: "Zadzwoń {number}",
+    sections: {
+      active: "Podczas zagrożenia",
+      preparedness: "Przygotowanie",
+    },
+    hazards: {
+      flooding: {
+        title: "Powódź",
+        tag: "Podtopienia",
+        sourceName: "RCB i PSP",
+        sourceUrl: "https://www.gov.pl/web/rcb/poradnik-powodz",
+        emergencyContact: "112",
+        activeSteps: [
+          "Wyjdź na wyższe kondygnacje lub wzniesienie. Nie schodź do piwnic.",
+          "Wyłącz prąd, gaz i główny zawór wody przed wdarciem się wody.",
+          "Nie wchodź i nie wjeżdżaj autem w wodę powodziową — nurt z łatwością porywa pojazdy.",
+          "Ewakuuj się natychmiast na wezwanie służb.",
+        ],
+        preparednessSteps: [
+          "Spakuj plecak ewakuacyjny z dokumentami w wodoszczelnym worku.",
+          "Zgromadź 3 litry wody na osobę dziennie (zapas na minimum 3 dni).",
+          "Wyznacz z rodziną punkt zbiórki na wyżej położonym terenie.",
+        ],
+      },
+      blackout: {
+        title: "Blackout",
+        tag: "Awaria sieci",
+        sourceName: "RCB",
+        sourceUrl: "https://www.gov.pl/web/rcb/badz-gotowy--poradnik-na-czas-kryzysu-i-wojny",
+        emergencyContact: "991",
+        activeSteps: [
+          "Odłącz wrażliwą elektronikę z gniazdek przed skokiem napięcia.",
+          "Ogranicz otwieranie lodówki i zamrażarki (trzymają chłód do 48h).",
+          "Używaj latarek bateryjnych lub czołówek; nie zostawiaj świec bez nadzoru.",
+          "Nigdy nie uruchamiaj agregatów spalinowych wewnątrz (ryzyko śmiertelnego czadu).",
+        ],
+        preparednessSteps: [
+          "Utrzymuj naładowane powerbanki i zapas baterii.",
+          "Miej radio na baterie lub dynamo do odbioru komunikatów kryzysowych.",
+          "Zabezpiecz żywność niewymagającą gotowania i ręczny otwieracz.",
+        ],
+      },
+      fire: {
+        title: "Pożar",
+        tag: "Ogień i dym",
+        sourceName: "PSP",
+        sourceUrl: "https://www.gov.pl/web/kgpsp/bezpieczenstwo-pozarowe",
+        emergencyContact: "998",
+        activeSteps: [
+          "Ostrzeż domowników i natychmiast opuść budynek najbliższym wyjściem.",
+          "Poruszaj się nisko przy podłodze — tam jest czyste powietrze.",
+          "Sprawdź dłonią drzwi przed otwarciem. Jeśli są gorące, wybierz inną drogę.",
+          "Zamykaj za sobą drzwi, by odciąć dopływ tlenu. Po wyjściu nie wracaj.",
+        ],
+        preparednessSteps: [
+          "Zamontuj czujniki dymu na każdym poziomie i sprawdzaj je co miesiąc.",
+          "Trzymaj gaśnicę proszkową ABC oraz koc gaśniczy w łatwo dostępnym miejscu.",
+          "Dbaj, aby drogi ewakuacyjne i korytarze były zawsze drożne.",
+        ],
+      },
+      evacuation: {
+        title: "Ewakuacja",
+        tag: "Opuszczenie rejonu",
+        sourceName: "RCB",
+        sourceUrl: "https://www.gov.pl/web/rcb/ewakuacja",
+        emergencyContact: "112",
+        activeSteps: [
+          "Kieruj się wyłącznie trasami wyznaczonymi przez ratowników.",
+          "Zabierz plecak ucieczkowy, dowód tożsamości i codzienne leki.",
+          "Zamknij zawory gazu i wody oraz wyłącz bezpieczniki.",
+          "Zamknij dom. Po dotarciu w bezpieczną strefę powiadom bliskich.",
+        ],
+        preparednessSteps: [
+          "Miej gotowy plecak ewakuacyjny na 72 godziny dla każdego członka rodziny.",
+          "Ustal z domownikami dwa alternatywne miejsca spotkania poza osiedlem.",
+          "Trzymaj bak zatankowany co najmniej do połowy i miej rezerwę gotówki.",
+        ],
+      },
+    },
+  },
   accessibility: { launcher: "Preferencje dostępności", title: "Dostępność", close: "Zamknij preferencje dostępności", display: "Wyświetlanie", displayDescription: "Wybierz wygląd najbardziej komfortowy dla siebie.", displayMode: "Tryb wyświetlania", appearance: { system: "Użyj ustawień urządzenia", light: "Jasny", dark: "Ciemny", hcBlackWhite: "Wysoki kontrast — czerń / biel", hcBlackYellow: "Wysoki kontrast — czerń / żółty", grayscale: "Skala szarości" }, textSize: "Rozmiar tekstu", textSizeDescription: "Dostosuj tekst w PLAN:0 bez zmieniania powiększenia przeglądarki.", decreaseTextSize: "Zmniejsz rozmiar tekstu", increaseTextSize: "Zwiększ rozmiar tekstu", resetTextSize: "Przywróć rozmiar tekstu", textSizeValue: "Rozmiar tekstu: {value}%", links: "Łącza", linksDescription: "Ułatw rozpoznawanie łączy w każdym trybie wyglądu.", underlineLinks: "Podkreślaj łącza", readAloud: "Czytaj na głos", readAloudDescription: "Użyj przeglądarki, aby przeczytać bieżącą stronę na głos.", readThisPage: "Czytaj tę stronę", pause: "Wstrzymaj", resume: "Wznów", stop: "Zatrzymaj", stopReading: "Zatrzymaj czytanie", readyToRead: "Gotowe do przeczytania tej strony na głos.", reading: "Trwa czytanie strony na głos.", readingPaused: "Czytanie wstrzymane.", noReadableContent: "Nie znaleziono treści strony do przeczytania.", finishedReading: "Zakończono czytanie strony.", readUnavailable: "Czytanie na głos jest teraz niedostępne.", readUnsupported: "Czytanie na głos nie jest obsługiwane przez tę przeglądarkę.", reset: "Resetuj", resetDescription: "Przywróć domyślny wygląd, rozmiar tekstu i sposób wyświetlania łączy.", resetSettings: "Zresetuj ustawienia" },
   map: { ariaLabel: "Mapa pobliskich ważnych miejsc", centerOnLocation: "Wyśrodkuj mapę na mojej lokalizacji", searchAndLocations: "Wyszukiwanie na mapie i miejsca", resizePanel: "Zmień rozmiar panelu mapy. Bieżący rozmiar: {size}. Użyj strzałek w górę i w dół, aby zmienić jego rozmiar.", sizes: { compact: "zwarty", browse: "przegląd", expanded: "rozszerzony" }, yourPlaces: "Twoje miejsca", noPlacesSummary: "Nie zapisano jeszcze miejsc w planie", planPlaces: "Miejsca w Twoim planie", primaryMeetingPlace: "Główne miejsce spotkania", meetingPlaceDescription: "Wybierz miejsce, na które domownicy mogą umówić się, zanim będzie potrzebne.", addMeetingPlace: "Dodaj główne miejsce spotkania do planu", add: "Dodaj", managePlan: "Zarządzaj planem", nearbyPlaces: "Miejsca w pobliżu", mapArea: "Ten obszar mapy", yourPlan: "Twój plan", search: "Szukaj miejsc i adresów", filterLocations: "Filtruj miejsca na mapie", all: "Wszystkie", shelters: "Schronienia", hospitals: "Szpitale", pharmacies: "Apteki", meetingPlaces: "Miejsca spotkań", nearbyUnavailable: "Pobliskie miejsca pojawią się tutaj po podłączeniu zaufanego lokalnego źródła.", locationUnavailable: "Lokalizacja nie jest dostępna w tej przeglądarce. Zamiast tego wyszukaj adres lub miejsce.", requestingLocation: "Trwa pobieranie Twojej lokalizacji…", centeredOnLocation: "Mapa została wyśrodkowana na Twojej bieżącej lokalizacji.", locationDenied: "Nie udało się uzyskać dostępu do Twojej lokalizacji. Zamiast tego wyszukaj adres lub miejsce.", mapLoading: "Trwa ładowanie mapy…", mapNotConfigured: "Mapbox nie jest skonfigurowany. Dodaj publiczny token dostępu Mapbox, aby wyświetlić mapę.", mapUnavailable: "Nie udało się załadować Mapbox. Spróbuj ponownie później.", selectLocation: "Wybierz miejsce na mapie lub z listy.", locations: "Miejsca", showLocation: "Pokaż: {title}", clearSearch: "Wyczyść wyszukiwanie" },
 };
+
+export const DEFAULT_LOCALE: Locale = "pl";
 
 export const messages: Record<Locale, Messages> = { en, pl };
 
@@ -949,13 +1121,5 @@ export function isLocale(value: unknown): value is Locale {
 }
 
 export function getDeviceLocale(): Locale {
-  if (typeof navigator === "undefined") return "en";
-
-  const preferredLanguages = navigator.languages?.length
-    ? navigator.languages
-    : [navigator.language];
-
-  return preferredLanguages.some((language) => language.toLowerCase().startsWith("pl"))
-    ? "pl"
-    : "en";
+  return DEFAULT_LOCALE;
 }

@@ -47,7 +47,7 @@ export function InstallReminder() {
   const copy = messages.installReminder;
   return (
     <Alert
-      actionHref="/settings/guides"
+      actionHref="/settings/install-guide"
       actionLabel={copy.action}
       className="app-shell__install-reminder"
       description={copy.description}
