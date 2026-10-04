@@ -54,6 +54,14 @@ python manage.py runserver 8000
 
 The API will be available at `http://127.0.0.1:8000/`.
 
+### Map demo data
+
+Set `MAP_PLACES_MOCK=True` in `backend/.env` to return deterministic nearby
+shelter, hospital, and pharmacy samples from `GET /api/places/`. The samples
+follow the requested map center and are labeled as mock, non-live data; no
+Mapbox Search token or imported shelter records are needed. This switch only
+works while `DJANGO_DEBUG=True`.
+
 ## Endpoints
 
 - **Health Check**: `GET /api/health/`
@@ -67,4 +75,3 @@ The API will be available at `http://127.0.0.1:8000/`.
 ```bash
 python manage.py test
 ```
-

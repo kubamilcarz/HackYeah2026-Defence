@@ -4531,6 +4531,55 @@ a.app-navigation__link--active {
   width: 100%;
 }
 
+.map__mock-canvas {
+  background-color: var(--surface-subtle);
+  background-image:
+    linear-gradient(35deg, transparent 46%, var(--surface-raised) 47%, var(--surface-raised) 52%, transparent 53%),
+    linear-gradient(125deg, transparent 46%, var(--surface-raised) 47%, var(--surface-raised) 52%, transparent 53%);
+  background-size: 11rem 11rem;
+  height: 22rem;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.map__mock-label {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--space-2);
+  color: var(--content-secondary);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  margin: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  position: absolute;
+  z-index: 1;
+}
+
+.map__mock-pin {
+  align-items: center;
+  background: var(--feedback-info-foreground);
+  border: 2px solid var(--surface-raised);
+  border-radius: 50%;
+  color: var(--content-inverse);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-weight: var(--font-weight-bold);
+  height: var(--space-12);
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: var(--space-12);
+}
+
+.map__mock-pin--success { background: var(--feedback-success-foreground); }
+.map__mock-pin--warning { background: var(--feedback-warning-foreground); }
+.map__mock-pin--danger { background: var(--feedback-danger-foreground); }
+.map__mock-pin[aria-pressed="true"] { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+.map__mock-pin:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+
 .map__canvas:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: -3px;
@@ -4676,7 +4725,8 @@ a.app-navigation__link--active {
 
 .map-screen__map,
 .map-screen__map .map__canvas-wrap,
-.map-screen__map .map__canvas {
+.map-screen__map .map__canvas,
+.map-screen__map .map__mock-canvas {
   height: 100%;
 }
 
@@ -4895,6 +4945,10 @@ a.app-navigation__link--active {
   .crisis-screen__exit-button { border: 1px solid ButtonText; }
 
   .map__marker-tone { background: CanvasText; }
+  .map__mock-canvas { background: Canvas; }
+  .map__mock-label,
+  .map__mock-pin { border: 1px solid CanvasText; }
+  .map__mock-pin { background: Canvas; color: CanvasText; }
   .map-sheet__handle-bar { background: CanvasText; }
 }
 

@@ -237,6 +237,13 @@ class PlacesView(APIView):
         if not requested_types:
             return Response({"error": "Choose at least one supported place type."}, status=status.HTTP_400_BAD_REQUEST)
 
+        if settings.MAP_PLACES_MOCK:
+            return Response({
+                "results": self._mock_response(params, requested_types),
+                "unavailable_types": [],
+                "retrieved_at": datetime.now(timezone.utc).isoformat(),
+            })
+
         results, unavailable = [], []
         if "shelter" in requested_types:
             queryset = ShelterPoint.objects.all()
@@ -260,6 +267,55 @@ class PlacesView(APIView):
                 unavailable.append(place_type)
         results.sort(key=lambda item: item["distance_km"])
         return Response({"results": results, "unavailable_types": unavailable, "retrieved_at": datetime.now(timezone.utc).isoformat()})
+
+    @staticmethod
+    def _mock_response(params, requested_types):
+        """Development-only POIs for exercising the map UI without external data.
+
+        Coordinates intentionally follow the requested center so geolocation and
+        map movement remain testable. These samples do not represent live places.
+        """
+        is_polish = params["locale"] == "pl"
+        labels = {
+            "shelter": ("Przykładowe miejsce schronienia", "Sample shelter"),
+            "hospital": ("Przykładowy szpital", "Sample hospital"),
+            "pharmacy": ("Przykładowa apteka", "Sample pharmacy"),
+        }
+        addresses = {
+            "shelter": ("ul. Przykładowa 12", "12 Example Street"),
+            "hospital": ("ul. Zdrowia 8", "8 Health Avenue"),
+            "pharmacy": ("ul. Pomocna 4", "4 Help Street"),
+        }
+        offsets = {
+            "shelter": (0.0042, -0.0036, 0.61),
+            "hospital": (-0.0027, 0.0051, 0.48),
+            "pharmacy": (0.0015, 0.0064, 0.54),
+        }
+        query = params.get("query", "").casefold().strip()
+        source = "Dane testowe — nie są aktualnymi danymi" if is_polish else "Mock data — not live data"
+        fetched_at = datetime.now(timezone.utc).isoformat()
+        results = []
+        for place_type in sorted(requested_types):
+            latitude_offset, longitude_offset, distance = offsets[place_type]
+            title = labels[place_type][0 if is_polish else 1]
+            address = addresses[place_type][0 if is_polish else 1]
+            searchable = f"{title} {address} {place_type}".casefold()
+            if query and query not in searchable:
+                continue
+            results.append({
+                "id": f"mock:{place_type}",
+                "type": place_type,
+                "title": title,
+                "address": address,
+                "latitude": params["lat"] + latitude_offset,
+                "longitude": params["lon"] + longitude_offset,
+                "distance_km": distance,
+                "accessibility": None,
+                "source": source,
+                "retrieved_at": fetched_at,
+                "temporary": True,
+            })
+        return results
 
 
 def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:

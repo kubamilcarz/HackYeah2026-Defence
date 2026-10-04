@@ -253,9 +253,23 @@ class ShelterPointTests(TestCase):
         self.assertEqual(response.data["by_voivodeship"]["dolnośląskie"], 2)
         self.assertIn("Całodobowa", response.data["by_accessibility"])
 
-    @override_settings(MAPBOX_SEARCH_TOKEN="")
+    @override_settings(MAPBOX_SEARCH_TOKEN="", MAP_PLACES_MOCK=False)
     def test_places_endpoint_returns_local_shelters_when_mapbox_is_unconfigured(self):
         response = self.client.get(reverse("places"), {"lat": 51.1097, "lon": 17.0327, "types": "shelter,hospital"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["results"][0]["id"], "shelter:OZO-TEST1")
         self.assertIn("hospital", response.data["unavailable_types"])
+
+    @override_settings(MAP_PLACES_MOCK=True)
+    def test_places_endpoint_returns_labeled_mock_places(self):
+        response = self.client.get(reverse("places"), {"lat": 51.1097, "lon": 17.0327, "types": "shelter,hospital", "locale": "en"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual([place["id"] for place in response.data["results"]], ["mock:hospital", "mock:shelter"])
+        self.assertTrue(all(place["temporary"] for place in response.data["results"]))
+        self.assertTrue(all(place["source"] == "Mock data — not live data" for place in response.data["results"]))
+
+    @override_settings(MAP_PLACES_MOCK=True)
+    def test_places_mock_respects_type_and_search_filters(self):
+        response = self.client.get(reverse("places"), {"lat": 51.1097, "lon": 17.0327, "types": "pharmacy", "query": "Help", "locale": "en"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual([place["id"] for place in response.data["results"]], ["mock:pharmacy"])
