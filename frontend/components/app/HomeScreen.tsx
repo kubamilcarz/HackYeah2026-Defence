@@ -11,6 +11,7 @@ import {
   MapPin,
   Package,
   Phone,
+  Siren,
   UsersThree,
 } from "@phosphor-icons/react/ssr";
 import { EmergencyModeCard, FamilyMembersCard, HouseholdResourcesCard, ReadinessCard } from "@/components/ui/Cards";
@@ -198,6 +199,14 @@ export function HomeScreen() {
               <span className="home-quick-link__content">
                 <span className="type-h3">{copy.quickAccess.numbers.title}</span>
                 <span className="type-caption">{copy.quickAccess.numbers.description}</span>
+              </span>
+              <ArrowRight aria-hidden="true" className="home-quick-link__arrow" size={20} weight="bold" />
+            </Link>
+            <Link className="home-quick-link" href="/signals">
+              <Siren aria-hidden="true" className="home-quick-link__icon" size={28} weight="bold" />
+              <span className="home-quick-link__content">
+                <span className="type-h3">{copy.quickAccess.signals.title}</span>
+                <span className="type-caption">{copy.quickAccess.signals.description}</span>
               </span>
               <ArrowRight aria-hidden="true" className="home-quick-link__arrow" size={20} weight="bold" />
             </Link>

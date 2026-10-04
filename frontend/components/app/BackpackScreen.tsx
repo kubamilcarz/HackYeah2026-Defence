@@ -345,7 +345,7 @@ export function BackpackScreen() {
 
           {/* Simple Family Bar */}
           <div className="backpack-clean__family-bar">
-            <div className="flex items-center gap-2.5 text-sm text-[var(--content-secondary)]">
+            <div className="flex items-center gap-2.5 text-sm text-[var(--content-secondary)] p-4">
               <UsersThree aria-hidden="true" size={20} />
               <span className="font-medium text-[var(--content-primary)]">{familyPillText}</span>
             </div>
@@ -367,6 +367,7 @@ export function BackpackScreen() {
               value={progress.packed}
               valueLabel={`${progress.percentage}%`}
               variant="success"
+              className="p-4"
             />
           </div>
         </header>
