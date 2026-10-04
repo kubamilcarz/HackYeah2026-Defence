@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import type { Icon } from "@phosphor-icons/react/lib";
 import {
   ArrowRight,
@@ -13,11 +13,15 @@ import {
   Package,
   Phone,
   Flashlight,
+  FloppyDisk,
+  Printer,
 } from "@phosphor-icons/react/ssr";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
+import { Button } from "@/components/ui/Button";
+import { Dialog } from "@/components/ui/Dialog";
+import { CheckboxGroup } from "@/components/ui/FormControls";
 import { CircularProgress } from "@/components/ui/Progress";
 import { PageNavigationBar } from "@/components/ui/PageNavigationBar";
-import { Button } from "@/components/ui/Button";
 import {
   getEmergencyContactsServerSnapshot,
   getEmergencyContactsSnapshot,
@@ -26,6 +30,9 @@ import {
 import {
   getMedicalProfilesServerSnapshot,
   getMedicalProfilesSnapshot,
+  getMedicalNotesServerSnapshot,
+  getMedicalNotesSnapshot,
+  subscribeToMedicalNotes,
   subscribeToMedicalProfiles,
   type MedicalProfile,
 } from "@/components/app/medical";
@@ -36,23 +43,32 @@ import {
   subscribeToSupplies,
   type SupplyItem,
 } from "@/components/app/supplies";
+import type { PlanTaskId } from "@/components/app/plan";
 import {
-  getPlanTasksServerSnapshot,
-  getPlanTasksSnapshot,
-  savePlanTask,
-  subscribeToPlanTasks,
-  type PlanTaskId,
-} from "@/components/app/plan";
+  getEmergencyPlanServerSnapshot,
+  getEmergencyPlanSnapshot,
+  hasCommunicationPlan,
+  hasMeetingPlaces,
+  hasRolesAndDocuments,
+  subscribeToEmergencyPlan,
+} from "@/components/app/emergency-plan";
+import {
+  DEFAULT_PLAN_EXPORT_SECTIONS,
+  exportPlanPdf,
+  PLAN_EXPORT_SECTIONS,
+  type PlanExportAction,
+  type PlanExportSection,
+} from "@/components/app/exportPlanPdf";
 
-type CompletionSource = "data" | "manual";
+type CompletionSource = "data";
 
 const planTasks: { icon: Icon; id: PlanTaskId; source: CompletionSource }[] = [
   { id: "contacts", icon: Phone, source: "data" },
-  { id: "meetingPlace", icon: MapPin, source: "manual" },
+  { id: "meetingPlace", icon: MapPin, source: "data" },
   { id: "supportInformation", icon: FirstAidKit, source: "data" },
   { id: "waterAndFood", icon: Drop, source: "data" },
   { id: "kitAndPower", icon: Flashlight, source: "data" },
-  { id: "rolesAndDocuments", icon: FileText, source: "manual" },
+  { id: "rolesAndDocuments", icon: FileText, source: "data" },
 ];
 
 function replaceValues(message: string, values: Record<string, number>) {
@@ -74,24 +90,32 @@ function categoryIsReady(items: SupplyItem[], categories: SupplyItem["category"]
 }
 
 export function PlanScreen() {
-  const { messages } = useLocalization();
+  const { locale, messages } = useLocalization();
   const copy = messages.plan;
-  const planTaskState = useSyncExternalStore(subscribeToPlanTasks, getPlanTasksSnapshot, getPlanTasksServerSnapshot);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [exportSections, setExportSections] = useState<PlanExportSection[]>(DEFAULT_PLAN_EXPORT_SECTIONS);
+  const [exportStatus, setExportStatus] = useState("");
   const contacts = useSyncExternalStore(subscribeToEmergencyContacts, getEmergencyContactsSnapshot, getEmergencyContactsServerSnapshot);
   const members = useSyncExternalStore(subscribeToMedicalProfiles, getMedicalProfilesSnapshot, getMedicalProfilesServerSnapshot);
+  const medicalNotes = useSyncExternalStore(subscribeToMedicalNotes, getMedicalNotesSnapshot, getMedicalNotesServerSnapshot);
   const supplies = useSyncExternalStore(subscribeToSupplies, getSupplyItemsSnapshot, getSupplyItemsServerSnapshot);
-  const manuallyCompleted = new Set(planTaskState.filter((task) => task.completed).map((task) => task.id));
-  const dataCompletion: Record<Exclude<PlanTaskId, "meetingPlace" | "rolesAndDocuments">, boolean> = {
-    contacts: contacts.length > 0,
+  const emergencyPlan = useSyncExternalStore(subscribeToEmergencyPlan, getEmergencyPlanSnapshot, getEmergencyPlanServerSnapshot);
+  const dataCompletion: Record<PlanTaskId, boolean> = {
+    contacts: contacts.length > 0 && hasCommunicationPlan(emergencyPlan),
+    meetingPlace: hasMeetingPlaces(emergencyPlan),
     supportInformation: members.some(hasHealthDetails),
     waterAndFood: categoryIsReady(supplies, ["water-food"]),
     kitAndPower: categoryIsReady(supplies, ["health", "power-light"]),
+    rolesAndDocuments: hasRolesAndDocuments(emergencyPlan),
   };
-  const isComplete = (task: (typeof planTasks)[number]) => task.source === "data" ? dataCompletion[task.id as keyof typeof dataCompletion] : manuallyCompleted.has(task.id);
+  const isComplete = (task: (typeof planTasks)[number]) => dataCompletion[task.id];
   const completedCount = planTasks.filter(isComplete).length;
   const total = planTasks.length;
   const percentage = Math.round((completedCount / total) * 100);
   const nextTask = planTasks.find((task) => !isComplete(task));
+  const sourceForTask = (id: PlanTaskId) => id === "contacts" && contacts.length > 0
+    ? copy.sources.communication
+    : copy.sources[id];
 
   const progressMessage = completedCount === 0
     ? copy.progress.notStarted
@@ -99,11 +123,39 @@ export function PlanScreen() {
       ? copy.progress.complete
       : replaceValues(copy.progress.inProgress, { completed: completedCount, total });
 
+  function exportPdf(action: PlanExportAction) {
+    try {
+      exportPlanPdf({
+        action,
+        contacts,
+        copy: copy.export.pdf,
+        emergencyPlan,
+        locale,
+        medicalNotes,
+        medicalProfiles: members,
+        readiness: { complete: completedCount, total },
+        sections: exportSections,
+        supplies,
+      });
+      setExportStatus(action === "print" ? copy.export.printStarted : copy.export.success);
+      setExportDialogOpen(false);
+    } catch {
+      setExportStatus(copy.export.error);
+    }
+  }
+
+  const exportOptions = PLAN_EXPORT_SECTIONS.map((section) => ({
+    description: copy.export.options[section].description,
+    label: copy.export.options[section].label,
+    value: section,
+  }));
+
   return (
     <main className="plan-screen">
-      <PageNavigationBar title={copy.title} />
+      <PageNavigationBar action={{ icon: FloppyDisk, label: copy.export.action, onClick: () => setExportDialogOpen(true) }} title={copy.title} />
       <div className="plan-screen__content">
         <h1 className="sr-only">{copy.title}</h1>
+        <p aria-live="polite" className="sr-only" role="status">{exportStatus}</p>
 
         <section aria-labelledby="plan-overview-heading" className="plan-screen__overview">
           <div className="plan-screen__progress-summary">
@@ -125,17 +177,13 @@ export function PlanScreen() {
 
         {nextTask && (() => {
           const task = copy.tasks[nextTask.id];
-          const source = nextTask.source === "data" ? copy.sources[nextTask.id as keyof typeof copy.sources] : undefined;
+          const source = sourceForTask(nextTask.id);
           return (
             <section aria-labelledby="plan-next-step-heading" className="plan-next-step">
               <p className="type-caption plan-next-step__eyebrow">{copy.nextStep.eyebrow}</p>
               <h2 className="type-h2" id="plan-next-step-heading">{task.title}</h2>
               <p className="type-body">{task.description}</p>
-              {source ? (
-                <Link className="button button--primary" href={source.href}>{source.label}</Link>
-              ) : (
-                <Button onClick={() => savePlanTask(nextTask.id, true)}>{copy.actions.markAgreed}</Button>
-              )}
+              <Link className="button button--primary" href={source.href}>{source.label}</Link>
             </section>
           );
         })()}
@@ -150,10 +198,10 @@ export function PlanScreen() {
               const { icon: Icon, id } = taskDefinition;
               const task = copy.tasks[id];
               const completed = isComplete(taskDefinition);
-              const source = taskDefinition.source === "data" ? copy.sources[id as keyof typeof copy.sources] : undefined;
+              const source = sourceForTask(id);
               const status = completed
-                ? taskDefinition.source === "data" ? copy.status.ready : copy.status.agreed
-                : taskDefinition.source === "data" ? copy.status.needsInformation : copy.status.toAgree;
+                ? copy.status.ready
+                : copy.status.needsInformation;
 
               return (
                 <li key={id}>
@@ -166,17 +214,7 @@ export function PlanScreen() {
                       <span className="plan-checklist__title">{task.title}</span>
                       <span className="type-caption plan-checklist__description">{task.description}</span>
                       <span className="plan-checklist__status-label">{status}</span>
-                      {source ? (
-                        <Link className="plan-checklist__source" href={source.href}>{source.label}</Link>
-                      ) : (
-                        <Button
-                          className="plan-checklist__action"
-                          onClick={() => savePlanTask(id, !completed)}
-                          variant="secondary"
-                        >
-                          {completed ? copy.actions.markNotAgreed : copy.actions.markAgreed}
-                        </Button>
-                      )}
+                      <Link className="plan-checklist__source" href={source.href}>{source.label}</Link>
                     </span>
                   </article>
                 </li>
@@ -200,6 +238,26 @@ export function PlanScreen() {
           </Link>
         </section>
       </div>
+      <Dialog
+        closeLabel={copy.export.close}
+        description={copy.export.description}
+        onOpenChange={setExportDialogOpen}
+        open={exportDialogOpen}
+        title={copy.export.title}
+      >
+        <CheckboxGroup
+          helperText={copy.export.helper}
+          label={copy.export.chooseSections}
+          name="plan-export-sections"
+          onValueChange={(values) => setExportSections(values.filter((value): value is PlanExportSection => PLAN_EXPORT_SECTIONS.includes(value as PlanExportSection)))}
+          options={exportOptions}
+          value={exportSections}
+        />
+        <div className="dialog__actions">
+          <Button disabled={exportSections.length === 0} leadingIcon={FloppyDisk} onClick={() => exportPdf("download")}>{copy.export.download}</Button>
+          <Button disabled={exportSections.length === 0} leadingIcon={Printer} onClick={() => exportPdf("print")} variant="secondary">{copy.export.print}</Button>
+        </div>
+      </Dialog>
     </main>
   );
 }

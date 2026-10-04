@@ -4,6 +4,7 @@ import {
   Bell,
   CaretLeft,
   CaretRight,
+  ChatCircleText,
   FirstAidKit,
   House,
   MapPin,
@@ -11,16 +12,50 @@ import {
   Warning,
 } from "@phosphor-icons/react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { useEmergencyMode } from "@/components/emergency/EmergencyModeProvider";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
+import {
+  getEmergencyPlanServerSnapshot,
+  getEmergencyPlanSnapshot,
+  subscribeToEmergencyPlan,
+} from "@/components/app/emergency-plan";
+import {
+  getEmergencyContactsServerSnapshot,
+  getEmergencyContactsSnapshot,
+  subscribeToEmergencyContacts,
+} from "@/components/app/contacts";
+import {
+  getMedicalProfilesServerSnapshot,
+  getMedicalProfilesSnapshot,
+  subscribeToMedicalProfiles,
+  type MedicalProfile,
+} from "@/components/app/medical";
+
+function hasMedicalValue(value: string | undefined) {
+  return Boolean(value && !["-", "—", "none", "brak"].includes(value.trim().toLowerCase()));
+}
+
+function medicalSummary(profile: MedicalProfile) {
+  return [profile.allergies, profile.chronicDiseases, profile.medications]
+    .filter(hasMedicalValue)
+    .join("; ");
+}
 
 export function CrisisScreen() {
   const router = useRouter();
   const { activateEmergency, deactivateEmergency } = useEmergencyMode();
   const { messages } = useLocalization();
   const copy = messages.crisisMode;
+  const emergencyPlan = useSyncExternalStore(subscribeToEmergencyPlan, getEmergencyPlanSnapshot, getEmergencyPlanServerSnapshot);
+  const contacts = useSyncExternalStore(subscribeToEmergencyContacts, getEmergencyContactsSnapshot, getEmergencyContactsServerSnapshot);
+  const medicalProfiles = useSyncExternalStore(subscribeToMedicalProfiles, getMedicalProfilesSnapshot, getMedicalProfilesServerSnapshot);
+  const primaryContact = contacts.find((contact) => contact.isPrimary);
+  const hasEmergencyPlan = Boolean(
+    emergencyPlan.primaryMeetingPlace || emergencyPlan.backupMeetingPlace || emergencyPlan.familyRoles
+    || emergencyPlan.documentsLocation || emergencyPlan.communicationPlan,
+  );
 
   useEffect(() => {
     activateEmergency();
@@ -94,6 +129,56 @@ export function CrisisScreen() {
           </h1>
           <p className="crisis-screen__description">{copy.description}</p>
         </section>
+
+        <section aria-labelledby="crisis-actions-heading" className="crisis-screen__quick-actions">
+          <h2 className="type-h3" id="crisis-actions-heading">{copy.quickActions.title}</h2>
+          <div className="crisis-screen__quick-actions-grid">
+            <a className="crisis-screen__quick-action crisis-screen__quick-action--emergency" href="tel:112">
+              <Phone aria-hidden="true" size={24} weight="bold" />
+              <span><strong>{copy.quickActions.callEmergency}</strong><small>{copy.quickActions.emergencyDescription}</small></span>
+            </a>
+            {primaryContact ? (
+              <>
+                <a className="crisis-screen__quick-action" href={`tel:${primaryContact.phone}`}>
+                  <Phone aria-hidden="true" size={24} weight="bold" />
+                  <span><strong>{copy.quickActions.callPrimary.replace("{name}", primaryContact.name)}</strong><small>{primaryContact.phone}</small></span>
+                </a>
+                <a className="crisis-screen__quick-action" href={`sms:${primaryContact.phone}`}>
+                  <ChatCircleText aria-hidden="true" size={24} weight="bold" />
+                  <span><strong>{copy.quickActions.textPrimary.replace("{name}", primaryContact.name)}</strong><small>{primaryContact.phone}</small></span>
+                </a>
+              </>
+            ) : (
+              <Link className="crisis-screen__quick-action" href="/family">
+                <Phone aria-hidden="true" size={24} weight="bold" />
+                <span><strong>{copy.quickActions.addPrimary}</strong><small>{copy.quickActions.addPrimaryDescription}</small></span>
+              </Link>
+            )}
+          </div>
+        </section>
+
+        <section aria-labelledby="crisis-plan-heading" className="crisis-screen__plan-card">
+          <div className="crisis-screen__plan-heading">
+            <div><h2 className="type-h3" id="crisis-plan-heading">{copy.card.title}</h2><p className="type-caption">{copy.card.offline}</p></div>
+            <Link href="/plan/details">{copy.plan.manage}</Link>
+          </div>
+          {hasEmergencyPlan || contacts.length > 0 || medicalProfiles.length > 0 ? (
+            <dl className="crisis-screen__plan-list">
+              {contacts.length > 0 && <div><dt>{copy.card.contacts}</dt><dd>{contacts.map((contact) => `${contact.name}: ${contact.phone}`).join(" · ")}</dd></div>}
+              {medicalProfiles.length > 0 && <div><dt>{copy.card.medical}</dt><dd>{medicalProfiles.map((profile) => `${profile.fullName}${medicalSummary(profile) ? `: ${medicalSummary(profile)}` : ""}`).join(" · ")}</dd></div>}
+              {emergencyPlan.primaryMeetingPlace && <div><dt>{copy.plan.primaryMeetingPlace}</dt><dd>{emergencyPlan.primaryMeetingPlace}</dd></div>}
+              {emergencyPlan.backupMeetingPlace && <div><dt>{copy.plan.backupMeetingPlace}</dt><dd>{emergencyPlan.backupMeetingPlace}</dd></div>}
+              {emergencyPlan.communicationPlan && <div><dt>{copy.plan.communication}</dt><dd>{emergencyPlan.communicationPlan}</dd></div>}
+              {emergencyPlan.familyRoles && <div><dt>{copy.plan.roles}</dt><dd>{emergencyPlan.familyRoles}</dd></div>}
+              {emergencyPlan.documentsLocation && <div><dt>{copy.plan.documents}</dt><dd>{emergencyPlan.documentsLocation}</dd></div>}
+            </dl>
+          ) : <p className="type-caption">{copy.plan.empty}</p>}
+        </section>
+
+        <aside className="crisis-screen__official-guidance">
+          <p>{copy.officialGuidance.description}</p>
+          <a href="https://www.gov.pl/web/rcb/" rel="noopener noreferrer" target="_blank">{copy.officialGuidance.action}</a>
+        </aside>
 
         <nav aria-label={copy.title} className="crisis-screen__menu-card">
           <ul className="crisis-screen__list">

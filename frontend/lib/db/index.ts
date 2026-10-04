@@ -6,6 +6,7 @@ import {
   type StoreEntityMap,
   type BaseEntity,
 } from "./schema";
+import { clearServiceWorkerHouseholdSnapshot } from "@/lib/offline/serviceWorker";
 
 const DB_CHANGE_EVENT = "plan0-db-change";
 
@@ -238,6 +239,7 @@ export async function clearAllOfflineData(): Promise<void> {
       window.localStorage.removeItem("plan-0-medical-notes-v1");
       window.localStorage.removeItem("plan-0-emergency-contacts-v1");
       window.localStorage.removeItem("plan-0-plan-tasks-v1");
+      window.localStorage.removeItem("plan-0-emergency-plan-v1");
       window.localStorage.removeItem("plan-0-emergency-mode-active");
     } catch {
       // Storage unavailable
@@ -248,10 +250,12 @@ export async function clearAllOfflineData(): Promise<void> {
     window.dispatchEvent(new Event("plan-0-supplies-change"));
     window.dispatchEvent(new Event("plan-0-emergency-contacts-change"));
     window.dispatchEvent(new Event("plan-0-plan-tasks-change"));
+    window.dispatchEvent(new Event("plan-0-emergency-plan-change"));
   }
 
   // Broadcast global DB change
   notifyDatabaseChange();
+  await clearServiceWorkerHouseholdSnapshot();
 }
 
 /**

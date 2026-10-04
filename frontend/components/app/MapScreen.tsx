@@ -2,11 +2,16 @@
 
 import { ArrowRight, Compass, Crosshair, MapPin } from "@phosphor-icons/react";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { Map, type MapPosition } from "@/components/ui/Map";
 import { IconButton } from "@/components/ui/Button";
 import { SearchField } from "@/components/ui/FormControls";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
+import {
+  getEmergencyPlanServerSnapshot,
+  getEmergencyPlanSnapshot,
+  subscribeToEmergencyPlan,
+} from "@/components/app/emergency-plan";
 
 type SheetSize = "compact" | "browse" | "expanded";
 type MapFilter = "plan" | "all" | "shelters" | "hospitals" | "pharmacies" | "meeting-places";
@@ -17,6 +22,7 @@ const DEFAULT_CENTER: MapPosition = { lat: 50.0674, lng: 19.9915 };
 export function MapScreen() {
   const { messages } = useLocalization();
   const copy = messages.map;
+  const emergencyPlan = useSyncExternalStore(subscribeToEmergencyPlan, getEmergencyPlanSnapshot, getEmergencyPlanServerSnapshot);
   const sheetLabels: Record<SheetSize, string> = copy.sizes;
   const mapFilters: { id: MapFilter; label: string }[] = [
     { id: "plan", label: copy.yourPlan }, { id: "all", label: copy.all }, { id: "shelters", label: copy.shelters }, { id: "hospitals", label: copy.hospitals }, { id: "pharmacies", label: copy.pharmacies }, { id: "meeting-places", label: copy.meetingPlaces },
@@ -129,10 +135,11 @@ export function MapScreen() {
                   <span aria-hidden="true" className="map-sheet__setup-icon"><MapPin size={24} weight="bold" /></span>
                   <div>
                     <h3 className="type-h3">{copy.primaryMeetingPlace}</h3>
-                    <p className="type-caption">{copy.meetingPlaceDescription}</p>
+                    <p className="type-caption">{emergencyPlan.primaryMeetingPlace || copy.meetingPlaceDescription}</p>
+                    {emergencyPlan.backupMeetingPlace && <p className="type-caption">{emergencyPlan.backupMeetingPlace}</p>}
                   </div>
-                  <Link aria-label={copy.addMeetingPlace} className="map-sheet__setup-action" href="/plan">
-                    <span>{copy.add}</span><ArrowRight aria-hidden="true" size={20} weight="bold" />
+                  <Link aria-label={emergencyPlan.primaryMeetingPlace ? copy.managePlan : copy.addMeetingPlace} className="map-sheet__setup-action" href="/plan/details">
+                    <span>{emergencyPlan.primaryMeetingPlace ? copy.managePlan : copy.add}</span><ArrowRight aria-hidden="true" size={20} weight="bold" />
                   </Link>
                 </div>
               </section>
