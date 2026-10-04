@@ -5,6 +5,7 @@ import { useState, useSyncExternalStore } from "react";
 import type { Icon } from "@phosphor-icons/react/lib";
 import {
   ArrowRight,
+  Backpack,
   Check,
   Drop,
   FileText,
@@ -16,6 +17,14 @@ import {
   FloppyDisk,
   Printer,
 } from "@phosphor-icons/react/ssr";
+import {
+  calculateBackpackProgress,
+  deriveFamilyComposition,
+  getBackpackServerSnapshot,
+  getBackpackSnapshot,
+  getCompiledFamilyItems,
+  subscribeToBackpack,
+} from "@/components/app/backpack";
 import { useLocalization } from "@/components/localization/LocalizationProvider";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
@@ -100,6 +109,11 @@ export function PlanScreen() {
   const medicalNotes = useSyncExternalStore(subscribeToMedicalNotes, getMedicalNotesSnapshot, getMedicalNotesServerSnapshot);
   const supplies = useSyncExternalStore(subscribeToSupplies, getSupplyItemsSnapshot, getSupplyItemsServerSnapshot);
   const emergencyPlan = useSyncExternalStore(subscribeToEmergencyPlan, getEmergencyPlanSnapshot, getEmergencyPlanServerSnapshot);
+  const backpackState = useSyncExternalStore(subscribeToBackpack, getBackpackSnapshot, getBackpackServerSnapshot);
+  const familyComposition = deriveFamilyComposition(members, backpackState.compositionOverride);
+  const compiledBackpackItems = getCompiledFamilyItems(familyComposition, backpackState.packedItemIds, backpackState.customItems);
+  const backpackProgress = calculateBackpackProgress(compiledBackpackItems);
+  const totalPeople = familyComposition.adults + familyComposition.children + familyComposition.seniors;
   const dataCompletion: Record<PlanTaskId, boolean> = {
     contacts: contacts.length > 0 && hasCommunicationPlan(emergencyPlan),
     meetingPlace: hasMeetingPlaces(emergencyPlan),
@@ -221,6 +235,30 @@ export function PlanScreen() {
               );
             })}
           </ul>
+        </section>
+
+        <section aria-labelledby="plan-backpack-heading" className="plan-screen__backpack-section">
+          <div className="plan-screen__section-heading">
+            <h2 className="type-h2" id="plan-backpack-heading">{copy.backpackBanner.heading}</h2>
+            <p className="type-caption">{copy.backpackBanner.description}</p>
+          </div>
+          <Link className="home-quick-link" href="/plan/backpack">
+            <Backpack aria-hidden="true" className="home-quick-link__icon" size={28} weight="bold" />
+            <span className="home-quick-link__content">
+              <span className="flex items-center gap-2">
+                <span className="type-h3">{copy.backpackBanner.actionTitle}</span>
+                <span className="badge badge--success">
+                  {copy.backpackBanner.packedBadge
+                    .replace("{packed}", String(backpackProgress.packed))
+                    .replace("{total}", String(backpackProgress.total))}
+                </span>
+              </span>
+              <span className="type-caption">
+                {copy.backpackBanner.actionDescription.replace("{peopleCount}", String(totalPeople))}
+              </span>
+            </span>
+            <ArrowRight aria-hidden="true" className="home-quick-link__arrow" size={20} weight="bold" />
+          </Link>
         </section>
 
         <section aria-labelledby="plan-supplies-heading" className="plan-screen__supplies-section">

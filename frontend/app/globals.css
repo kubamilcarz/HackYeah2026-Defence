@@ -1103,10 +1103,12 @@ a.app-navigation__link--active {
 .plan-next-step .button { justify-self: start; }
 
 .plan-screen__checklist-section,
+.plan-screen__backpack-section,
 .plan-screen__supplies-section,
 .plan-screen__section-heading { display: grid; }
 
 .plan-screen__checklist-section,
+.plan-screen__backpack-section,
 .plan-screen__supplies-section { gap: var(--space-4); }
 .plan-screen__section-heading { gap: var(--space-1); }
 .plan-screen__section-heading p { color: var(--content-muted); margin: 0; }
@@ -5227,4 +5229,364 @@ a.app-navigation__link--active {
   color: var(--content-link);
   text-decoration: underline;
 }
+
+/* ==========================================================================
+   Backpack Screen ("Plecak ewakuacyjny" RCB) - Clean & Minimalist Checklist
+   ========================================================================== */
+
+.backpack-clean {
+  box-sizing: border-box;
+  min-height: 100dvh;
+}
+
+.backpack-clean__content {
+  box-sizing: border-box;
+  display: grid;
+  gap: var(--space-5);
+  margin-inline: auto;
+  max-width: 44rem;
+  padding: var(--space-4) var(--space-4) var(--space-16);
+  width: 100%;
+}
+
+@media (min-width: 40rem) {
+  .backpack-clean__content {
+    gap: var(--space-6);
+    padding: var(--space-6) var(--space-6) var(--space-16);
+  }
+
+  .backpack-clean__filters-nav {
+    margin-inline: calc(var(--space-6) * -1);
+  }
+
+  .backpack-clean__filters {
+    padding-inline: var(--space-6);
+  }
+}
+
+.backpack-clean__header {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.backpack-clean__family-bar {
+  align-items: center;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-3);
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-3-5) var(--space-4);
+}
+
+.backpack-clean__edit-btn {
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--content-link);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-1-5);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--space-1);
+  transition: background-color 0.12s ease;
+}
+
+.backpack-clean__edit-btn:hover {
+  background: var(--surface-subtle);
+  text-decoration: underline;
+}
+
+.backpack-clean__progress-box {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-3);
+  padding: var(--space-3-5) var(--space-4);
+}
+
+/* Category Filter Chips */
+.backpack-clean__filters-nav {
+  margin-inline: calc(var(--space-4) * -1);
+  overflow-x: auto;
+  padding-block: var(--space-1);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.backpack-clean__filters-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.backpack-clean__filters {
+  display: flex;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 2px var(--space-4);
+  white-space: nowrap;
+}
+
+.backpack-clean__filter-btn {
+  align-items: center;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
+  color: var(--content-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  gap: var(--space-2);
+  min-height: 2.25rem;
+  padding: var(--space-1-5) var(--space-5);
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.backpack-clean__filter-btn:hover {
+  background: var(--action-secondary-hover);
+  color: var(--content-primary);
+}
+
+.backpack-clean__filter-btn--active {
+  background: var(--content-primary);
+  border-color: var(--content-primary);
+  color: var(--content-inverse);
+  font-weight: var(--font-weight-semibold);
+}
+
+.backpack-clean__filter-btn--active:hover {
+  background: var(--content-primary);
+  color: var(--content-inverse);
+}
+
+.backpack-clean__filter-label {
+  line-height: 1;
+}
+
+.backpack-clean__filter-count {
+  align-items: center;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
+  color: var(--content-secondary);
+  display: inline-flex;
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-bold);
+  height: 1.25rem;
+  justify-content: center;
+  line-height: 1;
+  min-width: 1.25rem;
+  padding: 0 0.375rem;
+}
+
+.backpack-clean__filter-btn--active .backpack-clean__filter-count {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--content-inverse);
+}
+
+/* Bulk Action Links */
+.backpack-clean__bulk-bar {
+  align-items: center;
+  color: var(--content-muted);
+  display: flex;
+  font-size: var(--font-size-caption);
+  justify-content: space-between;
+  padding-inline: var(--space-1);
+}
+
+.backpack-clean__bulk-link {
+  background: transparent;
+  border: none;
+  color: var(--content-secondary);
+  cursor: pointer;
+  font-size: var(--font-size-caption);
+  padding: 0;
+  transition: color 0.12s ease;
+}
+
+.backpack-clean__bulk-link:hover {
+  color: var(--content-primary);
+  text-decoration: underline;
+}
+
+/* Checklist Items */
+.backpack-clean__list {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-3);
+  list-style: none;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.backpack-clean__item + .backpack-clean__item {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.backpack-clean__row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  min-height: 3.5rem;
+  padding: var(--space-3) var(--space-4);
+  transition: background-color 0.12s ease;
+}
+
+.backpack-clean__row:hover {
+  background: var(--surface-subtle);
+}
+
+.backpack-clean__row--packed .backpack-clean__title {
+  color: var(--content-muted);
+  text-decoration: line-through;
+}
+
+.backpack-clean__label {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  flex: 1;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.backpack-clean__checkbox {
+  align-items: center;
+  border: 2px solid var(--border-strong);
+  border-radius: var(--space-1);
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-shrink: 0;
+  height: var(--space-5);
+  justify-content: center;
+  width: var(--space-5);
+  transition: all 0.15s ease;
+}
+
+.backpack-clean__row--packed .backpack-clean__checkbox {
+  background: var(--feedback-success-foreground);
+  border-color: var(--feedback-success-foreground);
+  color: var(--content-inverse);
+}
+
+.backpack-clean__title {
+  color: var(--content-primary);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body);
+}
+
+.backpack-clean__meta {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-2);
+  padding-left: var(--space-3);
+}
+
+.backpack-clean__qty {
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--space-1);
+  color: var(--content-secondary);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+  padding: 2px var(--space-2);
+  white-space: nowrap;
+}
+
+.backpack-clean__info-btn {
+  align-items: center;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--content-muted);
+  cursor: pointer;
+  display: inline-flex;
+  height: var(--space-8);
+  justify-content: center;
+  padding: 0;
+  width: var(--space-8);
+  transition: all 0.12s ease;
+}
+
+.backpack-clean__info-btn:hover,
+.backpack-clean__info-btn--active {
+  background: var(--surface-subtle);
+  color: var(--content-primary);
+}
+
+.backpack-clean__delete-btn {
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--content-muted);
+  cursor: pointer;
+  display: inline-flex;
+  height: var(--space-8);
+  justify-content: center;
+  padding: 0;
+  width: var(--space-8);
+}
+
+.backpack-clean__delete-btn:hover {
+  color: var(--action-danger);
+}
+
+/* Expandable Tip */
+.backpack-clean__tip {
+  background: var(--surface-subtle);
+  border-top: 1px dashed var(--border-subtle);
+  color: var(--content-secondary);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  padding: var(--space-3) var(--space-4) var(--space-3) calc(var(--space-5) + var(--space-4));
+}
+
+.backpack-clean__tip p {
+  margin: 0;
+}
+
+.backpack-clean__footer {
+  padding-top: var(--space-2);
+}
+
+/* Print View */
+@media print {
+  .app-shell__navigation,
+  .page-navigation-bar__back,
+  .page-navigation-bar__action,
+  .backpack-clean__filters-nav,
+  .backpack-clean__edit-btn,
+  .backpack-clean__info-btn,
+  .backpack-clean__delete-btn,
+  .dialog {
+    display: none !important;
+  }
+
+  .backpack-clean__content {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .backpack-clean__list {
+    border: 1px solid #000;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+@media (min-width: 40rem) {
+  .backpack-clean__content {
+    padding-top: var(--space-8);
+  }
+}
+
+
+
 

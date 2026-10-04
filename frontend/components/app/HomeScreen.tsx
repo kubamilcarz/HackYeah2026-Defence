@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
+  Backpack,
   FirstAidKit,
   MapTrifold,
   MapPin,
@@ -213,6 +214,14 @@ export function HomeScreen() {
               <span className="home-quick-link__content">
                 <span className="type-h3">{copy.quickAccess.supplies.title}</span>
                 <span className="type-caption">{copy.quickAccess.supplies.description}</span>
+              </span>
+              <ArrowRight aria-hidden="true" className="home-quick-link__arrow" size={20} weight="bold" />
+            </Link>
+            <Link className="home-quick-link" href="/plan/backpack">
+              <Backpack aria-hidden="true" className="home-quick-link__icon" size={28} weight="bold" />
+              <span className="home-quick-link__content">
+                <span className="type-h3">{copy.quickAccess.backpack.title}</span>
+                <span className="type-caption">{copy.quickAccess.backpack.description}</span>
               </span>
               <ArrowRight aria-hidden="true" className="home-quick-link__arrow" size={20} weight="bold" />
             </Link>
